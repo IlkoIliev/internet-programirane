@@ -19,7 +19,9 @@ nav:
 
   - Теория:
       - Въведение: teoria/index.md
-      - Раздел 1: teoria/razdel-1/index.md
+      - Раздел 1:
+          - Преглед на раздела: teoria/razdel-1/index.md
+          - "Урок 1. Основи на интернет": teoria/razdel-1/urok-01-osnovi-na-internet.md
       - Раздел 2: teoria/razdel-2/index.md
       - Раздел 3: teoria/razdel-3/index.md
       - Раздел 4: teoria/razdel-4/index.md
