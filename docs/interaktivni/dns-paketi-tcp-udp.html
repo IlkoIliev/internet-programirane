@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="bg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DNS, пакети, TCP и UDP – интерактивен изпитен модел v7</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef3f7;color:#172536;font-family:Arial,sans-serif}
+header{background:#183247;color:white;padding:16px 24px}header h1{margin:0 0 4px;font-size:30px}
+main{max-width:1600px;margin:auto;padding:14px}.panel{background:white;border:1px solid #b9c8d4;border-radius:15px;padding:15px;margin-bottom:14px}
+.assignment{background:#edf7ff;border-left:7px solid #2375ad;border-radius:10px;padding:14px 18px;line-height:1.45;font-size:17px}
+.assignment p{margin:7px 0}.setup,.buttons,.stats{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button,select{font:700 17px Arial;padding:10px 14px;border:2px solid #a7bac9;border-radius:10px;background:white}button{cursor:pointer}
+.primary{background:#176dab;color:white;border-color:#176dab}.timer{font-size:25px;font-weight:900;margin-left:auto}
+.bank{position:sticky;top:0;z-index:30;background:#f8fbfd;border:2px dashed #8ca7bb;border-radius:12px;padding:10px;display:flex;gap:8px;flex-wrap:wrap;min-height:125px}
+.card{background:white;border:2px solid #7894aa;border-radius:10px;padding:7px 10px;font-weight:700;text-align:center;cursor:grab;user-select:none;touch-action:none;color:#162536;max-width:230px}
+.card img{width:105px;height:72px;object-fit:contain;display:block;margin:auto}.card.arrow{font-size:42px;color:#f4a51c;line-height:45px;min-width:80px}.card.sel{outline:4px solid #f2b134}
+.stage{background:#070707;border-radius:15px;padding:18px;color:white;overflow:hidden}
+.flow{display:grid;grid-template-columns:18% 7% 18% 7% 18% 7% 18%;gap:8px;align-items:center}
+.slot{border:2px dashed #617b90;border-radius:10px;min-height:64px;display:flex;align-items:center;justify-content:center;padding:6px;overflow:hidden}
+.slot .card{max-width:100%}.pic{height:175px}.pic .card img{width:180px;height:135px}
+.arrowSlot{height:82px}.arrowSlot .card{background:#111;border:0}.arrowSlot .card.arrow{font-size:54px}
+.subrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}.subrow .slot{min-height:70px}
+.sectionTitle{font-size:24px;font-weight:900;margin:20px 0 10px}
+.packetArea{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:10px}.packetArea .slot{min-height:105px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px}.proto{border:2px solid #587186;border-radius:12px;padding:10px}
+.protoGrid{display:grid;grid-template-rows:65px repeat(3,85px);gap:8px}.feedback{margin-top:10px;background:#edf3f8;padding:12px;border-radius:9px;font-weight:700}
+.good{background:#e6f7ed;color:#176b43}.bad{background:#fdecec;color:#992929}.hide{display:none}
+.metric{background:#f2f6fa;padding:12px;border-radius:10px;min-width:170px;text-align:center}.big{font-size:28px;font-weight:900}
+@media(max-width:1050px){.flow{grid-template-columns:1fr}.compare,.packetArea{grid-template-columns:1fr}.bank{position:relative}.timer{margin-left:0}}
+
+.dnsStage{display:grid;grid-template-columns:1.25fr .9fr 1.15fr .75fr .95fr;gap:10px;align-items:center}
+.endpoint{display:grid;grid-template-rows:175px 64px;gap:8px}
+.dnsArrows{display:grid;grid-template-rows:82px 82px;gap:14px}
+.semanticArrow{min-height:82px}
+.semanticArrow .card.arrow{font-size:22px;line-height:1.15;white-space:normal;background:#111;color:#f4b942;border-color:#6f8494}
+.ipbox{min-height:72px}
+.webStage{display:grid;grid-template-columns:1fr 1fr 1.1fr 70px 1.1fr;gap:12px;align-items:center}
+.clientRef{border:2px dashed #617b90;border-radius:10px;min-height:90px;display:flex;align-items:center;justify-content:center;padding:10px;text-align:center;font-weight:800}
+.flowMark{font-size:54px;color:#f4b942;text-align:center;font-weight:900}
+
+@media(max-width:1050px){.dnsStage,.webStage{grid-template-columns:1fr}.dnsArrows{grid-template-columns:1fr 1fr;grid-template-rows:auto}.flowMark{transform:rotate(90deg)}}
+
+.stageLabel{font-size:19px;font-weight:900;margin:8px 0 10px}
+.stage2Label{margin-top:28px}
+.dnsFlowV3{display:grid;grid-template-columns:1.2fr .95fr 1.15fr 1fr;gap:14px;align-items:center}
+.endpointV3{display:grid;grid-template-rows:175px 64px;gap:8px;min-width:0}
+.dnsExchangeV3{display:grid;grid-template-rows:82px 82px;gap:14px;min-width:0}
+.dnsResultV3{display:grid;grid-template-rows:42px 66px 66px;gap:8px;min-width:0}
+.resultCaption{display:flex;align-items:center;justify-content:center;font-weight:800;color:#d6e6f2;text-align:center}
+.webFlowV3{display:grid;grid-template-columns:1.2fr 1fr 1.15fr 70px 1.15fr;gap:14px;align-items:center}
+.fixedArrowV3{font-size:58px;color:#f4b942;text-align:center;font-weight:900}
+.webFlowV3 .semanticArrow .card.arrow,.dnsExchangeV3 .semanticArrow .card.arrow{font-size:20px;line-height:1.15}
+@media(max-width:1050px){
+ .dnsFlowV3,.webFlowV3{grid-template-columns:1fr}
+ .dnsExchangeV3{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+ .fixedArrowV3{transform:rotate(90deg)}
+}
+
+
+.dnsFlowV4{display:grid;grid-template-columns:1.2fr 1.05fr 1.15fr;gap:18px;align-items:center;max-width:1120px}
+.dnsExchangeV4{display:grid;grid-template-rows:86px 86px;gap:18px;min-width:0}
+.dnsExchangeV4 .semanticArrow .card.arrow{font-size:19px;line-height:1.15;white-space:normal}
+@media(max-width:1050px){
+ .dnsFlowV4{grid-template-columns:1fr}
+ .dnsExchangeV4{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+}
+
+
+.packetExam{display:grid;grid-template-columns:.85fr 1.65fr;gap:18px;align-items:start}
+.packetDiagram{border:2px solid #587186;border-radius:12px;padding:12px}
+.packetCaption{text-align:center;font-weight:900;font-size:19px;margin-bottom:10px}
+.packetParts{display:grid;grid-template-columns:38% 62%;gap:8px}
+.packetPartSlot{min-height:120px;font-size:20px}
+.headerSort{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sortBox{border:2px solid #587186;border-radius:12px;padding:10px;min-width:0}
+.sortTitle{text-align:center;font-weight:900;font-size:17px;min-height:48px;display:flex;align-items:center;justify-content:center}
+.factSlot{min-height:72px;margin-top:8px}
+.factSlot .card{font-size:15px;line-height:1.15}
+@media(max-width:1050px){
+ .packetExam,.headerSort{grid-template-columns:1fr}
+}
+
+
+.hiddenWord{display:inline-block;min-width:82px;padding:2px 6px;border-radius:5px;background:#263746;color:#b8c7d2;letter-spacing:2px}
+.revealedWord{background:#164f9e;color:#fff;letter-spacing:0}
+.fixedProtoTitle{min-height:65px;border:2px solid #617b90;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;background:#101820;color:#fff}
+
+</style></head>
+<body><header><h1>DNS и пътуване на пакетите</h1><div>Интерактивен изпитен модел • Интернет и мрежови протоколи • v7</div></header>
+<main>
+<section class="panel"><h2>Задание</h2><div class="assignment">
+<p><b>Ситуация:</b> Потребител въвежда име на домейн в браузъра и иска да получи ресурс от уеб сървър.</p>
+<p><b>Част 1.</b> Възстановете двата етапа: <b>намиране на IP адрес чрез DNS</b> и <b>достъп до уеб сървъра</b>. В първия етап покажете DNS заявката и DNS отговора с получения IP адрес. Във втория етап използвайте този IP адрес, за да достигнете през Интернет до уеб сървъра.</p>
+<p><b>Част 2.</b> Конструирайте мрежов пакет, като поставите двете му основни части. След правилното конструиране ще се разкрие името на частта, по която трябва да разпределите останалите твърдения.</p>
+<p><b>Част 3.</b> Разпределете характеристиките в готовите колони <b>TCP</b> и <b>UDP</b>.</p>
+<p>Работете чрез <b>Drag & Drop</b>. На интерактивен дисплей може и: <b>докоснете карта → докоснете поле</b>. Разместването на равностойни стрелки не се счита за грешка.</p>
+</div></section>
+
+<section class="panel"><div class="setup"><b>Време:</b><select id="limit"><option value="0">Без ограничение</option><option value="7">7 минути</option><option value="10" selected>10 минути</option><option value="12">12 минути</option><option value="15">15 минути</option></select><button class="primary" id="start">Старт</button><span class="timer" id="timer">Време: --:--</span></div><p>Разрешени подсказки: <b>3</b>. Всяка използвана подсказка намалява крайния резултат с 2%.</p></section>
+
+<div id="task" class="hide">
+<section class="panel"><h3>Разбъркани карти</h3><div class="bank" id="bank"></div></section>
+<section class="panel"><div class="stage">
+<div class="sectionTitle">1. DNS и достъп до уеб сървъра</div>
+
+<div class="stageLabel">Етап 1: Намиране на IP адрес чрез DNS</div>
+<div class="dnsFlowV4">
+  <div class="endpointV3">
+    <div class="slot pic" data-slot="client"></div>
+    <div class="slot" data-slot="domain"></div>
+  </div>
+  <div class="dnsExchangeV4">
+    <div class="slot semanticArrow" data-slot="dnsReq"></div>
+    <div class="slot semanticArrow" data-slot="dnsResp"></div>
+  </div>
+  <div class="slot pic" data-slot="dns"></div>
+</div>
+<div class="stageLabel stage2Label">Етап 2: Достъп до уеб сървъра</div>
+<div class="webFlowV3">
+  <div class="endpointV3">
+    <div class="slot pic" data-slot="client"></div>
+    <div class="slot" data-slot="webIp"></div>
+  </div>
+  <div class="slot semanticArrow" data-slot="httpReq"></div>
+  <div class="slot pic" data-slot="internet"></div>
+  <div class="fixedArrowV3">→</div>
+  <div class="slot pic" data-slot="server"></div>
+</div>
+
+<div class="sectionTitle">2. Конструирай мрежов пакет</div>
+<div class="packetExam">
+  <div class="packetDiagram">
+    <div class="packetCaption">Структура на пакета</div>
+    <div class="packetParts">
+      <div class="slot packetPartSlot" data-slot="packetHeader"></div>
+      <div class="slot packetPartSlot" data-slot="packetData"></div>
+    </div>
+  </div>
+  <div class="headerSort">
+    <div class="sortBox">
+      <div class="sortTitle">Съдържа се в <span id="headerReveal" class="hiddenWord">??????</span></div>
+      <div class="slot factSlot" data-slot="inHeader"></div>
+      <div class="slot factSlot" data-slot="inHeader"></div>
+      <div class="slot factSlot" data-slot="inHeader"></div>
+      <div class="slot factSlot" data-slot="inHeader"></div>
+    </div>
+    <div class="sortBox">
+      <div class="sortTitle">НЕ е част от <span id="headerReveal2" class="hiddenWord">??????</span> според изучения материал</div>
+      <div class="slot factSlot" data-slot="notHeader"></div>
+      <div class="slot factSlot" data-slot="notHeader"></div>
+      <div class="slot factSlot" data-slot="notHeader"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sectionTitle">3. TCP срещу UDP</div>
+<div class="compare">
+<div class="proto"><div class="protoGrid"><div class="fixedProtoTitle">TCP</div><div class="slot" data-slot="tcp"></div><div class="slot" data-slot="tcp"></div><div class="slot" data-slot="tcp"></div></div></div>
+<div class="proto"><div class="protoGrid"><div class="fixedProtoTitle">UDP</div><div class="slot" data-slot="udp"></div><div class="slot" data-slot="udp"></div><div class="slot" data-slot="udp"></div></div></div>
+</div>
+</div></section>
+<section class="panel"><div class="buttons"><button id="ret">↩ Върни избраната карта</button><button id="hint">Подсказка (3)</button><button id="check">Провери напредъка</button><button class="primary" id="finish">Приключи и оцени</button></div><div id="fb" class="feedback">Изберете карта и я поставете в схемата.</div></section>
+</div>
+<section class="panel hide" id="result"><h2>Резултат</h2><div class="stats"><div class="metric"><div class="big" id="score"></div>Резултат</div><div class="metric"><div class="big" id="grade"></div>Оценка</div><div class="metric"><div class="big" id="usedtime"></div>Време</div><div class="metric"><div class="big" id="usedhints"></div>Подсказки</div></div><p id="details"></p></section>
+</main>
+<script>
+const cards=[["Клиент", "img", "clientWeb", "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMjAgMTUwIj48cmVjdCB4PSIyNSIgeT0iMTUiIHdpZHRoPSIxNzAiIGhlaWdodD0iMTAwIiByeD0iOCIgZmlsbD0iI2RjZThmMyIgc3Ryb2tlPSIjMzc1YTdmIiBzdHJva2Utd2lkdGg9IjYiLz48cmVjdCB4PSIzOCIgeT0iMjgiIHdpZHRoPSIxNDQiIGhlaWdodD0iNzMiIGZpbGw9IiM3OGI3ZTUiLz48cGF0aCBkPSJNODUgMTE2aDUwbDEyIDIwSDczeiIgZmlsbD0iIzhiOWNhYyIvPjxyZWN0IHg9IjU4IiB5PSIxMzYiIHdpZHRoPSIxMDQiIGhlaWdodD0iNyIgcng9IjMiIGZpbGw9IiMzNzVhN2YiLz48L3N2Zz4="], ["216.58.214.46", "text", "webIp", null], ["Подрежда пакетите в правилна последователност", "text", "tcp2", null], ["\"Fire-and-forget\"", "text", "udp2", null], ["Интернет", "img", "internet", "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTYwIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSI4MCIgcj0iNjUiIGZpbGw9IiM3MmI5ZTgiIHN0cm9rZT0iIzI0NTU3YSIgc3Ryb2tlLXdpZHRoPSI2Ii8+PGVsbGlwc2UgY3g9IjEwMCIgY3k9IjgwIiByeD0iMzAiIHJ5PSI2NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHBhdGggZD0iTTM4IDU4aDEyNE0zNSA4MmgxMzBNNDMgMTA2aDExNCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEwMCAxNXYxMzAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIvPjwvc3ZnPg=="], ["HTTP заявка →", "arrow", "httpReq", null], ["DNS заявка →", "arrow", "dnsReq", null], ["Скоростта е с по-висок приоритет", "text", "udp3", null], ["google.com", "text", "domain", null], ["Надеждността е с по-висок приоритет", "text", "tcp3", null], ["Уеб сървър", "img", "server", "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMTAgMTYwIj48cmVjdCB4PSI0NSIgeT0iMTAiIHdpZHRoPSIxMjAiIGhlaWdodD0iMTQwIiByeD0iOCIgZmlsbD0iI2RmZTVlYSIgc3Ryb2tlPSIjNTI2NTc0IiBzdHJva2Utd2lkdGg9IjYiLz48cmVjdCB4PSI2MCIgeT0iMjgiIHdpZHRoPSI5MCIgaGVpZ2h0PSIyNCIgcng9IjQiIGZpbGw9IiNhYWI5YzQiLz48cmVjdCB4PSI2MCIgeT0iNjQiIHdpZHRoPSI5MCIgaGVpZ2h0PSIyNCIgcng9IjQiIGZpbGw9IiNhYWI5YzQiLz48cmVjdCB4PSI2MCIgeT0iMTAwIiB3aWR0aD0iOTAiIGhlaWdodD0iMjQiIHJ4PSI0IiBmaWxsPSIjYWFiOWM0Ii8+PGNpcmNsZSBjeD0iNzIiIGN5PSIxMzYiIHI9IjYiIGZpbGw9IiMzZWI0NmMiLz48L3N2Zz4="], ["Клиент", "img", "clientDns", "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMjAgMTUwIj48cmVjdCB4PSIyNSIgeT0iMTUiIHdpZHRoPSIxNzAiIGhlaWdodD0iMTAwIiByeD0iOCIgZmlsbD0iI2RjZThmMyIgc3Ryb2tlPSIjMzc1YTdmIiBzdHJva2Utd2lkdGg9IjYiLz48cmVjdCB4PSIzOCIgeT0iMjgiIHdpZHRoPSIxNDQiIGhlaWdodD0iNzMiIGZpbGw9IiM3OGI3ZTUiLz48cGF0aCBkPSJNODUgMTE2aDUwbDEyIDIwSDczeiIgZmlsbD0iIzhiOWNhYyIvPjxyZWN0IHg9IjU4IiB5PSIxMzYiIHdpZHRoPSIxMDQiIGhlaWdodD0iNyIgcng9IjMiIGZpbGw9IiMzNzVhN2YiLz48L3N2Zz4="], ["DNS сървър", "img", "dns", "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTYwIj48cmVjdCB4PSI0NSIgeT0iMTIiIHdpZHRoPSIxMTAiIGhlaWdodD0iMTM1IiByeD0iMTAiIGZpbGw9IiNlNmVkZjMiIHN0cm9rZT0iIzRjNjU3OCIgc3Ryb2tlLXdpZHRoPSI2Ii8+PHJlY3QgeD0iNjAiIHk9IjMwIiB3aWR0aD0iODAiIGhlaWdodD0iMjAiIHJ4PSI0IiBmaWxsPSIjOWViNWM2Ii8+PHJlY3QgeD0iNjAiIHk9IjYwIiB3aWR0aD0iODAiIGhlaWdodD0iMjAiIHJ4PSI0IiBmaWxsPSIjOWViNWM2Ii8+PHJlY3QgeD0iNjAiIHk9IjkwIiB3aWR0aD0iODAiIGhlaWdodD0iMjAiIHJ4PSI0IiBmaWxsPSIjOWViNWM2Ii8+PGNpcmNsZSBjeD0iNzMiIGN5PSIxMjgiIHI9IjciIGZpbGw9IiMzOWE5NmIiLz48dGV4dCB4PSIxMDAiIHk9IjEzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzI2Mzc0NiI+RE5TPC90ZXh0Pjwvc3ZnPg=="], ["Не гарантира доставка", "text", "udp1", null], ["← DNS отговор: 216.58.214.46", "arrow", "dnsResp", null], ["Проверява пакетите", "text", "tcp1", null], ["HEADER", "text", "packetHeader", null], ["ДАННИ", "text", "packetData", null], ["Откъде идва", "text", "headerFact1", null], ["Къде отива", "text", "headerFact2", null], ["Размер на пакета", "text", "headerFact3", null], ["Информация за пакетите в съобщението", "text", "headerFact4", null], ["HTML код", "text", "notHeader1", null], ["Име на браузъра", "text", "notHeader2", null], ["Парола на потребителя", "text", "notHeader3", null]];
+let sel=null,started=false,done=false,hints=0,startms=0,limitSec=0,timerId=null;
+const bank=document.getElementById("bank"),fb=document.getElementById("fb");
+function targetOf(x){
+  if(x[2]==="clientDns"||x[2]==="clientWeb") return "client";
+  if(x[2]==="headerFact1"||x[2]==="headerFact2"||x[2]==="headerFact3"||x[2]==="headerFact4") return "inHeader";
+  if(x[2]==="notHeader1"||x[2]==="notHeader2"||x[2]==="notHeader3") return "notHeader";
+  if(x[2].startsWith("tcp")&&x[2]!=="tcpTitle") return "tcp";
+  if(x[2].startsWith("udp")&&x[2]!=="udpTitle") return "udp";
+  if(x[2]==="dnsReq") return "dnsReq";
+  if(x[2]==="dnsResp") return "dnsResp";
+  if(x[2]==="httpReq") return "httpReq";
+  return x[2];
+}
+function mk(x){let c=document.createElement("div");c.className="card"+(x[1]==="arrow"?" arrow":"");c.dataset.target=targetOf(x);c.draggable=true;c.innerHTML=x[1]==="img"?'<img src="'+x[3]+'" alt="'+x[0]+'">':x[0];c.addEventListener("click",e=>{e.stopPropagation();if(done)return;document.querySelectorAll(".card").forEach(q=>q.classList.remove("sel"));sel=c;c.classList.add("sel");fb.className="feedback";fb.textContent="Избрана карта: "+x[0]});c.addEventListener("dragstart",e=>{sel=c;e.dataTransfer.setData("text/plain",x[0])});c.addEventListener("dblclick",e=>{e.stopPropagation();back(c)});return c}
+cards.forEach(x=>bank.appendChild(mk(x)));
+function back(c=sel,msg=true){if(!c)return;bank.appendChild(c);c.classList.remove("sel");if(sel===c)sel=null;updateHeaderReveal();if(msg){fb.className="feedback good";fb.textContent="✓ Картата е върната."}}
+function updateHeaderReveal(){
+  const h=document.querySelector('[data-slot="packetHeader"] .card');
+  const d=document.querySelector('[data-slot="packetData"] .card');
+  const ok=h && d && h.dataset.target==="packetHeader" && d.dataset.target==="packetData";
+  const r1=document.getElementById("headerReveal");
+  const r2=document.getElementById("headerReveal2");
+  [r1,r2].forEach(r=>{
+    if(!r)return;
+    r.textContent=ok?"HEADER":"??????";
+    r.classList.toggle("revealedWord",ok);
+  });
+}
+function put(slot){if(!sel||done)return;let old=slot.querySelector(".card");if(old)back(old,false);slot.appendChild(sel);sel.classList.remove("sel");sel=null;updateHeaderReveal()}
+document.querySelectorAll(".slot").forEach(s=>{s.addEventListener("click",()=>put(s));s.addEventListener("dragover",e=>e.preventDefault());s.addEventListener("drop",e=>{e.preventDefault();put(s)})});
+bank.addEventListener("dragover",e=>e.preventDefault());bank.addEventListener("drop",e=>{e.preventDefault();if(sel)back(sel)});
+document.getElementById("ret").onclick=()=>sel?back(sel):(fb.textContent="Първо изберете поставена карта.");
+function isCorrectPlacement(slot,card){
+  if(!slot||!card) return false;
+  const want=slot.dataset.slot;
+  const got=card.dataset.target;
+
+  // Двете еднакви карти "Клиент" са взаимозаменяеми.
+  if(want==="client") return got==="client";
+
+  // Четирите изучени характеристики на header-а са равностойни в тази зона.
+  if(want==="inHeader") return got==="inHeader";
+
+  // Подвеждащите карти са равностойни в зоната "не е част от HEADER".
+  if(want==="notHeader") return got==="notHeader";
+
+  // Трите TCP характеристики могат да бъдат в произволен ред.
+  if(want==="tcp") return got==="tcp";
+
+  // Трите UDP характеристики могат да бъдат в произволен ред.
+  if(want==="udp") return got==="udp";
+
+  // Всички останали карти имат точно определено поле.
+  return got===want;
+}
+
+function stats(){
+  const slots=[...document.querySelectorAll(".slot")];
+  let correct=0,placed=0;
+  slots.forEach(slot=>{
+    const card=slot.querySelector(".card");
+    if(!card) return;
+    placed++;
+    if(isCorrectPlacement(slot,card)) correct++;
+  });
+  return {correct,placed,total:slots.length};
+}
+document.getElementById("check").onclick=()=>{let z=stats();fb.className="feedback";fb.textContent=`Поставени: ${z.placed}/${z.total}. Правилни: ${z.correct}. Неправилни или празни: ${z.total-z.correct}.`};
+document.getElementById("hint").onclick=()=>{if(hints>=3){fb.className="feedback bad";fb.textContent="Използвани са всички 3 подсказки.";return}let wrong=[...document.querySelectorAll(".slot")].filter(s=>{let c=s.querySelector(".card");return c&&c.dataset.target!==s.dataset.slot});hints++;document.getElementById("hint").textContent="Подсказка ("+(3-hints)+")";if(wrong.length){let c=wrong[Math.floor(Math.random()*wrong.length)].querySelector(".card");c.classList.add("sel");setTimeout(()=>c.classList.remove("sel"),1800);fb.className="feedback bad";fb.textContent=`Подсказка ${hints}/3: маркираната карта е на грешно място.`}else{fb.className="feedback";fb.textContent=`Подсказка ${hints}/3: поставеното дотук е правилно. Проверете какво липсва.`}};
+function fmt(s){s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function elapsed(){return started?Math.floor((Date.now()-startms)/1000):0}
+function tick(){if(done)return;let e=elapsed();if(limitSec){let l=limitSec-e;timer.textContent="Остава: "+fmt(l);if(l<=0)finish(true)}else timer.textContent="Време: "+fmt(e)}
+document.getElementById("start").onclick=()=>{if(started)return;started=true;startms=Date.now();limitSec=+limit.value*60;limit.disabled=true;start.disabled=true;task.classList.remove("hide");tick();timerId=setInterval(tick,1000)};
+function finish(timeout=false){if(done||!started)return;done=true;clearInterval(timerId);let z=stats(),raw=Math.round(z.correct/z.total*100),pen=hints*2,fin=Math.max(0,raw-pen);let g=fin>=90?"Отличен (6)":fin>=75?"Много добър (5)":fin>=60?"Добър (4)":fin>=50?"Среден (3)":"Слаб (2)";score.textContent=fin+"%";grade.textContent=g;usedtime.textContent=fmt(elapsed());usedhints.textContent=hints+"/3";details.textContent=`Правилни позиции: ${z.correct}/${z.total}. Суров резултат: ${raw}%. Наказание за подсказки: −${pen}%.`+(timeout?" Времето изтече.":"");result.classList.remove("hide");result.scrollIntoView({behavior:"smooth"})}
+
+function validateModel(){
+  const cards=[...document.querySelectorAll(".card")];
+  const slots=[...document.querySelectorAll(".slot")];
+  const ct={},st={};
+  cards.forEach(c=>ct[c.dataset.target]=(ct[c.dataset.target]||0)+1);
+  slots.forEach(x=>st[x.dataset.slot]=(st[x.dataset.slot]||0)+1);
+  const keys=new Set([...Object.keys(ct),...Object.keys(st)]);
+  const bad=[];
+  keys.forEach(k=>{
+    if((ct[k]||0)!==(st[k]||0))
+      bad.push(`${k}: карти ${ct[k]||0}, полета ${st[k]||0}`);
+  });
+  if(bad.length){
+    console.error("Несъответствие в модела:",bad);
+    fb.className="feedback bad";
+    fb.textContent="Техническа грешка в модела: "+bad.join("; ");
+    document.getElementById("finish").disabled=true;
+    return false;
+  }
+  return true;
+}
+
+document.getElementById("finish").onclick=()=>finish(false);
+validateModel();
+</script></body></html>
