@@ -13,8 +13,28 @@ theme:
     - search.highlight
     - content.code.copy
 
+
 nav:
   - Начало: index.md
+
+  - Теория:
+      - Въведение: teoria/index.md
+      - Раздел 1: teoria/razdel-1/index.md
+      - Раздел 2: teoria/razdel-2/index.md
+      - Раздел 3: teoria/razdel-3/index.md
+      - Раздел 4: teoria/razdel-4/index.md
+
+  - Практика:
+      - Въведение: praktika/index.md
+      - Раздел 1: praktika/razdel-1/index.md
+      - Раздел 2: praktika/razdel-2/index.md
+      - Раздел 3: praktika/razdel-3/index.md
+      - Раздел 4: praktika/razdel-4/index.md
+      - Раздел 5: praktika/razdel-5/index.md
+
+  - Общ проект: proekt/index.md
+  - Ресурси: resursi/index.md
+
 
 markdown_extensions:
   - admonition
