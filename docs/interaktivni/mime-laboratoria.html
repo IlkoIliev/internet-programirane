@@ -1,0 +1,405 @@
+<!doctype html><html lang="bg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIME лаборатория • 4 мисии</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#eef6fb;color:#082b44}header{background:#174e6e;color:#fff;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px}h1{margin:0;font-size:29px}.sub{font-weight:700}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:0;border-radius:11px;padding:14px 18px;font-weight:800;font-size:16px;cursor:pointer}.btn.active,.primary{background:#ffb52d}.wrap{display:grid;grid-template-columns:1.15fr .95fr;gap:16px;padding:16px;min-height:calc(100vh - 86px)}.panel{background:#fff;border-radius:18px;padding:22px}.panel h2{font-size:30px;margin:0 0 14px}.note{background:#fff7e6;border-left:6px solid #ffb52d;padding:14px 16px;font-size:19px;font-weight:700;line-height:1.25}.info{margin-top:12px;background:#e6f3fa;border-left:5px solid #1695c5;padding:11px 14px;font-size:17px;font-weight:700}.board{margin-top:14px;border:3px solid #12618b;border-radius:16px;padding:12px;background:#edf7fc}.board-title{font-weight:900;font-size:18px;margin-bottom:10px}.rows{display:grid;gap:9px}.row{display:grid;grid-template-columns:230px 1fr;gap:10px}.file,.request{display:flex;align-items:center;padding:12px 15px;border-radius:11px;background:#173448;color:#fff;font-family:Consolas,monospace;font-weight:700;font-size:17px;white-space:pre-line}.slot{min-height:53px;border:2px dashed #7db1ce;border-radius:11px;background:#f7fbfd;display:flex;align-items:center;padding:7px;gap:7px;flex-wrap:wrap}.bank{min-height:470px;border:2px dashed #8bb8d0;border-radius:15px;padding:12px;display:flex;align-content:flex-start;align-items:flex-start;gap:9px;flex-wrap:wrap}.card{border:2px solid #62a5ce;background:#fff;border-radius:10px;padding:11px 14px;font-family:Consolas,monospace;font-weight:700;font-size:16px;cursor:pointer;user-select:none}.card.selected{outline:4px solid #ffb52d}.status{margin-top:13px;padding:13px;border-radius:10px;background:#e6f3fa;font-size:18px;font-weight:800}.console{margin-top:10px;background:#102f42;color:#fff;border-radius:10px;padding:13px;font-family:Consolas,monospace}.response{font-family:Consolas,monospace;background:#173448;color:#fff;border-radius:11px;padding:12px 14px;margin-bottom:10px}.label{font-size:13px;font-weight:900;color:#487087;margin-bottom:4px}@media(max-width:1000px){.wrap{grid-template-columns:1fr}.row{grid-template-columns:190px 1fr}}
+</style></head><body>
+<header><div><h1>🧪 MIME лаборатория</h1><div class="sub">Урок 2 • MIME / Content-Type • версия 6</div></div>
+<div class="actions"><button class="btn active" id="m1">Мисия 1</button><button class="btn" id="m2">Мисия 2</button><button class="btn" id="m3">Мисия 3</button><button class="btn" id="m4">Мисия 4</button><button class="btn" id="back">↩ Върни</button><button class="btn primary" id="check">🔎 Провери</button><button class="btn" id="reset">↻</button><button class="btn" id="fs">⛶</button></div></header>
+<main class="wrap"><section class="panel"><h2 id="title"></h2><div class="note" id="note"></div><div class="info" id="info"></div><div class="board"><div class="board-title" id="boardTitle"></div><div class="rows" id="rows"></div></div><div class="status" id="status"></div><div class="console" id="console"></div></section>
+<section class="panel"><h2 id="bankTitle">MIME карти</h2><p style="font-size:18px">Докосни карта, после поле — или я плъзни. Има и подвеждащи карти.</p><div class="bank" id="bank"></div></section></main>
+<script>
+const missions = {
+  1:{
+    title:"Мисия 1 • Файл → MIME тип",
+    note:"Сървърът трябва да изпрати шест различни ресурса. Постави до всеки файл правилния MIME тип. Не всички карти трябва да се използват.",
+    info:"Свържи вида на ресурса с подходящата стойност за Content-Type.",
+    board:"РЕСУРСИ НА СЪРВЪРА",
+    mode:"mime",
+    items:[
+      ["index.html","text/html"],["logo.png","image/png"],["report.pdf","application/pdf"],
+      ["data.json","application/json"],["movie.mp4","video/mp4"],["readme.txt","text/plain"]
+    ],
+    cards:["text/html","image/png","application/pdf","application/json","video/mp4","text/plain",
+           "text/png","application/html","text/pdf","image/pdf","application/mp4","application/plain"]
+  },
+  2:{
+    title:"Мисия 2 • Какво връща сървърът?",
+    note:"Клиентът изпраща HTTP заявки за различни ресурси. Сървърът ги намира. Постави в HTTP response правилната стойност на Content-Type за всяка заявка.",
+    info:"Работи като сървър: разпознай поискания ресурс и избери какъв Content-Type трябва да върнеш.",
+    board:"HTTP REQUEST → RESPONSE HEADER",
+    mode:"response",
+    items:[
+      [`GET /images/logo.png HTTP/1.1\nHost: school.bg`,"image/png"],
+      [`GET /docs/report.pdf HTTP/1.1\nHost: school.bg`,"application/pdf"],
+      [`GET /api/data.json HTTP/1.1\nHost: school.bg`,"application/json"],
+      [`GET /video/intro.mp4 HTTP/1.1\nHost: school.bg`,"video/mp4"]
+    ],
+    cards:["image/png","application/pdf","application/json","video/mp4","text/html","text/plain",
+           "image/pdf","application/mp4","text/json","application/png","Content-Type: text/html","Content-Length: 24"]
+  },
+  3:{
+    title:"Мисия 3 • Диагностицирай HTTP response",
+    note:"Сървърът е намерил ресурса, но в HTTP response е записан грешен Content-Type. Замени само грешната стойност.",
+    info:"При рестарт се зарежда различна ситуация. Избери MIME типа, който действително съответства на поискания ресурс.",
+    board:"ГРЕШЕН HTTP RESPONSE → ПОПРАВКА",
+    mode:"diagnose"
+  },
+  4:{
+    title:"Мисия 4 • Как ще го интерпретира браузърът?",
+    note:"Браузърът получава HTTP response. Определи как трябва да интерпретира съдържанието според Content-Type.",
+    info:"Свържи всеки Content-Type с вида съдържание, което описва.",
+    board:"CONTENT-TYPE → ИНТЕРПРЕТАЦИЯ",
+    mode:"interpret",
+    items:[
+      ["Content-Type: text/html","HTML документ / уеб страница"],
+      ["Content-Type: image/png","PNG изображение"],
+      ["Content-Type: application/pdf","PDF документ"],
+      ["Content-Type: application/json","JSON данни"],
+      ["Content-Type: video/mp4","MP4 видео"],
+      ["Content-Type: text/plain","обикновен текст"]
+    ],
+    cards:["HTML документ / уеб страница","PNG изображение","PDF документ","JSON данни","MP4 видео","обикновен текст",
+           "JPEG изображение","ZIP архив","MP3 аудио","изпълнима програма"]
+  }
+};
+
+const diagnoseCases = [
+  {req:`GET /index.html HTTP/1.1\nHost: school.bg`, wrong:"image/png", right:"text/html",
+   cards:["text/html","image/png","application/html","text/plain","application/pdf","text/png"]},
+  {req:`GET /images/logo.png HTTP/1.1\nHost: school.bg`, wrong:"text/html", right:"image/png",
+   cards:["image/png","text/html","text/png","application/png","image/pdf","application/pdf"]},
+  {req:`GET /docs/report.pdf HTTP/1.1\nHost: school.bg`, wrong:"text/plain", right:"application/pdf",
+   cards:["application/pdf","text/plain","text/pdf","image/pdf","application/json","application/plain"]},
+  {req:`GET /api/data.json HTTP/1.1\nHost: school.bg`, wrong:"text/html", right:"application/json",
+   cards:["application/json","text/html","text/json","application/plain","application/pdf","text/plain"]},
+  {req:`GET /video/intro.mp4 HTTP/1.1\nHost: school.bg`, wrong:"application/mp4", right:"video/mp4",
+   cards:["video/mp4","application/mp4","video/mpeg","image/mp4","text/plain","application/pdf"]},
+  {req:`GET /readme.txt HTTP/1.1\nHost: school.bg`, wrong:"application/plain", right:"text/plain",
+   cards:["text/plain","application/plain","text/html","application/pdf","text/json","application/json"]}
+];
+
+let current=1, selected=null, diagnoseCase=null;
+
+const rows=document.getElementById("rows");
+const bank=document.getElementById("bank");
+const titleEl=document.getElementById("title");
+const noteEl=document.getElementById("note");
+const infoEl=document.getElementById("info");
+const boardTitleEl=document.getElementById("boardTitle");
+const statusEl=document.getElementById("status");
+const consoleEl=document.getElementById("console");
+const backEl=document.getElementById("back");
+const checkEl=document.getElementById("check");
+const resetEl=document.getElementById("reset");
+const fsEl=document.getElementById("fs");
+const missionButtons=[1,2,3,4].map(n=>document.getElementById("m"+n));
+
+function shuffle(a){
+  a=[...a];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function makeCard(value){
+  const c=document.createElement("div");
+  c.className="card";
+  c.textContent=value;
+  c.dataset.value=value;
+  c.draggable=true;
+  c.addEventListener("click",()=>{
+    document.querySelectorAll(".card").forEach(x=>x.classList.remove("selected"));
+    selected=c;
+    c.classList.add("selected");
+  });
+  c.addEventListener("dragstart",e=>{
+    e.dataTransfer.setData("text/plain",value);
+    window.__dragged=c;
+  });
+  return c;
+}
+
+function enableDrop(el){
+  el.addEventListener("click",()=>{
+    if(!selected || selected.parentElement===el) return;
+    if(el.classList.contains("slot")){
+      const old=el.querySelector(".card");
+      if(old) bank.appendChild(old);
+    }
+    el.appendChild(selected);
+    selected.classList.remove("selected");
+    selected=null;
+  });
+  el.addEventListener("dragover",e=>e.preventDefault());
+  el.addEventListener("drop",e=>{
+    e.preventDefault();
+    const c=window.__dragged;
+    if(!c) return;
+    if(el.classList.contains("slot")){
+      const old=el.querySelector(".card");
+      if(old && old!==c) bank.appendChild(old);
+    }
+    el.appendChild(c);
+    window.__dragged=null;
+  });
+}
+
+function getMissionData(){
+  const m=missions[current];
+  if(current!==3) return m;
+  if(!diagnoseCase) diagnoseCase=diagnoseCases[Math.floor(Math.random()*diagnoseCases.length)];
+  return {
+    ...m,
+    items:[[
+      diagnoseCase.req+"\n\nHTTP/1.1 200 OK\nContent-Type: "+diagnoseCase.wrong,
+      diagnoseCase.right
+    ]],
+    cards:diagnoseCase.cards
+  };
+}
+
+function build(){
+  const m=getMissionData();
+  selected=null;
+  rows.innerHTML="";
+  bank.innerHTML="";
+  titleEl.textContent=m.title;
+  noteEl.textContent=m.note;
+  infoEl.textContent=m.info;
+  boardTitleEl.textContent=m.board;
+
+  m.items.forEach((it,i)=>{
+    const r=document.createElement("div");
+    r.className="row";
+
+    const left=document.createElement("div");
+    left.className=(m.mode==="mime") ? "file" : "request";
+    left.textContent=it[0];
+
+    const slot=document.createElement("div");
+    slot.className="slot";
+    slot.dataset.i=i;
+
+    if(m.mode==="response"){
+      const lab=document.createElement("div");
+      lab.className="label";
+      lab.textContent="Content-Type:";
+      slot.appendChild(lab);
+    } else if(m.mode==="diagnose"){
+      const lab=document.createElement("div");
+      lab.className="label";
+      lab.textContent="Правилен Content-Type:";
+      slot.appendChild(lab);
+    } else if(m.mode==="interpret"){
+      const lab=document.createElement("div");
+      lab.className="label";
+      lab.textContent="Браузърът го приема като:";
+      slot.appendChild(lab);
+    }
+
+    enableDrop(slot);
+    r.append(left,slot);
+    rows.appendChild(r);
+  });
+
+  shuffle(m.cards).forEach(v=>bank.appendChild(makeCard(v)));
+  enableDrop(bank);
+
+  statusEl.textContent="Работи по задачата и натисни „Провери“.";
+  consoleEl.textContent=current===4 ? "BROWSER> Очаквам интерпретация на съдържанието..." :
+                       current===3 ? "SERVER> Открий грешния MIME тип..." :
+                       "SERVER> Очаквам MIME конфигурация...";
+  missionButtons.forEach((b,i)=>b.classList.toggle("active",current===i+1));
+}
+
+missionButtons.forEach((b,i)=>{
+  b.addEventListener("click",()=>{
+    current=i+1;
+    if(current===3) diagnoseCase=diagnoseCases[Math.floor(Math.random()*diagnoseCases.length)];
+    build();
+  });
+});
+
+backEl.addEventListener("click",()=>{
+  if(selected){
+    selected.classList.remove("selected");
+    selected=null;
+    return;
+  }
+  const slots=[...document.querySelectorAll(".slot")].reverse();
+  const s=slots.find(x=>x.querySelector(".card"));
+  if(s) bank.appendChild(s.querySelector(".card"));
+});
+
+checkEl.addEventListener("click",()=>{
+  const m=getMissionData();
+  let problems=0, empty=0;
+  document.querySelectorAll(".slot").forEach((slot,i)=>{
+    const c=slot.querySelector(".card");
+    if(!c){ problems++; empty++; }
+    else if(c.dataset.value!==m.items[i][1]) problems++;
+  });
+
+  if(problems===0){
+    statusEl.textContent="✅ Решението е правилно.";
+    consoleEl.textContent=current===3 ? "SERVER> Грешният Content-Type е поправен." :
+                         current===4 ? "BROWSER> Съдържанието е интерпретирано правилно." :
+                         "SERVER> Content-Type конфигурацията е приета.";
+  } else {
+    statusEl.textContent=`⚠ Има ${problems} ${problems===1?"проблем":"проблема"}. Провери решението${empty?` и празните полета (${empty})`:""}.`;
+    consoleEl.textContent=current===3 ? "SERVER> В отговора все още има грешен MIME тип." :
+                         current===4 ? "BROWSER> Има неправилно интерпретирано съдържание." :
+                         "SERVER> Отговорът съдържа несъответствия.";
+  }
+});
+
+resetEl.addEventListener("click",()=>{
+  if(current===3) diagnoseCase=diagnoseCases[Math.floor(Math.random()*diagnoseCases.length)];
+  build();
+});
+
+fsEl.addEventListener("click",async()=>{
+  try{
+    if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
+    else await document.exitFullscreen();
+  }catch(e){}
+});
+
+build();
+
+// ===== МИСИЯ 5: MIME детектив =====
+const MIME5_CASES = [
+  {
+    title:"HTML кодът се показва като обикновен текст",
+    request:"GET /pages/news.html HTTP/1.1\nHost: school.bg",
+    body:"<h1>Новини</h1><p>Добре дошли!</p>",
+    wrong:"text/plain",
+    correct:"text/html",
+    cards:["text/html","application/json","image/png","application/pdf","video/mp4","text/plain"],
+    clue:"Съдържанието е HTML документ, но сървърът го е описал като обикновен текст."
+  },
+  {
+    title:"JSON данните са описани като HTML",
+    request:"GET /api/student.json HTTP/1.1\nHost: school.bg",
+    body:'{"name":"Maria","class":12}',
+    wrong:"text/html",
+    correct:"application/json",
+    cards:["application/json","text/html","text/plain","image/png","application/pdf","video/mp4"],
+    clue:"BODY съдържа JSON данни, но Content-Type твърди, че това е HTML."
+  },
+  {
+    title:"PNG изображението е описано като текст",
+    request:"GET /images/logo.png HTTP/1.1\nHost: school.bg",
+    body:"[PNG image data]",
+    wrong:"text/plain",
+    correct:"image/png",
+    cards:["image/png","text/html","application/pdf","application/json","video/mp4","text/plain"],
+    clue:"Ресурсът е PNG изображение, а response header го описва като текст."
+  },
+  {
+    title:"PDF документът е описан с грешен MIME тип",
+    request:"GET /docs/report.pdf HTTP/1.1\nHost: school.bg",
+    body:"[PDF document data]",
+    wrong:"text/html",
+    correct:"application/pdf",
+    cards:["application/pdf","text/html","image/png","application/json","video/mp4","text/plain"],
+    clue:"Ресурсът е PDF документ, но Content-Type е за HTML."
+  },
+  {
+    title:"MP4 видеото е описано като изображение",
+    request:"GET /video/intro.mp4 HTTP/1.1\nHost: school.bg",
+    body:"[MP4 video data]",
+    wrong:"image/png",
+    correct:"video/mp4",
+    cards:["video/mp4","image/png","text/html","application/pdf","application/json","text/plain"],
+    clue:"Ресурсът е MP4 видео, но сървърът го е описал като PNG изображение."
+  }
+];
+let mime5Case = MIME5_CASES[Math.floor(Math.random()*MIME5_CASES.length)];
+let mime5Selected = null;
+
+function shuffle5(a){
+  a=[...a];
+  for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function renderMission5(){
+  mime5Selected=null;
+  if(typeof currentMission!=="undefined") currentMission=5;
+  const main = document.querySelector("main") || document.querySelector(".main") || document.body;
+  const left = document.querySelector(".left") || document.querySelector(".left-panel") || main.children[0];
+  const right = document.querySelector(".right") || document.querySelector(".right-panel") || main.children[1];
+  if(!left || !right) return;
+
+  left.innerHTML = `
+    <h1>Мисия 5 • MIME детектив</h1>
+    <div class="taskbox"><b>Браузърът получава HTTP response, но съдържанието не е описано правилно.</b>
+    Открий грешния <code>Content-Type</code> и го замени с правилния.</div>
+    <div class="hintbox">Не се води само по името на файла — сравни ресурса, BODY и response header.</div>
+    <div class="labbox">
+      <h2>${mime5Case.title}</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <pre style="white-space:pre-wrap;background:#12364a;color:white;padding:14px;border-radius:10px"><b>REQUEST</b>\n${mime5Case.request}</pre>
+        <pre style="white-space:pre-wrap;background:#12364a;color:white;padding:14px;border-radius:10px"><b>HTTP RESPONSE</b>\nHTTP/1.1 200 OK\nContent-Type: <span style="color:#ffd166">${mime5Case.wrong}</span>\n\n${mime5Case.body}</pre>
+      </div>
+      <div style="margin-top:12px;font-weight:800">ПОПРАВИ RESPONSE HEADER</div>
+      <div id="mime5slot" class="dropzone" style="min-height:70px;margin-top:8px;display:flex;align-items:center;padding:10px">
+        <span style="font-weight:800;margin-right:10px">Content-Type:</span>
+        <span id="mime5answer" style="opacity:.65">избери карта</span>
+      </div>
+    </div>
+    <div id="mime5feedback" class="feedback">Работи по задачата и натисни „Провери“.</div>
+    <div class="console">BROWSER&gt; Анализирай какво съдържание действително е върнал сървърът.</div>`;
+
+  right.innerHTML = `<h1>MIME карти</h1>
+    <p>Избери правилната стойност за <b>Content-Type</b>. Има подвеждащи карти.</p>
+    <div id="mime5cards" class="bank"></div>`;
+  const bank=right.querySelector("#mime5cards");
+  shuffle5(mime5Case.cards).forEach(v=>{
+    const b=document.createElement("button");
+    b.className="card"; b.textContent=v; b.type="button";
+    b.style.margin="6px";
+    b.onclick=()=>{
+      mime5Selected=v;
+      left.querySelector("#mime5answer").textContent=v;
+      left.querySelector("#mime5answer").style.opacity="1";
+      bank.querySelectorAll(".card").forEach(x=>x.style.outline="");
+      b.style.outline="3px solid #ffb52e";
+    };
+    bank.appendChild(b);
+  });
+}
+function checkMission5(){
+  const f=document.querySelector("#mime5feedback");
+  if(!f) return;
+  if(!mime5Selected){
+    f.innerHTML="⚠️ Избери стойност за Content-Type.";
+    return;
+  }
+  if(mime5Selected===mime5Case.correct){
+    f.innerHTML="✅ Решението е правилно. Съдържанието вече е описано с подходящ MIME тип.";
+  } else {
+    f.innerHTML="⚠️ Има 1 проблем. Сравни BODY/ресурса с избрания Content-Type.";
+  }
+}
+(function installMission5(){
+  const b=document.getElementById("m5");
+  if(b) b.addEventListener("click", ()=>{
+    document.querySelectorAll(".mission-btn").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    renderMission5();
+  });
+  const check=document.querySelector("#checkBtn") ||
+              [...document.querySelectorAll("button")].find(x=>x.textContent.includes("Провери"));
+  if(check){
+    check.addEventListener("click", e=>{
+      if(document.getElementById("m5")?.classList.contains("active")){
+        e.stopImmediatePropagation(); e.preventDefault(); checkMission5();
+      }
+    }, true);
+  }
+})();
+
+</script></body></html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>URL лаборатория – 6 мисии</title>
+<style>
+:root{--nav:#174967;--bg:#eef6fb;--panel:#fff;--line:#75a9c8;--slot:#eaf4f9;--accent:#ffb62e;--ink:#082d46;--ok:#0a9f3f;--warn:#fff4d8}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{position:sticky;top:0;z-index:5;background:var(--nav);color:#fff;padding:13px 22px;display:flex;gap:16px;align-items:center}
+.title{font-size:27px;font-weight:800;line-height:1}.sub{font-size:15px;font-weight:700;margin-top:5px}
+nav{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+button{border:0;border-radius:10px;padding:14px 15px;font-weight:800;font-size:15px;cursor:pointer}
+.mbtn{background:#f7f7f7}.mbtn.active,.check{background:var(--accent)} .back{background:#f7f7f7}
+main{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;padding:16px;min-height:calc(100vh - 78px)}
+.panel{background:#fff;border-radius:18px;padding:20px}
+h1{margin:0 0 14px;font-size:28px}.situation{background:#fff8e9;border-left:6px solid var(--accent);padding:13px 14px;font-size:18px;font-weight:700;min-height:70px}
+.display{margin-top:10px;background:#102f42;color:#fff;border-radius:11px;padding:14px;font:700 18px Consolas,monospace;overflow-wrap:anywhere}
+.hint{margin-top:10px;background:#e8f5fb;border-left:5px solid #1c8cbd;padding:10px 12px;font-weight:700}
+.workspace{margin-top:12px;border:3px solid #1b6087;border-radius:15px;background:#eaf4f9;padding:10px}
+.workspace h3{margin:0 0 8px;font-size:16px}
+.row{display:flex;gap:9px;flex-wrap:wrap}.slot{min-height:70px;border:2px dashed #8bb4cc;border-radius:12px;background:#f7fbfd;padding:8px;flex:1;min-width:130px}
+.slot label{display:block;text-align:center;font-size:13px;font-weight:800;color:#46738d;margin-bottom:7px}
+.slot.dropwide{min-width:220px}.seqslot{min-width:150px;flex:1}.card{display:inline-block;background:#fff;border:2px solid #69a6ca;border-radius:10px;padding:10px 12px;margin:4px;font:700 15px Consolas,monospace;cursor:pointer;user-select:none;touch-action:manipulation}
+.card.selected{outline:4px solid #ffc64d}.bank{border:2px dashed #8bb4cc;border-radius:14px;min-height:390px;padding:8px}
+.banktitle{font-size:18px;margin:0 0 12px}.feedback{margin-top:12px;padding:12px;border-radius:10px;background:#e8f3fa;font-size:17px;font-weight:800}
+.console{margin-top:9px;background:#102f42;color:white;border-radius:10px;padding:12px;font:15px Consolas,monospace}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice{border:2px solid #83b3cf;background:#fff;border-radius:12px;padding:12px;font:700 15px Consolas,monospace;cursor:pointer;overflow-wrap:anywhere}.choice.sel{outline:4px solid #ffc64d}
+@media(max-width:1050px){main{grid-template-columns:1fr}header{position:relative}.panel{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+<div><div class="title">🔎 URL лаборатория: 6 мисии</div><div class="sub">Урок 2 • URL • версия 10</div></div>
+<nav id="nav"></nav>
+</header>
+<main>
+<section class="panel">
+<h1 id="missionTitle"></h1>
+<div class="situation" id="situation"></div>
+<div class="display" id="display"></div>
+<div class="hint" id="hint"></div>
+<div class="workspace" id="workspace"></div>
+<div class="feedback" id="feedback">Работи по задачата и натисни „Провери“.</div>
+<div class="console" id="console">URL&gt; Очаквам решение...</div>
+</section>
+<section class="panel">
+<h1>Карти / избори</h1>
+<p class="banktitle" id="bankHelp">Докосни карта, после поле — или я плъзни.</p>
+<div class="bank" id="bank"></div>
+</section>
+</main>
+<script>
+const M=[
+ {t:"Мисия 1 • Разглоби URL",s:"Разпредели частите на показания URL в правилните полета. Не всички карти трябва да се използват.",
+  d:"http://mysite.com:8080/demo/index.php?id=27&lang=en#lectures",h:"Определи шестте компонента на адреса.",
+  type:"parts", slots:[["protocol","PROTOCOL"],["host","HOST"],["port","PORT"],["path","PATH"],["query","QUERY"],["fragment","FRAGMENT"]],
+  expected:{protocol:"http",host:"mysite.com",port:"8080",path:"/demo/index.php",query:"id=27&lang=en",fragment:"lectures"},
+  cards:[["http","http"],["host","mysite.com"],["port","8080"],["path","/demo/index.php"],["query","id=27&lang=en"],["fragment","lectures"],["x1","https"],["x2","www.mysite.com"],["x3","80"],["x4","lang=en"]]},
+ {t:"Мисия 2 • Сглоби URL",s:"Трябва да се отвори защитена страница courses.html на сайта school.bg, в папка lessons, като се изпрати параметър class=12. Сглоби URL в правилния ред.",
+  d:"Описание → URL",h:"Нареди само необходимите части отляво надясно.",
+  type:"sequence", answer:["https://","school.bg","/lessons/courses.html","?class=12"],
+  cards:[["a","https://"],["b","school.bg"],["c","/lessons/courses.html"],["d","?class=12"],["e","http://"],["f",":8080"],["g","#class=12"],["h","www.school.bg"],["i","/lessons/course.html"],["j","/courses.html"],["k","?class=11"],["l","?class=12#lessons"]]},
+ {t:"Мисия 3 • Намери грешката", type:"fix-random",
+  variants:[
+   {s:"Училищният сайт използва защитена връзка. Трябва да се отвори страницата index.html в папка news на school.bg. В URL има точно една грешна част. Замени само нея.",
+    d:"http://school.bg/news/index.html",h:"Останалите части на адреса са правилни.",answer:"https://",
+    cards:[["ok","https://"],["x1","http://"],["x2","school.com"],["x3","/new/"],["x4","index.php"],["x5",":8080"]]},
+   {s:"Трябва да се отвори страницата index.html в папка news на училищния сайт school.bg. Използва се HTTPS. В URL има точно една грешна част. Замени само нея.",
+    d:"https://schools.bg/news/index.html",h:"Останалите части на адреса са правилни.",answer:"school.bg",
+    cards:[["ok","school.bg"],["x1","www.school.bg"],["x2","schools.com"],["x3","http://"],["x4","/news/"],["x5","index.php"]]},
+   {s:"Трябва да се отвори страницата index.html в папка news на school.bg чрез HTTPS. В URL има точно една грешна част. Замени само нея.",
+    d:"https://school.bg/new/index.html",h:"Останалите части на адреса са правилни.",answer:"/news/",
+    cards:[["ok","/news/"],["x1","/new/"],["x2","/news.html"],["x3","/news/index.php"],["x4","school.bg"],["x5","https://"]]},
+   {s:"Учебният уеб сървър работи на school.bg през HTTPS на стандартния порт. Трябва да се отвори /news/index.html. В URL има точно една грешна част. Замени само нея.",
+    d:"https://school.bg:8080/news/index.html",h:"Останалите части на адреса са правилни.",answer:":443",
+    cards:[["ok",":443"],["x1",":80"],["x2",":8080"],["x3",":3000"],["x4","http://"],["x5","school.bg"]]},
+   {s:"Трябва да се отвори /news/index.html на school.bg чрез HTTPS и да се изпрати параметър lang=bg. В URL има точно една грешна част. Замени само нея.",
+    d:"https://school.bg/news/index.html#lang=bg",h:"Останалите части на адреса са правилни.",answer:"?lang=bg",
+    cards:[["ok","?lang=bg"],["x1","#lang=bg"],["x2","?lang=en"],["x3","&lang=bg"],["x4","/lang=bg"],["x5","?language=bg"]]}
+  ]},
+ {t:"Мисия 4 • Какво ще получи сървърът?",s:"Разпредели частите според ролята им. Обърни специално внимание на фрагмента.",
+  d:"https://shop.bg/products/27?lang=bg&view=full#reviews",h:"Кое определя ресурса, кое изпраща параметри и кое сочи място в документа?",
+  type:"parts", slots:[["path","PATH"],["query","QUERY"],["fragment","FRAGMENT"]],
+  expected:{path:"/products/27",query:"lang=bg&view=full",fragment:"reviews"},
+  cards:[["path","/products/27"],["query","lang=bg&view=full"],["fragment","reviews"],["x1","/products"],["x2","/products/28"],["x3","lang=bg"],["x4","view=full"],["x5","lang=bg#reviews"],["x6","?lang=bg&view=full"],["x7","#reviews"],["x8","details"],["x9","shop.bg"],["x10","https"],["x11","27"]]},
+ {t:"Мисия 5 • Два почти еднакви URL адреса",type:"compare-random",
+  variants:[
+   {s:"Сравни двата адреса и избери коя част е различна.",d:"A: https://site.bg/catalog?id=27#details\nB: http://site.bg/catalog?id=27#details",h:"Не гледай само визуално — определи компонента на URL.",answer:"PROTOCOL"},
+   {s:"Сравни двата адреса и избери коя част е различна.",d:"A: https://site.bg/catalog?id=27#details\nB: https://shop.bg/catalog?id=27#details",h:"Не гледай само визуално — определи компонента на URL.",answer:"HOST"},
+   {s:"Сравни двата адреса и избери коя част е различна.",d:"A: https://site.bg:443/catalog?id=27#details\nB: https://site.bg:8443/catalog?id=27#details",h:"Не гледай само визуално — определи компонента на URL.",answer:"PORT"},
+   {s:"Сравни двата адреса и избери коя част е различна.",d:"A: https://site.bg/catalog?id=27#details\nB: https://site.bg/products?id=27#details",h:"Не гледай само визуално — определи компонента на URL.",answer:"PATH"},
+   {s:"Сравни двата адреса и избери коя част е различна.",d:"A: https://site.bg/catalog?id=27&lang=bg#details\nB: https://site.bg/catalog?id=28&lang=bg#details",h:"Не гледай само визуално — определи компонента на URL.",answer:"QUERY"},
+   {s:"Сравни двата адреса и избери коя част е различна.",d:"A: https://site.bg/catalog?id=27#details\nB: https://site.bg/catalog?id=27#reviews",h:"Не гледай само визуално — определи компонента на URL.",answer:"FRAGMENT"}
+  ], choices:["PROTOCOL","HOST","PORT","PATH","QUERY","FRAGMENT"]},
+ {t:"Мисия 6 • URL детектив",s:"Потребителят трябва да отвори продукт №27 в онлайн магазин, на английски език, и браузърът да премине към секцията reviews. Избери точния URL.",
+  d:"Ситуация → подходящ URL",h:"Внимавай не само за стойностите, а и за структурата на URL — query е преди fragment.",
+  type:"urlchoice", answer:"https://shop.bg/products/27?lang=en#reviews",
+  choices:[
+   "https://shop.bg/products/27?lang=en#reviews",
+   "https://shop.bg/products/27#reviews?lang=en",
+   "https://shop.bg/products/27#lang=en&reviews",
+   "https://shop.bg/products/27?lang=bg#reviews",
+   "https://shop.bg/products/28?lang=en#reviews",
+   "https://shop.bg/products/27?lang=en#details",
+   "https://shop.bg/products/27&lang=en#reviews",
+   "https://shop.bg/products/27?lang=en?reviews"
+  ]}
+];
+let mi=0, selected=null, chosen=null;
+const $=id=>document.getElementById(id);
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function nav(){
+ $("nav").innerHTML=M.map((_,i)=>`<button class="mbtn ${i===mi?'active':''}" onclick="load(${i})">Мисия ${i+1}</button>`).join("")+
+ `<button class="back" onclick="returnCard()">↩ Върни</button><button class="check" onclick="check()">🔎 Провери</button><button class="back" onclick="resetMission()">↻</button><button class="back" onclick="toggleFullscreen()" title="Цял екран / изход">⛶</button>`;
+}
+function load(i){mi=i;selected=null;chosen=null;nav();render()}
+function render(){
+ let m=M[mi];
+ if(m.type==="fix-random" || m.type==="compare-random"){
+   if(!m._current || m._needsNew){m._current=m.variants[Math.floor(Math.random()*m.variants.length)];m._needsNew=false;}
+   m={...m,...m._current,type:m.type==="fix-random"?"fix":"choice"};
+ }
+ $("missionTitle").textContent=m.t;$("situation").textContent=m.s;$("display").style.whiteSpace="pre-line";$("display").textContent=m.d;$("hint").textContent=m.h;
+ $("feedback").textContent="Работи по задачата и натисни „Провери“.";$("console").textContent="URL> Очаквам решение...";
+ $("workspace").innerHTML="";$("bank").innerHTML="";
+ if(m.type==="parts"){
+   $("workspace").innerHTML="<h3>СТРУКТУРА НА URL</h3><div class='row'>"+m.slots.map(x=>`<div class="slot" data-key="${x[0]}" onclick="putHere(this)" ondragover="event.preventDefault()" ondrop="dropHere(event,this)"><label>${x[1]}</label></div>`).join("")+"</div>";
+   makeCards(m.cards);
+ } else if(m.type==="sequence"){
+   $("workspace").innerHTML="<h3>СГЛОБИ URL ОТЛЯВО НАДЯСНО</h3><div class='row' id='seqRow'>"+
+     [0,1,2,3].map((n)=>`<div class="slot seqslot" data-pos="${n}" onclick="putHere(this)" ondragover="event.preventDefault()" ondrop="dropHere(event,this)"><label>${n+1}</label></div>`).join("")+
+     "</div>";
+   makeCards(m.cards);
+ } else if(m.type==="fix"){
+   $("workspace").innerHTML="<h3>ЗАМЕНИ ГРЕШНАТА ЧАСТ</h3><div class='slot' id='fix' onclick='putHere(this)' ondragover='event.preventDefault()' ondrop='dropHere(event,this)'><label>ПОПРАВКА</label></div>";
+   makeCards(m.cards);
+ } else {
+   $("workspace").innerHTML="<h3>НАПРАВИ ИЗБОР</h3><div id='choiceResult' class='slot'><label>ТВОЯТ ИЗБОР</label></div>";
+   shuffle(m.choices).forEach(v=>{let e=document.createElement("div");e.className="choice";e.textContent=v;e.onclick=()=>choose(e,v);$("bank").appendChild(e)});
+ }
+}
+function makeCards(cards){shuffle(cards).forEach(([id,txt])=>{let e=document.createElement("div");e.className="card";e.dataset.id=id;e.textContent=txt;e.draggable=true;e.onclick=ev=>selectCard(e,ev);e.ondragstart=ev=>ev.dataTransfer.setData("text/plain",id);$("bank").appendChild(e)})}
+function selectCard(e,ev){ev.stopPropagation();document.querySelectorAll(".card").forEach(c=>c.classList.remove("selected"));selected=e;e.classList.add("selected")}
+function putHere(slot){if(!selected)return; if(M[mi].type!=="sequence"){[...slot.querySelectorAll(".card")].forEach(c=>$("bank").appendChild(c));} slot.appendChild(selected);selected.classList.remove("selected");selected=null}
+function dropHere(ev,slot){ev.preventDefault();let id=ev.dataTransfer.getData("text/plain");let c=document.querySelector(`.card[data-id="${id}"]`);if(c){selected=c;putHere(slot)}}
+function returnCard(){if(selected){$("bank").appendChild(selected);selected.classList.remove("selected");selected=null;return}let cards=document.querySelectorAll(".workspace .card");if(cards.length)$("bank").appendChild(cards[cards.length-1])}
+function choose(e,v){document.querySelectorAll(".choice").forEach(x=>x.classList.remove("sel"));e.classList.add("sel");chosen=v;$("choiceResult").innerHTML="<label>ТВОЯТ ИЗБОР</label><div class='card'>"+v+"</div>"}
+function check(){
+ let m=M[mi];
+ if(m.type==="fix-random" || m.type==="compare-random") m={...m,...m._current,type:m.type==="fix-random"?"fix":"choice"};
+ let problems=0;
+ if(m.type==="parts"){
+   m.slots.forEach(([key])=>{
+     const s=document.querySelector(`.slot[data-key="${key}"]`);
+     const c=s ? s.querySelector(".card") : null;
+     if(!c || !m.expected || c.textContent.trim() !== m.expected[key]) problems++;
+   });
+ } else if(m.type==="sequence"){
+   let got=[...document.querySelectorAll(".seqslot")].map(s=>{let c=s.querySelector(".card");return c?c.textContent:null;});
+   if(JSON.stringify(got)!==JSON.stringify(m.answer))problems=1;
+ } else if(m.type==="fix"){
+   let c=$("fix").querySelector(".card"); if(!c||c.textContent!==m.answer)problems=1;
+ } else {if(chosen!==m.answer)problems=1}
+ if(problems===0){$("feedback").textContent="✅ Решението е правилно.";$("console").textContent="URL> Анализът е завършен успешно."}
+ else{$("feedback").textContent=`⚠️ Има ${problems} ${problems===1?"проблем":"проблема"}. Провери решението.`;$("console").textContent="URL> Решението не е завършено правилно."}
+}
+function toggleFullscreen(){
+ if(document.fullscreenElement){
+   document.exitFullscreen?.();
+ }else{
+   document.documentElement.requestFullscreen?.();
+ }
+}
+function resetMission(){
+ if(M[mi].type==="fix-random" || M[mi].type==="compare-random") M[mi]._needsNew=true;
+ render();
+}
+load(0);
+</script>
+</body></html>

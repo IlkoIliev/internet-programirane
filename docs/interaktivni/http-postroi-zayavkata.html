@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>HTTP лаборатория – Построй заявката v4</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#eef4f8;color:#173042}
+header{background:#173f5f;color:#fff;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:25px}.sub{opacity:.9;margin-top:3px}.tools{display:flex;gap:8px;flex-wrap:wrap}
+button{border:0;border-radius:10px;padding:11px 14px;font:bold 15px Arial;cursor:pointer;background:#e2edf3;color:#173042}
+button.active{background:#f2b134}.send{background:#f2b134}
+main{display:grid;grid-template-columns:minmax(590px,1.08fr) minmax(470px,.92fr);gap:14px;padding:14px}
+.panel{background:#fff;border-radius:15px;padding:15px;box-shadow:0 3px 12px #0001}
+h2{margin:0 0 8px}.help{margin:5px 0 11px;color:#506b7b}
+.request{border:3px solid #1d5579;border-radius:14px;overflow:hidden}
+.zone{padding:9px 10px;border-bottom:2px dashed #a9bdc9}.zone:last-child{border:0}
+.zt{font-size:13px;font-weight:900;color:#587181;margin-bottom:6px}
+.requestline{display:grid;grid-template-columns:.8fr 1.5fr 1fr;gap:8px}
+.subzone{background:#eaf2f6;border-radius:9px;padding:7px;min-height:72px}
+.szt{font-size:11px;font-weight:bold;color:#627b89;margin-bottom:5px;text-align:center}
+.drop{min-height:43px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.headers,.bodydrop,.crlfdrop{background:#eaf2f6;border-radius:9px;padding:7px;min-height:50px}
+.card{background:#fff;border:2px solid #80a8bf;border-radius:9px;padding:9px 11px;font:bold 14px Consolas,monospace;cursor:pointer;user-select:none;touch-action:manipulation;box-shadow:0 2px 5px #0001}
+.card.selected{outline:4px solid #f2b134}.card.placed{border-color:#3c7898}
+.bank{display:flex;gap:8px;flex-wrap:wrap;align-content:flex-start;min-height:315px;padding:9px;border:2px dashed #aac0cd;border-radius:12px;background:#f7fafc}
+.mission{padding:10px;border-radius:10px;background:#edf5fa;margin:8px 0 10px;font-weight:bold}
+.note{font-size:13px;color:#617987}
+.status{margin-top:10px;padding:11px;border-radius:10px;background:#eaf4fb;font-weight:bold;min-height:44px}
+.server{margin-top:10px;border-radius:10px;background:#162c3b;color:#d9edf8;padding:12px;font:14px Consolas,monospace;min-height:92px;white-space:pre-wrap}
+.legend{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.pill{background:#edf3f6;border-radius:18px;padding:5px 8px;font-size:12px;font-weight:bold}
+@media(max-width:1100px){main{grid-template-columns:1fr}.requestline{grid-template-columns:1fr 1.4fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+<div><h1>🧪 HTTP лаборатория: Построй заявката</h1><div class="sub">Урок 2 • HTTP. Видове HTTP заявки • версия 5</div></div>
+<div class="tools">
+<button id="m1" class="active">🧩 Мисия 1</button>
+<button id="m2">🧩 Мисия 2</button>
+<button id="m3">🧩 Мисия 3</button>
+<button id="m4">🧩 Мисия 4</button>
+<button id="reset">↩ Върни картите</button>
+<button id="send" class="send">🚀 Изпрати заявката</button>
+<button id="fs">⛶ Цял екран</button>
+</div>
+</header>
+
+<main>
+<section class="panel">
+<h2>HTTP заявка</h2>
+<p class="help">Докосни карта → докосни поле, или влачи картата. Не всички карти трябва да се използват.</p>
+
+<div class="request">
+ <div class="zone">
+  <div class="zt">1. REQUEST LINE — състави първия ред от три части</div>
+  <div class="requestline">
+   <div class="subzone" data-zone="method"><div class="szt">МЕТОД</div><div class="drop"></div></div>
+   <div class="subzone" data-zone="path"><div class="szt">ПЪТ ДО РЕСУРСА</div><div class="drop"></div></div>
+   <div class="subzone" data-zone="protocol"><div class="szt">ПРОТОКОЛ / ВЕРСИЯ</div><div class="drop"></div></div>
+  </div>
+ </div>
+ <div class="zone" data-zone="headers"><div class="zt">2. HTTP HEADERS</div><div class="drop headers"></div></div>
+ <div class="zone" data-zone="crlf"><div class="zt">3. КРАЙ НА HEADERS / ПРАЗЕН РЕД</div><div class="drop crlfdrop"></div></div>
+ <div class="zone" data-zone="body"><div class="zt">4. BODY</div><div class="drop bodydrop"></div></div>
+</div>
+
+<div class="status" id="status">Избери необходимите карти и построй заявката.</div>
+<div class="server" id="server">SERVER&gt; Очаквам HTTP заявка...</div>
+</section>
+
+<section class="panel">
+<h2>Всички карти</h2>
+<div class="mission" id="mission"></div>
+<div class="legend">
+<span class="pill">Един и същ комплект за всички мисии</span>
+<span class="pill">Избери само необходимите карти</span>
+<span class="pill">Има и подвеждащи карти</span>
+</div>
+
+<div class="bank" id="bank"></div>
+</section>
+</main>
+
+<script>
+const ALL=[
+ {id:"get",text:"GET",type:"method"},
+ {id:"post",text:"POST",type:"method"},
+ {id:"put",text:"PUT",type:"method"},
+ {id:"del",text:"DELETE",type:"method"},
+ {id:"pget",text:"/courses/javascript",type:"path"},
+ {id:"ppost",text:"/login",type:"path"},
+ {id:"puser",text:"/users/8",type:"path"},
+ {id:"ppostdel",text:"/posts/17",type:"path"},
+ {id:"pwrong",text:"/img/logo.gif",type:"distractor"},
+ {id:"http",text:"HTTP/1.1",type:"protocol"},
+ {id:"status200",text:"200 OK",type:"distractor"},
+ {id:"hmon",text:"Host: www.mon.bg",type:"headers"},
+ {id:"hloc",text:"Host: localhost",type:"headers"},
+ {id:"ua",text:"User-Agent: Mozilla/5.0",type:"headers"},
+ {id:"len",text:"Content-Length: 59",type:"headers"},
+ {id:"server",text:"Server: Apache/2.2.14",type:"distractor"},
+ {id:"ctype",text:"Content-Type: text/html",type:"distractor"},
+ {id:"crlf",text:"<CRLF>",type:"crlf"},
+ {id:"body",text:"username=mente&password=top*secret!",type:"body"},
+ {id:"bodyput",text:"name=Maria&city=Dobrich",type:"body"}
+];
+
+const MISSIONS={
+ post:{
+  text:"Мисия 1: Потребителят изпраща данни за вход към /login на localhost. Построй правилната HTTP заявка.",
+  need:{method:["post"],path:["ppost"],protocol:["http"],headers:["hloc","len"],crlf:["crlf"],body:["body"]}
+ },
+ del:{
+  text:"Мисия 2: Публикация с номер 17 трябва да бъде премахната от сървъра www.mon.bg. Ресурсът е /posts/17. Построй правилната HTTP заявка.",
+  need:{method:["del"],path:["ppostdel"],protocol:["http"],headers:["hmon"],crlf:["crlf"],body:[]}
+ },
+ get:{
+  text:"Мисия 3: Браузърът трябва да зареди ресурса /courses/javascript от сървъра www.mon.bg. Построй правилната HTTP заявка.",
+  need:{method:["get"],path:["pget"],protocol:["http"],headers:["hmon","ua"],crlf:["crlf"],body:[]}
+ },
+ put:{
+  text:"Мисия 4: Данните за потребител 8 на localhost трябва да бъдат актуализирани изцяло. Ресурсът е /users/8, а новите данни са name=Maria&city=Dobrich. Построй правилната HTTP заявка.",
+  need:{method:["put"],path:["puser"],protocol:["http"],headers:["hloc"],crlf:["crlf"],body:["bodyput"]}
+ }
+};
+
+let mode="post",selected=null;
+const bank=document.querySelector("#bank"),statusEl=document.querySelector("#status"),serverEl=document.querySelector("#server"),missionEl=document.querySelector("#mission");
+const targets=[...document.querySelectorAll("[data-zone]")];
+
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function cardEl(c){
+ const d=document.createElement("div");d.className="card";d.dataset.id=c.id;d.textContent=c.text;d.draggable=true;
+ d.onclick=()=>{document.querySelectorAll(".card").forEach(x=>x.classList.remove("selected"));if(selected===d){selected=null;return}selected=d;d.classList.add("selected")};
+ d.ondragstart=e=>e.dataTransfer.setData("text/plain",c.id);return d
+}
+function reset(){
+ selected=null;targets.forEach(t=>t.querySelector(".drop").innerHTML="");bank.innerHTML="";
+ shuffle(ALL).forEach(c=>bank.appendChild(cardEl(c)));
+ missionEl.textContent=MISSIONS[mode].text;
+ statusEl.textContent=mode==="get"?"Построй правилната HTTP заявка.":"Построй правилната HTTP заявка.";
+ serverEl.textContent="SERVER> Очаквам HTTP заявка...";
+ document.querySelector("#m1").classList.toggle("active",mode==="post");
+ document.querySelector("#m2").classList.toggle("active",mode==="del");
+ document.querySelector("#m3").classList.toggle("active",mode==="get");
+ document.querySelector("#m4").classList.toggle("active",mode==="put");
+}
+function place(el,t){
+ if(!el)return;
+ const z=t.dataset.zone;
+ if(["method","path","protocol","crlf"].includes(z)) {
+   const old=t.querySelector(".card"); if(old)bank.appendChild(old);
+ }
+ t.querySelector(".drop").appendChild(el);el.classList.add("placed");el.classList.remove("selected");selected=null;
+}
+targets.forEach(t=>{
+ t.onclick=e=>{if(!e.target.classList.contains("card"))place(selected,t)};
+ t.ondragover=e=>e.preventDefault();
+ t.ondrop=e=>{e.preventDefault();const el=document.querySelector('.card[data-id="'+e.dataTransfer.getData("text/plain")+'"]');place(el,t)}
+});
+bank.ondragover=e=>e.preventDefault();
+bank.ondrop=e=>{e.preventDefault();const el=document.querySelector('.card[data-id="'+e.dataTransfer.getData("text/plain")+'"]');if(el){bank.appendChild(el);el.classList.remove("placed")}};
+
+document.querySelector("#m1").onclick=()=>{mode="post";reset()};
+document.querySelector("#m2").onclick=()=>{mode="del";reset()};
+document.querySelector("#m3").onclick=()=>{mode="get";reset()};
+document.querySelector("#m4").onclick=()=>{mode="put";reset()};
+document.querySelector("#reset").onclick=reset;
+
+function idsIn(zone){return [...document.querySelectorAll('[data-zone="'+zone+'"] .card')].map(x=>x.dataset.id)}
+function sameSet(a,b){return a.length===b.length && a.every(x=>b.includes(x))}
+function countProblems(){
+ const need=MISSIONS[mode].need;
+ let problems=0;
+ for(const z of ["method","path","protocol","crlf","body"]){
+   const actual=idsIn(z), expected=need[z];
+   const missing=expected.filter(id=>!actual.includes(id)).length;
+   const extra=actual.filter(id=>!expected.includes(id)).length;
+   problems+=missing+extra;
+ }
+ const actualHeaders=idsIn("headers");
+ problems+=need.headers.filter(id=>!actualHeaders.includes(id)).length;
+ const allowedHeaders=[...need.headers,"ua",...(mode==="put"?["len"]:[])];
+ problems+=actualHeaders.filter(id=>!allowedHeaders.includes(id)).length;
+ return problems;
+}
+function validate(){ return countProblems()===0; }
+function build(){
+ const val=z=>[...document.querySelectorAll('[data-zone="'+z+'"] .card')].map(x=>x.textContent);
+ let out=[...val("method"),...val("path"),...val("protocol")].join(" ");
+ val("headers").forEach(x=>out+="\n"+x);
+ out+="\n";
+ val("body").forEach(x=>out+="\n"+x);
+ return out;
+}
+document.querySelector("#send").onclick=()=>{
+ const problems=countProblems();
+ if(problems>0){
+  statusEl.textContent=`⚠️ Заявката съдържа ${problems} ${problems===1?"проблем":"проблема"}. Провери структурата и избраните карти.`;
+  serverEl.textContent="SERVER> Заявката не може да бъде обработена в този вид.";
+  return;
+ }
+ statusEl.textContent="✅ Правилно! Заявката е построена и изпратена.";
+ serverEl.textContent="CLIENT> Изпращам:\n\n"+build()+"\n\nSERVER> HTTP/1.1 200 OK\nSERVER> Заявката е приета.";
+};
+document.querySelector("#fs").onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.();
+reset();
+</script>
+</body></html>

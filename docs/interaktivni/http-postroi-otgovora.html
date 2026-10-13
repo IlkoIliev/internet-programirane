@@ -1,0 +1,65 @@
+<!doctype html><html lang="bg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HTTP Response Lab v1</title><style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#eef4f8;color:#173042}header{background:#173f5f;color:white;padding:13px 18px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}h1{margin:0;font-size:25px}.tools{display:flex;gap:6px;flex-wrap:wrap}button{border:0;border-radius:9px;padding:10px 12px;font-weight:bold;cursor:pointer}.active,.send{background:#f2b134}.wrap{display:grid;grid-template-columns:1.08fr .92fr;gap:14px;padding:14px}.p{background:white;border-radius:14px;padding:14px}.case{background:#fff8e8;border-left:6px solid #f2b134;padding:11px;margin:8px 0;font-weight:bold}.req,.client{background:#162c3b;color:#d9edf8;border-radius:10px;padding:11px;font:14px Consolas;white-space:pre-wrap}.resp{border:3px solid #1d5579;border-radius:13px;overflow:hidden;margin-top:10px}.z{padding:9px;border-bottom:2px dashed #a9bdc9}.z:last-child{border:0}.zt{font-size:13px;font-weight:bold;color:#587181;margin-bottom:6px}.line{display:grid;grid-template-columns:1fr .7fr 1.5fr;gap:8px}.target{background:#eaf2f6;border-radius:8px;padding:6px;min-height:60px}.lab{text-align:center;font-size:11px;font-weight:bold;color:#607987}.drop{min-height:40px;display:flex;gap:7px;flex-wrap:wrap}.bank{display:flex;gap:8px;flex-wrap:wrap;align-content:flex-start;min-height:380px;border:2px dashed #aac0cd;border-radius:10px;padding:9px}.c{border:2px solid #80a8bf;background:white;border-radius:8px;padding:9px 10px;font:bold 14px Consolas;cursor:pointer;user-select:none}.sel{outline:4px solid #f2b134}.msg{background:#eaf4fb;padding:10px;border-radius:9px;margin:10px 0;font-weight:bold}@media(max-width:1050px){.wrap{grid-template-columns:1fr}}</style></head><body>
+<header><div><h1>📡 HTTP лаборатория: Построй отговора</h1><div>Урок 2 • HTTP Response • версия 12</div></div><div class="tools"><button id="b1" class=active>Мисия 1</button><button id="b2">Мисия 2</button><button id="b3">Мисия 3</button><button id="b4">Мисия 4</button><button id="b5">Мисия 5</button><button id="b6">Мисия 6</button><button id="reset">↩ Върни</button><button id="send" class="send">📤 Изпрати отговора</button><button id="fs">⛶</button></div></header>
+<div class="wrap"><section class="p"><h2>Сървърът трябва да отговори</h2><div id="case" class="case"></div><div id="req" class="req"></div><div id="info" class="case" style="border-left-color:#1d7aa8;background:#eef8fc;white-space:pre-line"></div><div class="resp"><div class="z"><div class="zt">1. STATUS LINE</div><div class="line"><div class="target" data-z="protocol"><div class="lab">ПРОТОКОЛ / ВЕРСИЯ</div><div class="drop"></div></div><div class="target" data-z="code"><div class="lab">STATUS CODE</div><div class="drop"></div></div><div class="target" data-z="text"><div class="lab">STATUS TEXT</div><div class="drop"></div></div></div></div><div class="z target" data-z="headers"><div class="zt">2. HTTP HEADERS</div><div class="drop"></div></div><div class="z target" data-z="crlf"><div class="zt">3. КРАЙ НА HEADERS</div><div class="drop"></div></div><div class="z target" data-z="body"><div class="zt">4. BODY</div><div class="drop"></div></div></div><div id="msg" class="msg">Построй HTTP отговора според ситуацията.</div><div id="client" class="client">CLIENT&gt; Очаквам отговор...</div></section><section class="p"><h2>Всички карти</h2><p>Един и същ комплект за всички мисии. Не всички карти трябва да се използват.</p><div id="bank" class="bank"></div></section></div>
+<script>
+const C=[["http","HTTP/1.1"],["c200","200"],["c201","201"],["c301","301"],["c401","401"],["c404","404"],["c500","500"],["c503","503"],["t200","OK"],["t201","Created"],["t301","Moved Permanently"],["t401","Unauthorized"],["t404","Not Found"],["t500","Internal Server Error"],["t503","Service Unavailable"],["html","Content-Type: text/html"],["json","Content-Type: application/json"],["server","Server: Apache/2.2.14"],["date","Date: --"],["len0","Content-Length: 0"],["len404","Content-Length: 68"],["lenPage","Content-Length: 57"],["lenJson","Content-Length: 24"],["len500","Content-Length: 76"],["len503","Content-Length: 85"],["location","Location: /new-page"],["crlf","<CRLF>"],["page","<html><body>Начална страница</body></html>"],["created",'{"id":18,"created":true}'],["e404","<html><body>Продуктът не е намерен.</body></html>"],["e500","<html><body>Вътрешна грешка на сървъра.</body></html>"],["e503","<html><body>Услугата временно не е достъпна.</body></html>"]];
+const M=[
+["GET /products/125 HTTP/1.1\nHost: shop.bg","Потребител отваря страница с информация за продукт №125 в онлайн магазин. Сървърът проверява каталога, но продукт с такъв номер не е открит. Построй HTTP отговора.","ДАННИ ОТ СЪРВЪРА\\nТип на съдържанието: text/html\\nРазмер на BODY: 68 bytes",{protocol:["http"],code:["c404"],text:["t404"],headers:["html","len404"],crlf:["crlf"],body:["e404"]}],
+["POST /users HTTP/1.1\nHost: school.bg\n\nname=Ivan","Потребител изпраща данни за регистрация. Сървърът ги обработва успешно и създава новия потребител с №18. Построй HTTP отговора.","ДАННИ ОТ СЪРВЪРА\\nТип на съдържанието: application/json\\nРазмер на BODY: 24 bytes",{protocol:["http"],code:["c201"],text:["t201"],headers:["json","lenJson"],crlf:["crlf"],body:["created"]}],
+["GET /profile HTTP/1.1\nHost: school.bg","Посетител се опитва да отвори личния си профил, без преди това да е влязъл в системата. Сървърът не му предоставя съдържанието. Построй HTTP отговора.","ДАННИ ОТ СЪРВЪРА\\nРазмер на BODY: 0 bytes",{protocol:["http"],code:["c401"],text:["t401"],headers:["len0"],crlf:["crlf"],body:[]}],
+["PUT /users/8 HTTP/1.1\nHost: localhost\n\nname=Maria","Потребител изпраща нови данни за профила си. По време на обработката възниква проблем в програмата на сървъра и заявката не може да бъде изпълнена. Построй HTTP отговора.","ДАННИ ОТ СЪРВЪРА\\nТип на съдържанието: text/html\\nРазмер на BODY: 76 bytes",{protocol:["http"],code:["c500"],text:["t500"],headers:["html","len500"],crlf:["crlf"],body:["e500"]}],
+["GET /index.html HTTP/1.1\nHost: school.bg","Браузърът иска началната страница на сайта. Сървърът я намира и изпраща съдържанието ѝ към браузъра. Построй HTTP отговора.","ДАННИ ОТ СЪРВЪРА\\nТип на съдържанието: text/html\\nРазмер на BODY: 57 bytes",{protocol:["http"],code:["c200"],text:["t200"],headers:["html","lenPage"],crlf:["crlf"],body:["page"]}],
+["DELETE /posts/17 HTTP/1.1\nHost: school.bg","Изпратена е заявка за изтриване на публикация. В този момент сървърът е претоварен и не може да обработи заявката. Построй HTTP отговора.","ДАННИ ОТ СЪРВЪРА\\nТип на съдържанието: text/html\\nРазмер на BODY: 85 bytes",{protocol:["http"],code:["c503"],text:["t503"],headers:["html","len503"],crlf:["crlf"],body:["e503"]}]];
+let mi=0,sel=null;
+const bankEl=document.getElementById("bank");
+const caseEl=document.getElementById("case");
+const infoEl=document.getElementById("info");
+const reqEl=document.getElementById("req");
+const msgEl=document.getElementById("msg");
+const clientEl=document.getElementById("client");
+const resetBtn=document.getElementById("reset");
+const sendBtn=document.getElementById("send");
+const fsBtn=document.getElementById("fs");
+const missionBtns=[1,2,3,4,5,6].map(i=>document.getElementById("b"+i));
+const targets=[...document.querySelectorAll("[data-z]")];
+function sh(a){return [...a].sort(()=>Math.random()-.5)}
+function httpDate(){return new Date().toUTCString()}
+function refreshDateCard(){
+ const d=bankEl.querySelector('.c[data-id="date"]');
+ if(d)d.textContent="Date: "+httpDate();
+}
+function mk(x){let d=document.createElement("div");d.className="c";d.dataset.id=x[0];d.textContent=(x[0]==="date"?"Date: "+httpDate():x[1]);d.draggable=true;d.onclick=()=>{document.querySelectorAll(".c").forEach(q=>q.classList.remove("sel"));sel=sel===d?null:d;if(sel)sel.classList.add("sel")};d.ondragstart=e=>e.dataTransfer.setData("text",x[0]);return d}
+function load(){
+  sel=null;
+  targets.forEach(t=>t.querySelector(".drop").innerHTML="");
+  bankEl.innerHTML="";
+  sh(C).forEach(x=>bankEl.appendChild(mk(x)));
+  caseEl.textContent=M[mi][1];
+  reqEl.textContent="REQUEST:\n"+M[mi][0];
+  infoEl.innerHTML=M[mi][2].replace(/\\n/g,"<br>").replace(/\n/g,"<br>");
+  infoEl.style.display=M[mi][2]?"block":"none";
+  msgEl.textContent="Построй HTTP отговора според ситуацията.";
+  clientEl.textContent="CLIENT> Очаквам отговор...";
+  missionBtns.forEach((b,i)=>b.classList.toggle("active",i===mi));
+}
+function put(d,t){if(!d)return;if(["protocol","code","text","crlf"].includes(t.dataset.z)){let o=t.querySelector(".c");if(o)bankEl.appendChild(o)}t.querySelector(".drop").appendChild(d);d.classList.remove("sel");sel=null}
+targets.forEach(t=>{t.onclick=e=>{if(!e.target.classList.contains("c"))put(sel,t)};t.ondragover=e=>e.preventDefault();t.ondrop=e=>{e.preventDefault();put(document.querySelector('.c[data-id="'+e.dataTransfer.getData("text")+'"]'),t)}});bankEl.ondragover=e=>e.preventDefault();
+bankEl.ondrop=e=>{e.preventDefault();let d=document.querySelector('.c[data-id="'+e.dataTransfer.getData("text")+'"]');if(d){bankEl.appendChild(d);if(d.dataset.id==="date")refreshDateCard()}}
+function ids(z){return [...document.querySelectorAll('[data-z="'+z+'"] .c')].map(x=>x.dataset.id)}function problems(){let n=0,N=M[mi][3];for(let z of ["protocol","code","text","headers","crlf","body"]){let a=ids(z),b=N[z];n+=b.filter(x=>!a.includes(x)).length+a.filter(x=>!b.includes(x)&&x!=="server"&&x!=="date").length}return n}
+missionBtns.forEach((b,i)=>b.addEventListener("click",()=>{mi=i;load()}));
+resetBtn.addEventListener("click",load);
+sendBtn.addEventListener("click",()=>{
+ let n=problems();
+ if(n){
+   msgEl.textContent="⚠️ Отговорът съдържа "+n+" "+(n===1?"проблем":"проблема")+". Провери структурата и картите.";
+   clientEl.textContent="CLIENT> Отговорът не съответства на ситуацията.";
+   return;
+ }
+ msgEl.textContent="✅ HTTP отговорът съответства на ситуацията.";
+ clientEl.textContent="CLIENT> Отговорът е приет.";
+});
+fsBtn.addEventListener("click",()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.());
+load();
+setInterval(refreshDateCard,60000);
+</script></body></html>
