@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OSI модел – интерактивна ВОСКС лаборатория</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#172033;--muted:#667085;--line:#cfd6e2;--accent:#2457a7;--good:#157347;--bad:#b42318}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:1580px;margin:auto;padding:18px} h1{margin:0;font-size:30px} h2{font-size:21px;margin:0 0 10px}
+header{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.sub{font-size:17px;color:var(--muted);margin-top:6px}
+.panel{background:#fff;border:2px solid var(--line);border-radius:16px;padding:16px;margin-top:15px}
+.instructions{font-size:17px;line-height:1.45}
+.bank{display:flex;flex-wrap:wrap;gap:9px}.panel.cards-panel{position:sticky;top:6px;z-index:20;max-height:250px;overflow-y:auto;box-shadow:0 3px 14px rgba(0,0,0,.12)}.card{touch-action:none;user-select:none;cursor:grab;border:2px solid #aeb7c6;border-radius:12px;padding:10px 12px;font-size:15px;font-weight:700;min-height:48px;display:flex;align-items:center;background:#fff}
+.card[data-kind="layer"]{background:#e8f0ff}.card[data-kind="desc"]{background:#fff3d8}.card[data-kind="proto"]{background:#e9f8ed}.card[data-kind="group"]{background:#f1eaff}.card[data-kind="trap"]{background:#f7e8e8}
+.card.selected{outline:4px solid #5c8fe6}.workspace{overflow-x:auto}
+.grid{min-width:1180px;display:grid;grid-template-columns:150px 190px 1fr 310px;gap:8px;align-items:stretch}
+.head{font-weight:800;text-align:center;padding:9px;background:#eef1f6;border-radius:10px}
+.bracezone{grid-row:span 3;border:3px dashed #9ca7b8;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:210px;padding:8px}.bracezone .card{width:100%;justify-content:center;text-align:center}.bracehint{font-size:13px;color:var(--muted);font-weight:700}
+.bracezone.bottom{grid-row:span 4}.bracevisual{font-size:86px;line-height:.6;font-family:serif}.slot{min-height:74px;border:3px dashed #aeb7c6;border-radius:13px;padding:7px;display:flex;align-items:center;justify-content:center;text-align:center}
+.slot .card{width:100%;justify-content:center;min-height:56px}.rowlabel{display:flex;align-items:center;justify-content:center;font-weight:800;color:#667085}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}button{font:700 17px Arial;border:0;border-radius:11px;min-height:50px;padding:11px 18px;cursor:pointer}
+.primary{background:var(--accent);color:white}.secondary{background:#e8edf5;color:var(--ink)}.danger{background:#f6e6e5;color:#8b1d18}
+.feedback{font-size:18px;font-weight:700;margin-top:12px;min-height:28px}.good{color:var(--good)}.bad{color:var(--bad)}
+#result{display:none}.resultbox{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{border:2px solid var(--line);border-radius:14px;padding:14px;text-align:center}.big{font-size:30px;font-weight:800}
+.finalgrade{font-size:36px;font-weight:900;text-align:center;margin:16px 0}.small{color:var(--muted);font-size:14px}
+@media(max-width:850px){header{flex-direction:column}.resultbox{grid-template-columns:1fr 1fr}main{padding:9px}}
+</style>
+</head>
+<body><main>
+<header><div><h1>OSI модел – 7 слоя</h1><div class="sub">Интерактивна ВОСКС лаборатория • подреждане, функции, протоколи и нива</div></div></header>
+
+<section class="panel" id="setup">
+<h2>Настройка от учителя</h2>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+<label style="font-weight:700">Време за решаване:
+<select id="timeLimit" style="font:700 17px Arial;padding:10px;border:2px solid var(--line);border-radius:10px">
+<option value="0">Без ограничение</option>
+<option value="5">5 минути</option>
+<option value="10">10 минути</option>
+<option value="12" selected>12 минути</option>
+<option value="15">15 минути</option>
+<option value="20">20 минути</option>
+<option value="25">25 минути</option>
+<option value="30">30 минути</option>
+</select></label>
+<button class="primary" id="startTask">Старт на задачата</button>
+<div id="timer" style="font-size:26px;font-weight:900;margin-left:auto">Време: --:--</div>
+</div>
+<div class="small">Таймерът започва след „Старт на задачата“. Времето се отчита във финалния резултат, но не намалява оценката.</div>
+</section>
+<div id="taskArea" style="display:none">
+<section class="panel instructions">
+<b>Задача:</b> Подреди OSI слоевете от Layer 7 до Layer 1. Към всеки слой свържи правилното описание и правилната група протоколи/технологии. Накрая постави двете карти за нивата във фигурните скоби вляво. Има <b>карти капани</b>.<br>
+<span class="small">Тъч: <b>препоръчително</b> докосни карта → превърти → докосни празно поле. Панелът с картите остава видим. За връщане: докосни вече поставена карта и натисни „↩ Върни избраната карта“, или я провлачи обратно в панела. Компютър: може и чрез drag-and-drop. Цветовете показват само вида карта, не верния ред.</span>
+</section>
+
+<section class="panel cards-panel"><h2>Разбъркани карти — остават видими при превъртане</h2><div class="bank" id="bank"></div></section>
+
+<section class="panel workspace">
+<div class="grid" id="grid">
+<div class="head">Ниво / фигурна скоба</div><div class="head">OSI слой</div><div class="head">Какво изпълнява</div><div class="head">Протоколи / технологии</div>
+
+<div class="bracezone" data-slot="group-host"><span class="bracehint">Постави карта за нивото</span><span class="bracevisual">{</span></div>
+<div class="slot" data-slot="layer-7"></div><div class="slot" data-slot="desc-7"></div><div class="slot" data-slot="proto-7"></div>
+<div class="slot" data-slot="layer-6"></div><div class="slot" data-slot="desc-6"></div><div class="slot" data-slot="proto-6"></div>
+<div class="slot" data-slot="layer-5"></div><div class="slot" data-slot="desc-5"></div><div class="slot" data-slot="proto-5"></div>
+
+<div class="bracezone bottom" data-slot="group-net"><span class="bracehint">Постави карта за нивото</span><span class="bracevisual">{</span></div>
+<div class="slot" data-slot="layer-4"></div><div class="slot" data-slot="desc-4"></div><div class="slot" data-slot="proto-4"></div>
+<div class="slot" data-slot="layer-3"></div><div class="slot" data-slot="desc-3"></div><div class="slot" data-slot="proto-3"></div>
+<div class="slot" data-slot="layer-2"></div><div class="slot" data-slot="desc-2"></div><div class="slot" data-slot="proto-2"></div>
+<div class="slot" data-slot="layer-1"></div><div class="slot" data-slot="desc-1"></div><div class="slot" data-slot="proto-1"></div>
+</div>
+<div class="controls">
+<button class="primary" id="check">Провери напредъка</button>
+<button class="secondary" id="returnCard">↩ Върни избраната карта</button><button class="secondary" id="hint">Подсказка (3)</button>
+<button class="primary" id="finish">Приключи и оцени</button>
+<button class="danger" id="reset">Нова задача</button>
+</div>
+<div class="feedback" id="feedback"></div>
+</section>
+
+</div><section class="panel" id="result">
+<h2>Краен резултат</h2>
+<div class="finalgrade" id="grade"></div>
+<div class="resultbox"><div class="metric"><div class="big" id="timeResult">--:--</div><div>Време</div></div>
+<div class="metric"><div class="big" id="pct"></div><div>Краен процент</div></div>
+<div class="metric"><div class="big" id="layerscore"></div><div>Слоеве</div></div>
+<div class="metric"><div class="big" id="assocscore"></div><div>Функции + протоколи</div></div>
+<div class="metric"><div class="big" id="groupscore"></div><div>Фигурни скоби / нива</div></div>
+</div>
+<p id="hintpenalty"></p>
+</section>
+
+<script>
+(()=>{
+const items=[
+['l7','layer','Application Layer','layer-7'],['l6','layer','Presentation Layer','layer-6'],['l5','layer','Session Layer','layer-5'],['l4','layer','Transport Layer','layer-4'],['l3','layer','Network Layer','layer-3'],['l2','layer','Data Link Layer','layer-2'],['l1','layer','Physical Layer','layer-1'],
+['d7','desc','Дава мрежови услуги на приложенията и потребителския софтуер.','desc-7'],
+['d6','desc','Форматира, преобразува, компресира и криптира данните.','desc-6'],
+['d5','desc','Създава, управлява и прекратява комуникационни сесии.','desc-5'],
+['d4','desc','Осигурява край-до-край пренос, сегментация, портове и надеждност.','desc-4'],
+['d3','desc','Използва логическо адресиране и определя пътя между мрежи.','desc-3'],
+['d2','desc','Работи с кадри, MAC адреси и достъп до преносната среда.','desc-2'],
+['d1','desc','Предава битове като електрически, оптични или радиосигнали.','desc-1'],
+['p7','proto','HTTP • HTTPS • DNS • FTP • SMTP','proto-7'],
+['p6','proto','TLS/SSL • JPEG • PNG • UTF-8','proto-6'],
+['p5','proto','RPC • NetBIOS Session Service','proto-5'],
+['p4','proto','TCP • UDP','proto-4'],
+['p3','proto','IPv4 • IPv6 • ICMP • IPsec','proto-3'],
+['p2','proto','Ethernet (802.3) • Wi-Fi MAC (802.11) • PPP','proto-2'],
+['p1','proto','UTP • оптика • радиосигнал • конектори','proto-1'],
+['gh','group','Host / Application-oriented layers','group-host'],
+['gn','group','Network / Media-oriented layers','group-net'],
+['t1','trap','SQL • LINQ • Entity Framework','none'],['t2','trap','HTML • CSS • JavaScript','none'],['t3','trap','BIOS • UEFI • NTFS','none'],['t4','trap','Създава потребителски акаунти и пароли.','none'],['t5','trap','Определя резолюцията на монитора.','none']
+];
+const bank=document.getElementById('bank'), feedback=document.getElementById('feedback'); let selected=null,hints=0,finished=false,started=false,startMs=0,timerId=null,limitSec=0;
+function fmt(sec){sec=Math.max(0,Math.floor(sec));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
+function elapsed(){return started?Math.floor((Date.now()-startMs)/1000):0}
+function tick(){if(!started||finished)return;let e=elapsed();if(limitSec>0){let left=limitSec-e;document.getElementById('timer').textContent='Остава: '+fmt(left);if(left<=0){finishTask(true);}}else document.getElementById('timer').textContent='Време: '+fmt(e)}
+document.getElementById('startTask').addEventListener('click',()=>{if(started)return;started=true;startMs=Date.now();limitSec=parseInt(document.getElementById('timeLimit').value,10)*60;document.getElementById('timeLimit').disabled=true;document.getElementById('startTask').disabled=true;document.getElementById('taskArea').style.display='block';tick();timerId=setInterval(tick,1000);document.getElementById('taskArea').scrollIntoView({behavior:'smooth'})});
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function makeCard(it){let c=document.createElement('div');c.className='card';c.draggable=true;c.dataset.id=it[0];c.dataset.kind=it[1];c.dataset.target=it[3];c.textContent=it[2];c.addEventListener('click',(e)=>{e.stopPropagation();if(finished)return;document.querySelectorAll('.card').forEach(x=>x.classList.remove('selected'));selected=c;c.classList.add('selected');feedback.className='feedback';feedback.textContent='Избрана карта: „'+c.textContent+'“. Можеш да я поставиш другаде или да я върнеш при картите за избор.'});c.addEventListener('dblclick',(e)=>{e.stopPropagation();if(finished)return;bank.appendChild(c);c.classList.remove('selected');selected=null;feedback.className='feedback good';feedback.textContent='✓ Картата е върната при картите за избор.';});c.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',it[0]));return c}
+shuffle([...items]).forEach(x=>bank.appendChild(makeCard(x)));
+function accept(slot,c){if(!c||finished)return;let old=slot.querySelector('.card');if(old)bank.appendChild(old);slot.appendChild(c);c.classList.remove('selected');selected=null}
+document.querySelectorAll('[data-slot]').forEach(s=>{s.addEventListener('click',()=>accept(s,selected));s.addEventListener('dragover',e=>e.preventDefault());s.addEventListener('drop',e=>{e.preventDefault();let c=document.querySelector('[data-id=\"'+e.dataTransfer.getData('text/plain')+'\"]');accept(s,c)})});
+bank.addEventListener('click',e=>{if(finished)return;if(e.target===bank&&selected){bank.appendChild(selected);selected.classList.remove('selected');selected=null;feedback.className='feedback';feedback.textContent='Картата е върната при картите за избор.'}});
+bank.addEventListener('dragover',e=>e.preventDefault());
+bank.addEventListener('drop',e=>{e.preventDefault();if(finished)return;let id=e.dataTransfer.getData('text/plain');let c=document.querySelector('[data-id="'+id+'"]');if(c){bank.appendChild(c);c.classList.remove('selected');selected=null;feedback.className='feedback';feedback.textContent='Картата е върната при картите за избор.'}});
+function counts(){let L=0,D=0,P=0,G=0;document.querySelectorAll('[data-slot]').forEach(s=>{let c=s.querySelector('.card');if(c&&c.dataset.target===s.dataset.slot){if(c.dataset.kind==='layer')L++;if(c.dataset.kind==='desc')D++;if(c.dataset.kind==='proto')P++;if(c.dataset.kind==='group')G++}});return {L,D,P,G}}
+document.getElementById('returnCard').addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();if(finished)return;let c=selected||document.querySelector('.card.selected');if(c){bank.appendChild(c);c.classList.remove('selected');selected=null;feedback.className='feedback good';feedback.textContent='✓ Картата е върната при картите за избор.';bank.scrollIntoView({behavior:'smooth',block:'nearest'});}else{feedback.className='feedback bad';feedback.textContent='Първо докосни вече поставената карта, която искаш да върнеш.';}});
+document.getElementById('check').addEventListener('click',()=>{if(finished)return;let c=counts();feedback.className='feedback';feedback.textContent=`Слоеве: ${c.L}/7 правилни • Описания: ${c.D}/7 • Протоколи/технологии: ${c.P}/7 • Нива: ${c.G}/2. Не се показва кои точно са грешните.`});
+document.getElementById('hint').addEventListener('click',()=>{if(finished)return;if(hints>=3){feedback.className='feedback bad';feedback.textContent='Използвани са максималните 3 подсказки.';return;}let wrong=[...document.querySelectorAll('[data-slot]')].filter(s=>{let c=s.querySelector('.card');return c&&c.dataset.target!==s.dataset.slot});if(wrong.length){hints++;let s=wrong[Math.floor(Math.random()*wrong.length)],c=s.querySelector('.card');feedback.className='feedback bad';let extra=' Не показвам къде трябва да бъде.';if(hints===3){let t=c.dataset.target||'';let zone=t.includes('-7')||t.includes('-6')||t.includes('-5')?'горната група слоеве':t.includes('-4')||t.includes('-3')||t.includes('-2')||t.includes('-1')?'долната група слоеве':'друга категория';extra=' Ориентир: търси правилното място в '+zone+'.';}feedback.textContent=`Подсказка ${hints}/3: картата „${c.textContent}“ не е на правилното място.${extra}`;document.getElementById('hint').textContent='Подсказка ('+(3-hints)+')';}else{feedback.textContent='Няма поставена грешна карта. Ако има празни полета, продължи да подреждаш.'}});
+function grade(p){if(p>=90)return'Отличен (6)';if(p>=75)return'Много добър (5)';if(p>=60)return'Добър (4)';if(p>=50)return'Среден (3)';return'Слаб (2)'}
+function finishTask(timeout=false){if(finished||!started)return;finished=true;if(timerId)clearInterval(timerId);let c=counts();let raw=c.L+c.D+c.P+c.G, max=23;let penalty=hints*2;let pct=Math.max(0,Math.round(raw/max*100)-penalty);document.getElementById('pct').textContent=pct+'%';document.getElementById('layerscore').textContent=c.L+'/7';document.getElementById('assocscore').textContent=(c.D+c.P)+'/14';document.getElementById('groupscore').textContent=c.G+'/2';document.getElementById('grade').textContent=grade(pct);document.getElementById('hintpenalty').textContent=`Правилни елементи: ${raw}/${max}. Използвани подсказки: ${hints}. Наказание: ${penalty} процентни пункта.`;document.getElementById('result').style.display='block';document.getElementById('timeResult').textContent=fmt(elapsed());if(timeout){document.getElementById('grade').textContent+=' • Времето изтече';}document.getElementById('result').scrollIntoView({behavior:'smooth'})}
+document.getElementById('finish').addEventListener('click',()=>finishTask(false));
+document.getElementById('reset').addEventListener('click',()=>location.reload());
+})();
+</script>
+</main></body></html>
