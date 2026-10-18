@@ -1,8 +1,7 @@
 
 site_name: Интернет програмиране
 site_description: Електронен учебник по Интернет програмиране
-site_url: https://ilkolliev.github.io/internet-programirane/
-
+site_url: https://ilkoiliev.github.io/internet-programirane/
 theme:
   name: material
   language: bg
