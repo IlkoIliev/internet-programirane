@@ -263,9 +263,14 @@ HTML елементите се различават и по начина, по �
 **HTML код:**
 
 ```html
-<div>
+<div style="background-color: #e3f0ff; border: 2px solid #3287ef; padding: 20px;">
     <h2>Училищни новини</h2>
     <p>Нашият училищен отбор спечели първо място.</p>
+
+    <div style="background-color: #fff0e4; border: 2px solid #ff852e; padding: 20px;">
+        <h3>Повече информация</h3>
+        <p>Това е първа победа за нашия отбор през тази учебна година.</p>
+    </div>
 </div>
 ```
 
