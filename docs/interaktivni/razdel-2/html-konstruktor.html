@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTML конструктор – Построй своята страница</title>
+<style>
+:root{--nav:#174967;--bg:#eef6fb;--panel:#fff;--line:#75a9c8;--accent:#ffb62e;--ink:#082d46;--ok:#0a9f3f;--bad:#c53030;--soft:#46738d}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header.top{position:sticky;top:0;z-index:20;background:var(--nav);color:#fff;padding:12px 18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.title{font-size:24px;font-weight:800;line-height:1.1}.sub{font-size:14px;font-weight:700;margin-top:4px;opacity:.9}
+nav.missions{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+button{border:0;border-radius:9px;padding:9px 12px;font:800 14px Arial,sans-serif;cursor:pointer;background:#f1f4f6;color:var(--ink)}
+button:hover{filter:brightness(.96)}
+button:focus-visible{outline:3px solid #1c8cbd;outline-offset:2px}
+button:disabled{opacity:.45;cursor:default;filter:none}
+.mbtn{background:#f7f7f7;padding:10px 12px}.mbtn.active{background:var(--accent)}.mbtn .ok{color:var(--ok)}
+.mbtn.active .ok{color:#05501f}
+.primary{background:var(--accent)}
+.fullbtn{background:rgba(255,255,255,.14);color:#fff;font-size:20px;line-height:1;padding:8px 11px;border:2px solid rgba(255,255,255,.35)}
+.fullbtn:hover{background:rgba(255,255,255,.26);filter:none}
+.danger{background:#fde8e8;color:#8a1c1c}
+main{display:grid;grid-template-columns:340px minmax(0,1fr);gap:14px;padding:14px;align-items:start}
+.panel{background:var(--panel);border-radius:16px;padding:16px}
+.mission h1{margin:0 0 10px;font-size:22px}
+.situation{background:#fff8e9;border-left:6px solid var(--accent);padding:11px 12px;font-size:15px;font-weight:700;line-height:1.4}
+.checks{list-style:none;margin:12px 0 0;padding:0}
+.checks li{display:flex;gap:8px;padding:6px 4px;border-bottom:1px solid #e3eef5;font-size:14px;line-height:1.35}
+.checks li .m{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #9fbfd2;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff}
+.checks li.done .m{background:var(--ok);border-color:var(--ok)}
+.checks li.done{color:#2c5a43}
+.checks li.bonus .lbl::before{content:"★ ";color:#c98a00}
+.errs{margin-top:10px;background:#fff1f1;border-left:5px solid var(--bad);padding:8px 10px;font-size:13.5px;border-radius:6px}
+.errs b{display:block;margin-bottom:4px;color:#8a1c1c}
+.errs a{display:block;color:#8a1c1c;cursor:pointer;padding:3px 0;text-decoration:underline dotted}
+.quiz{margin-top:12px;border:2px solid #cfe2ee;border-radius:12px;padding:10px 12px}
+.quiz .q{font-weight:800;font-size:14.5px;margin-bottom:6px}
+.quiz label{display:flex;gap:8px;align-items:flex-start;font-size:14px;padding:4px 0;cursor:pointer}
+.quiz label.right{color:var(--ok);font-weight:800}.quiz label.wrong{color:var(--bad)}
+.mbar{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.hint{margin-top:10px;background:#e8f5fb;border-left:5px solid #1c8cbd;padding:9px 11px;font-size:14px;font-weight:700;line-height:1.4}
+.feedback{margin-top:10px;padding:11px 12px;border-radius:10px;background:#e8f3fa;font-size:15px;font-weight:800;line-height:1.4}
+.feedback.good{background:#e3f7e9;color:#05501f}.feedback.bad{background:#fff4d8}
+.ws{display:flex;flex-direction:column;gap:12px;min-width:0}
+.palette{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-start}
+.grp>span{display:block;font-size:12px;font-weight:800;color:var(--soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}
+.grp div{display:flex;gap:5px;flex-wrap:wrap}
+.tag{font:700 14px Consolas,"DejaVu Sans Mono",monospace;background:#fff;border:2px solid #9cc3da;border-radius:8px;padding:6px 8px}
+.tag.rel{border-color:#e39d12;background:#fff8e9}
+.place{display:flex;gap:6px;align-items:center;font-size:14px;font-weight:800;margin-bottom:10px;flex-wrap:wrap}
+.seg{display:inline-flex;background:#eef3f6;border-radius:10px;padding:3px}
+.seg button{background:transparent;padding:7px 10px}.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.selbar .crumbs{font:700 14px Consolas,"DejaVu Sans Mono",monospace;display:flex;flex-wrap:wrap;gap:2px;align-items:center;min-height:26px}
+.crumbs a{cursor:pointer;padding:3px 6px;border-radius:6px;background:#eef6fb;color:var(--ink)}
+.crumbs a.cur{background:var(--accent)}
+.crumbs .sep{color:#9bb;padding:0 2px}
+.fields{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:10px}
+.fields label{display:flex;flex-direction:column;font-size:12px;font-weight:800;color:var(--soft);gap:3px;min-width:150px;flex:1}
+.fields label.wide{flex-basis:100%}
+.fields input,.fields textarea{font:15px Consolas,"DejaVu Sans Mono",monospace;padding:7px 9px;border:2px solid #b9d4e4;border-radius:8px;color:var(--ink);width:100%}
+.fields input:focus,.fields textarea:focus{outline:none;border-color:#1c8cbd}
+.fields .note{font-size:13px;color:var(--soft);font-weight:700;flex-basis:100%}
+.files{flex-basis:100%;font:13px Consolas,"DejaVu Sans Mono",monospace;background:#f5f9fb;border-radius:8px;padding:7px 10px;color:#2d5870;white-space:pre}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.selhead{display:flex;gap:8px 12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.msg{margin-top:10px;font-size:14px;font-weight:700;line-height:1.4;border-radius:8px;padding:0}
+.msg:not(:empty){padding:9px 11px;background:#fff4d8;border-left:5px solid #e39d12}
+.msg.info:not(:empty){background:#e8f5fb;border-left-color:#1c8cbd}
+.msg.err:not(:empty){background:#fff1f1;border-left-color:var(--bad)}
+.msg button{margin:6px 6px 0 0;background:var(--accent)}
+.clip{font-size:13px;font-weight:800;color:#7a5200;background:#fff8e9;border-radius:8px;padding:6px 9px;margin-top:8px}
+.panes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.pane{display:flex;flex-direction:column;min-width:0}
+.ph{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.ph h2{margin:0 auto 0 0;font-size:17px}
+.ph button{padding:7px 10px;font-size:13px}
+.ph button.on{background:var(--accent)}
+pre.code{margin:0;background:#102f42;color:#e9f3f8;border-radius:12px;padding:14px;font:14.5px/1.6 Consolas,"DejaVu Sans Mono",monospace;overflow:auto;min-height:430px;max-height:72vh;white-space:pre;tab-size:2}
+pre.code:empty::before{content:"Документът е празен. Добави елемент от панела.";color:#8fb0c4;font-family:Arial,sans-serif;white-space:normal}
+.tok{cursor:pointer;border-radius:3px}
+.tn{color:#7fd1ff;font-weight:700}.an{color:#ffcf6b}.av{color:#9be89b}.tx{color:#fff}.dt{color:#c9a6ff}
+.tok.hl{background:rgba(255,182,46,.45)}
+.el.sel{background:rgba(255,182,46,.17);box-shadow:inset 3px 0 0 var(--accent)}
+.tok.selt{background:rgba(255,182,46,.38)}
+.tok.err{text-decoration:underline wavy #ff6b6b;text-underline-offset:4px}
+textarea.editor{display:none;width:100%;min-height:430px;max-height:72vh;background:#102f42;color:#fff;border:3px solid var(--accent);border-radius:12px;padding:14px;font:14.5px/1.6 Consolas,"DejaVu Sans Mono",monospace;resize:vertical;tab-size:2}
+.editing pre.code{display:none}.editing textarea.editor{display:block}
+.edbar{display:none;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap}.editing .edbar{display:flex}
+.edbar button{padding:6px 10px;font-size:13px}.edinfo{font-size:12.5px;color:var(--soft);font-weight:700}
+.mission.free #checks,.mission.free #quiz,.mission.free #btnCheck,.mission.free #btnHint,.mission.free #feedback,.mission.free #hints{display:none}
+.freeinfo{display:none;margin-top:10px;font-size:14px;line-height:1.45;color:#2d5870}.mission.free .freeinfo{display:block}
+.freeinfo b{color:var(--ink)}
+.errs.plain span{display:block;color:#8a1c1c;padding:3px 0}
+.warns{margin-top:10px;background:#fff8e1;border-left:5px solid #e39d12;padding:8px 10px;font-size:13.5px;border-radius:6px}
+.warns b{display:block;margin-bottom:4px;color:#7a5200}
+.warns a,.warns span{display:block;color:#6b4800;padding:3px 0}.warns a{cursor:pointer;text-decoration:underline dotted}
+.rowwarn{margin-top:8px;background:#fff8e1;border-left:5px solid #e39d12;padding:7px 10px;font-size:13.5px;font-weight:700;color:#6b4800;border-radius:6px}
+.tok.warn{text-decoration:underline dotted #ffcf6b;text-underline-offset:4px}
+.browser{border:1px solid #9aa0a6;border-radius:10px;overflow:hidden;background:#fff;display:flex;flex-direction:column;min-height:430px}
+.btabs{background:#dee1e6;height:36px;display:flex;align-items:flex-end;padding-left:8px}
+.btab{background:#fff;border-radius:8px 8px 0 0;height:29px;padding:0 12px;display:flex;align-items:center;gap:8px;font-size:13px;max-width:70%;min-width:150px}
+.btab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btab .x{margin-left:auto;color:#5f6368}
+.bbar{height:36px;display:flex;align-items:center;gap:10px;padding:0 10px;border-bottom:1px solid #dadce0;color:#5f6368;font-size:15px}
+.burl{flex:1;background:#f1f3f4;border-radius:14px;height:26px;display:flex;align-items:center;padding:0 12px;font-size:13px;color:#202124;overflow:hidden;white-space:nowrap}
+.browser iframe{border:0;width:100%;flex:1;min-height:390px;background:#fff}
+.legend{font-size:12.5px;color:var(--soft);font-weight:700;margin-top:6px;min-height:16px}
+.legend i{display:inline-block;width:16px;height:10px;vertical-align:middle;margin:0 4px 0 8px}
+.mswitch{display:none;gap:6px}
+footer.foot{padding:4px 18px 18px;font-size:13px;color:var(--soft)}
+@media(min-width:1151px){
+ header.top{padding:8px 16px}.title{font-size:20px}.sub{font-size:13px;margin-top:2px}.mbtn{padding:8px 11px;font-size:13.5px}
+ main{grid-template-columns:310px minmax(0,1fr);gap:10px;padding:10px}
+ .panel{padding:12px}
+ .mission{position:sticky;top:calc(var(--hh,56px) + 10px);max-height:calc(100vh - var(--hh,56px) - 20px);overflow:auto}
+ .mission h1{font-size:19px;margin-bottom:8px}.situation{font-size:14px;padding:9px 10px}
+ .checks li{font-size:13.5px;padding:5px 2px}
+ .ws{gap:10px}
+ .place{margin-bottom:6px;font-size:13px}.seg button{padding:5px 9px;font-size:13px}
+ .palette{gap:6px 14px}
+ .grp{display:flex;align-items:center;gap:6px}
+ .grp>span{margin:0;font-size:11px}
+ .tag{font-size:13px;padding:4px 7px;border-width:2px}
+ .fields{margin-top:6px;gap:6px 10px}.fields label{min-width:130px}
+ .fields input,.fields textarea{padding:5px 8px;font-size:14px}
+ .acts button{padding:5px 9px;font-size:13px}
+ .palwrap{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}.palwrap .place{margin:0}.palwrap .palette{display:contents}
+ .fields label.wide{flex:2 1 280px}
+ .fields .files{flex:1 1 220px;white-space:normal}
+ .msg{margin-top:6px;font-size:13.5px}.msg:not(:empty){padding:7px 10px}
+ .ph{margin-bottom:6px}.ph h2{font-size:16px}.ph button{padding:6px 8px;font-size:12.5px}
+ pre.code,textarea.editor{height:var(--ph,460px);min-height:300px;max-height:none}
+ .editing textarea.editor{height:calc(var(--ph,460px) - 40px)}
+ .browser{height:calc(var(--ph,460px) - 4px);min-height:300px}
+ .browser iframe{min-height:0}
+}
+@media(max-width:1150px){main{grid-template-columns:1fr}header.top{position:relative}}
+@media(max-width:820px){
+ .panes{grid-template-columns:1fr}
+ .mswitch{display:flex}
+ .panes[data-show="code"] .pane.pv{display:none}
+ .panes[data-show="preview"] .pane.pc{display:none}
+ .title{font-size:20px}
+ main{padding:10px;gap:10px}.panel{padding:12px}
+ pre.code,textarea.editor{min-height:340px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+ <div><div class="title">🧱 HTML конструктор: Построй своята страница</div><div class="sub">Раздел 2 • Урок 1 • Основни HTML тагове</div></div>
+ <nav class="missions" id="mnav" aria-label="Мисии"></nav>
+ <button id="btnFull" class="fullbtn" title="Цял екран" aria-label="Цял екран">⛶</button>
+</header>
+
+<main>
+ <section class="panel mission" aria-labelledby="mTitle">
+  <h1 id="mTitle"></h1>
+  <div class="situation" id="mTask"></div>
+  <ul class="checks" id="checks"></ul>
+  <div id="errs"></div>
+  <div class="quiz" id="quiz"></div>
+  <div class="mbar">
+   <button class="primary" id="btnCheck">✔ Провери</button>
+   <button id="btnHint">💡 Подсказка</button>
+   <button id="btnReset" class="danger">⟲ Започни отначало</button>
+  </div>
+  <div id="hints"></div>
+  <div class="freeinfo">Как се работи:<br>• <b>Кликни таг</b> от панела – добавя се <b>вътре в</b> или <b>след</b> избрания елемент.<br>• <b>Избери елемент</b> в кода или в браузъра и промени текста и атрибутите му.<br>• С <b>✏️ Редактирай</b> пишеш кода сам – браузърът се обновява веднага.<br>• С <b>⬇ Свали ZIP</b> взимаш проекта за VS Code.</div>
+  <div class="feedback" id="feedback">Изгради страницата и натисни „Провери“.</div>
+ </section>
+
+ <section class="ws">
+  <div class="panel palwrap">
+   <div class="place">Добави новия елемент:
+    <span class="seg" role="group" aria-label="Място за добавяне">
+     <button id="modeIn" class="on">вътре в избрания</button>
+     <button id="modeAfter">след избрания</button>
+    </span>
+   </div>
+   <div class="palette" id="palette"></div>
+  </div>
+
+  <div class="panel selbar" aria-live="polite">
+   <div class="selhead"><div class="crumbs" id="crumbs"></div><div class="acts" id="acts"></div></div>
+   <div class="fields" id="fields"></div>
+   <div id="rowwarn"></div>
+   <div id="clip"></div>
+   <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="mswitch" id="mswitch">
+   <button id="showCode" class="primary">‹/› HTML код</button>
+   <button id="showPrev">🖥 Браузър</button>
+  </div>
+
+  <div class="panes" id="panes" data-show="code">
+   <div class="pane pc panel" id="codePane">
+    <div class="ph">
+     <h2>HTML код</h2>
+     <button id="btnUndo" title="Ctrl+Z">↶ Отмени</button>
+     <button id="btnEdit">✏️ Редактирай</button>
+     <button id="btnCopy">⧉ Копирай</button>
+     <button id="btnDown" title="Свали папката на проекта: index.html и images">⬇ Свали ZIP</button>
+    </div>
+    <pre class="code" id="code" aria-label="Генериран HTML код"></pre>
+    <textarea class="editor" id="editor" spellcheck="false" aria-label="Редактор на HTML код"></textarea>
+    <div class="edbar"><button class="primary" id="btnBack">🧱 Към конструктора</button><button class="danger" id="btnDiscard">Отхвърли промените</button></div>
+   </div>
+   <div class="pane pv panel">
+    <div class="ph">
+     <h2>Браузър</h2>
+     <button id="btnGrid" class="on" title="Помощна решетка на таблиците – само в лабораторията, не е част от кода">▦ Решетка</button>
+     <button id="btnPoint" title="Покажи границите на елементите при посочване">🎯 Посочи елемент</button>
+    </div>
+    <div class="browser">
+     <div class="btabs"><div class="btab">📄 <span id="tabTitle">index.html</span><b class="x">✕</b></div></div>
+     <div class="bbar">← → ⟳ <div class="burl">moyat-klas/index.html</div></div>
+     <iframe id="frame" title="Визуализация на страницата" sandbox="allow-scripts"></iframe>
+    </div>
+    <div class="legend" id="legend">Кликни върху елемент в страницата, за да го намериш в кода.</div>
+   </div>
+  </div>
+ </section>
+</main>
+<footer class="foot">Конструкторът работи без интернет и без сървър. Напредъкът се пази в този браузър. Изображенията <code>images/klas.svg</code> и <code>images/uchilishte.svg</code> се включват в ZIP архива, когато са използвани в страницата.</footer>
+
+<script>
+"use strict";
+/* ---------- Данни ---------- */
+const VOID=new Set(["meta","img","br","hr"]);
+const PHRASING=new Set(["#text","a","strong","em","span","img","br"]);
+const PHR_PARENT=new Set(["p","h1","h2","h3","strong","em","span","a","caption"]);
+const INLINE_FMT=new Set(["p","h1","h2","h3","li","a","strong","em","span","title","caption","th","td"]);
+const KNOWN=new Set(["html","head","body","title","meta","h1","h2","h3","p","strong","em","br","hr","ul","ol","li","a","img","div","span","table","caption","tr","th","td","header","nav","main","section","article","aside","footer","#text"]);
+const DEF={h1:"Заглавие",h2:"Подзаглавие",h3:"Заглавие трето ниво",p:"Текст на параграфа.",strong:"важно",em:"уточнение",span:"текст",li:"Елемент от списъка",a:"Текст на връзката",title:"Заглавие на страницата",caption:"Заглавие на таблицата",th:"Заглавие",td:"Данни","#text":"Нов текст"};
+const ATTRS={html:["lang"],meta:["charset"],a:["href","target"],img:["src","alt","width","height"],th:["scope","colspan","rowspan"],td:["colspan","rowspan"]};
+const NO_ID=new Set(["html","head","body","title","meta","br"]);
+const PH={lang:"напр. bg",charset:"UTF-8",href:"https://…, файл.html или #id",target:"_blank",src:"напр. images/klas.svg",alt:"описание на изображението",width:"в пиксели",height:"в пиксели",scope:"col или row",colspan:"брой колони",rowspan:"брой редове",id:"уникално име, напр. deynosti"};
+const ALAB={lang:"lang – език",charset:"charset – кодиране",href:"href – адрес",target:"target",src:"src – път до файла",alt:"alt – алтернативен текст",width:"width",height:"height",scope:"scope",colspan:"colspan",rowspan:"rowspan",id:"id"};
+
+const SVG_KLAS='<svg xmlns="http://www.w3.org/2000/svg" width="400" height="250" viewBox="0 0 400 250"><rect width="400" height="250" fill="#eaf4f9"/><rect x="70" y="26" width="260" height="104" rx="6" fill="#1f5135" stroke="#9a6a3a" stroke-width="8"/><text x="200" y="88" font-family="Arial" font-size="32" font-weight="bold" fill="#fff" text-anchor="middle">12 клас</text><g fill="#c98a4b"><rect x="40" y="200" width="90" height="12" rx="3"/><rect x="155" y="200" width="90" height="12" rx="3"/><rect x="270" y="200" width="90" height="12" rx="3"/></g><g fill="#174967"><circle cx="70" cy="168" r="14"/><circle cx="100" cy="172" r="13"/><circle cx="185" cy="168" r="14"/><circle cx="215" cy="172" r="13"/><circle cx="300" cy="168" r="14"/><circle cx="330" cy="172" r="13"/></g><g fill="#ffb62e"><rect x="56" y="182" width="28" height="18" rx="6"/><rect x="87" y="185" width="26" height="15" rx="6"/><rect x="171" y="182" width="28" height="18" rx="6"/><rect x="202" y="185" width="26" height="15" rx="6"/><rect x="286" y="182" width="28" height="18" rx="6"/><rect x="317" y="185" width="26" height="15" rx="6"/></g></svg>';
+const SVG_SCHOOL='<svg xmlns="http://www.w3.org/2000/svg" width="400" height="250" viewBox="0 0 400 250"><rect width="400" height="250" fill="#dff1fb"/><rect y="210" width="400" height="40" fill="#8cc084"/><rect x="80" y="95" width="240" height="115" fill="#f3e3c3" stroke="#9a6a3a" stroke-width="3"/><polygon points="65,98 200,35 335,98" fill="#b5473a"/><rect x="185" y="150" width="30" height="60" fill="#7a4a24"/><g fill="#7fc4e8" stroke="#fff" stroke-width="3"><rect x="100" y="115" width="34" height="28"/><rect x="145" y="115" width="34" height="28"/><rect x="221" y="115" width="34" height="28"/><rect x="266" y="115" width="34" height="28"/><rect x="100" y="160" width="34" height="28"/><rect x="266" y="160" width="34" height="28"/></g><line x1="200" y1="35" x2="200" y2="8" stroke="#555" stroke-width="3"/><rect x="200" y="8" width="26" height="6" fill="#fff"/><rect x="200" y="14" width="26" height="6" fill="#00966e"/><rect x="200" y="20" width="26" height="6" fill="#d62612"/></svg>';
+const FILES={"images/klas.svg":SVG_KLAS,"images/uchilishte.svg":SVG_SCHOOL};
+const dataURI=s=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
+
+const PAL=[
+ ["Документ",[["!doctype","<!DOCTYPE html>","Декларация за HTML5 документ"],["html","<html>","Коренен елемент на документа"],["head","<head>","Метаданни – не се виждат в страницата"],["meta","<meta>","Кодиране на символите"],["title","<title>","Заглавие в раздела (таба) на браузъра"],["body","<body>","Видимото съдържание"]]],
+ ["Текст",[["h1","<h1>","Основно заглавие"],["h2","<h2>","Подзаглавие"],["h3","<h3>","Заглавие трето ниво"],["p","<p>","Параграф"],["strong","<strong>","Силна значимост"],["em","<em>","Смислово подчертаване"],["br","<br>","Нов ред"],["hr","<hr>","Тематично разделяне"],["#text","абв","Обикновен текст"]]],
+ ["Списъци",[["ul","<ul>","Неномериран списък"],["ol","<ol>","Номериран списък"],["li","<li>","Елемент от списък"]]],
+ ["Връзки и изображения",[["a","<a>","Хипервръзка"],["img","<img>","Изображение"]]],
+ ["Контейнери",[["div","<div>","Блоков контейнер"],["span","<span>","Вграден контейнер"]]],
+ ["Таблици",[["table","<table>","Таблица"],["caption","<caption>","Заглавие на таблица"],["tr","<tr>","Ред"],["th","<th>","Заглавна клетка"],["td","<td>","Клетка с данни"]]],
+ ["Семантика",[["header","<header>","Въвеждаща част"],["nav","<nav>","Навигация"],["main","<main>","Основно съдържание"],["section","<section>","Тематичен раздел"],["article","<article>","Самостоятелно съдържание"],["aside","<aside>","Странично съдържание"],["footer","<footer>","Долна част"]]]
+];
+
+const TEMPLATE=`<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<title>Моят клас</title>
+</head>
+<body>
+</body>
+</html>`;
+
+/* ---------- Помощни функции за проверки ---------- */
+function walk(n,f,p,anc){anc=anc||[];f(n,p,anc);if(n.children){const a2=anc.concat([n]);n.children.forEach(c=>walk(c,f,n,a2))}}
+function all(st,tag){const r=[];walk(st.root,(n,p,anc)=>{if(n.tag===tag)r.push(n)});return r}
+function kids(n,tag){return n?n.children.filter(c=>c.tag===tag):[]}
+function txt(n){return n.tag==="#text"?n.text:(n.children||[]).map(txt).join("")}
+function own(n,tag){const t=txt(n).trim();return t!==""&&t!==DEF[tag||n.tag]}
+function inside(st,node,tag){const p=pathTo(st.root,node.id);return p.slice(0,-1).some(x=>x.tag===tag)}
+function ancOf(st,node){return pathTo(st.root,node.id).slice(0,-1)}
+function parts(st){const html=kids(st.root,"html")[0];return{html,head:kids(html,"head")[0],body:kids(html,"body")[0]}}
+function okDoc(st){const {html,head,body}=parts(st);return st.doctype&&st.root.children.length===1&&html&&(html.attrs.lang||"").trim().toLowerCase()==="bg"&&head&&body&&html.children.indexOf(head)<html.children.indexOf(body)&&kids(head,"meta").some(m=>/^utf-8$/i.test((m.attrs.charset||"").trim()))&&kids(head,"title").some(t=>txt(t).trim()!=="")}
+function imgOk(i){return !!FILES[(i.attrs.src||"").trim()]}
+function relImg(i){return /^(?!https?:|\/|[a-z]:[\\/]|file:)[^\s"']+\.(jpe?g|png|gif|svg|webp|avif)$/i.test((i.attrs.src||"").trim())}
+function extLink(a){return /^https?:\/\/[^\s/]+\.[^\s]+/i.test((a.attrs.href||"").trim())&&own(a,"a")}
+function gridInfo(table){
+ const rows=kids(table,"tr"),N=rows.length,occ=[],issues=[];
+ const num=(c,k)=>{const v=c.attrs[k];if(v==null||String(v).trim()==="")return 1;const t=String(v).trim();
+  if(!/^\d+$/.test(t)||+t<1){issues.push({id:c.id,msg:`${k}="${v}" не е валидна стойност – трябва да е цяло число: 1, 2, 3…`});return 1}
+  return Math.min(+t,1000)};
+ rows.forEach((r,ri)=>{occ[ri]=occ[ri]||[];let col=0;
+  r.children.filter(c=>c.tag==="td"||c.tag==="th").forEach(c=>{
+   while(occ[ri][col])col++;
+   const cs=num(c,"colspan"),rs=num(c,"rowspan"),left=N-ri-1;
+   if(rs>1&&rs-1>left)issues.push({id:c.id,msg:`rowspan="${rs}" излиза извън таблицата – след този ред ${left===0?"няма повече редове":left===1?"има само 1 ред":"има само "+left+" реда"}.`});
+   let clash=false;
+   for(let y=0;y<rs&&ri+y<N;y++){occ[ri+y]=occ[ri+y]||[];for(let x=0;x<cs;x++){if(occ[ri+y][col+x])clash=true;occ[ri+y][col+x]={c,ri}}}
+   if(clash)issues.push({id:c.id,msg:"Клетката се застъпва с клетка от предишен ред, която има rowspan. Премахни една клетка от този ред или намали colspan/rowspan."});
+   col+=cs;});});
+ return{rows:rows.map((r,ri)=>{const o=occ[ri]||[];
+  const above=[...new Set(o.filter(x=>x&&x.ri<ri).map(x=>x.c))].map(c=>({c,from:o.find(x=>x&&x.c===c).ri}));
+  const spans=r.children.filter(c=>(c.tag==="td"||c.tag==="th")&&(parseInt(c.attrs.colspan,10)||1)>1);
+  return{len:o.length,full:o.filter(Boolean).length,above,spans}}),issues};
+}
+function grid(t){return gridInfo(t).rows}
+const cells=n=>n===1?"една клетка":n+" клетки";
+function tableWarn(st){
+ const W=new Map();
+ all(st,"table").forEach(t=>{
+  const rows=kids(t,"tr");if(rows.length<2)return;
+  const g=gridInfo(t),ref=g.rows[0].len;
+  g.rows.forEach((r,i)=>{if(i===0||r.len===ref)return;
+   const head=`Ред ${i+1} заема ${r.len} колони, а първият ред – ${ref}.`;
+   if(r.len>ref){const ex=cells(r.len-ref);
+    if(r.spans.length){const cs=parseInt(r.spans[0].attrs.colspan,10);W.set(rows[i].id,`${head} Клетка с colspan="${cs}" заема мястото на ${cs} клетки – затова в този ред трябва да има ${ex} по-малко. Премахни излишната клетка.`)}
+    else if(r.above.length){const a=r.above[0];W.set(rows[i].id,`${head} Клетка с rowspan="${a.c.attrs.rowspan}" от ред ${a.from+1} заема място и в този ред – затова тук трябва да има ${ex} по-малко.`)}
+    else W.set(rows[i].id,`${head} В него има ${ex} повече.`)}
+   else W.set(rows[i].id,`${head} Добави още ${cells(ref-r.len)} – или, ако клетките трябва да се обединят, използвай colspan.`);
+  });});
+ return W;
+}
+function tableEven(t){const g=gridInfo(t);return g.rows.length>0&&!g.issues.length&&g.rows.every(x=>x.len===g.rows[0].len&&x.full===x.len)}
+function spans(t){let s=false;walk(t,n=>{if((n.tag==="td"||n.tag==="th")&&((parseInt(n.attrs.colspan,10)||1)>1||(parseInt(n.attrs.rowspan,10)||1)>1))s=true});return s}
+function dataRows(t){return kids(t,"tr").filter(r=>{const tds=kids(r,"td");return tds.length&&tds.every(d=>own(d,"td"))}).length}
+const norm=s=>s.trim().toLowerCase();
+
+/* ---------- Мисии ---------- */
+const M=[
+ {nav:"✎ Свободен",t:"Свободен конструктор",free:true,
+  s:"Твоята работна площ – без задачи и оценки. Добавяй, премествай и изтривай елементи или пиши код директно. Структурните грешки се показват, за да ги забележиш, но нищо не е задължително. Мисиите 1–5 горе са учебни задачи стъпка по стъпка.",
+  rel:[],start:TEMPLATE.replace("<body>\n","<body>\n<h1>Моят клас</h1>\n"),checks:[],quiz:null,hints:[]},
+ {nav:"1 • Документ",t:"Мисия 1 • Създай HTML документ",
+  s:"Документът е празен. Изгради скелета на HTML5 страница „Моят клас“ – декларация, коренен елемент, метаданни и видимо съдържание. После сравни: кое се вижда в страницата и кое – само в таба?",
+  rel:["!doctype","html","head","meta","title","body","h1"],start:"",
+  checks:[
+   ["Първият ред е <!DOCTYPE html>.",st=>st.doctype],
+   ["Коренният елемент е <html> и извън него няма други елементи.",st=>st.root.children.length===1&&!!parts(st).html],
+   ["<html> има атрибут lang=\"bg\".",st=>{const h=parts(st).html;return !!h&&norm(h.attrs.lang||"")==="bg"}],
+   ["В <html> има <head> и <body> – точно в този ред.",st=>{const {html,head,body}=parts(st);return !!(html&&head&&body)&&html.children.indexOf(head)<html.children.indexOf(body)}],
+   ["В <head> има <meta charset=\"UTF-8\">.",st=>kids(parts(st).head,"meta").some(m=>/^utf-8$/i.test((m.attrs.charset||"").trim()))],
+   ["В <head> има <title> с текст „Моят клас“.",st=>kids(parts(st).head,"title").some(t=>norm(txt(t))==="моят клас")],
+   ["В <body> има заглавие <h1>.",st=>{const b=parts(st).body;return !!b&&all(st,"h1").some(h=>inside(st,h,"body"))}],
+   ["Няма структурни грешки.",(st,e)=>e.size===0]
+  ],
+  quiz:{q:"Кое от изброените се вижда в самата страница (не в таба)?",o:["Текстът в <title>","Текстът в <h1>","Елементът <meta charset>","Всичко в <head>"],a:1,
+   why:"Съдържанието на <body> се показва в страницата. <title> се вижда само в раздела (таба), а <head> съдържа метаданни."},
+  hints:["Започни с <!DOCTYPE html>, после добави <html>. Всички други елементи са вътре в него.","Избери <html> и добави в него <head> и <body>. Ако редът им е грешен, избери елемента и натисни ↑ или ↓.","<meta> и <title> се поставят в <head>. Атрибута lang задаваш, като избереш <html> и попълниш полето."]},
+
+ {nav:"2 • Съдържание",t:"Мисия 2 • Добави съдържание",
+  s:"Скелетът е готов. В <body> представи класа: заглавие, подзаглавие, параграфи, два вида списъци, изображение и външна връзка. Попълни текста и атрибутите в полетата над кода.",
+  rel:["h1","h2","p","ul","ol","li","a","img","#text"],start:TEMPLATE,
+  checks:[
+   ["Основно заглавие <h1> с текст „Моят клас“.",st=>all(st,"h1").some(h=>/моят клас/i.test(txt(h)))],
+   ["Подзаглавие <h2> с клас и специалност (твой текст).",st=>all(st,"h2").some(h=>own(h))],
+   ["Поне два параграфа <p> с твой текст.",st=>all(st,"p").filter(p=>own(p)).length>=2],
+   ["Неномериран списък <ul> с поне 4 дейности.",st=>all(st,"ul").some(u=>kids(u,"li").filter(l=>own(l,"li")).length>=4)],
+   ["Номериран списък <ol> с поне 3 стъпки.",st=>all(st,"ol").some(u=>kids(u,"li").filter(l=>own(l,"li")).length>=3)],
+   ["<img> със src към съществуващ файл от папката images.",st=>all(st,"img").some(imgOk)],
+   ["Изображението има смислен alt.",st=>all(st,"img").some(i=>(i.attrs.alt||"").trim().length>=3)],
+   ["Външна връзка <a> с href, който започва с https://, и с текст.",st=>all(st,"a").some(extLink)],
+   ["Няма структурни грешки.",(st,e)=>e.size===0]
+  ],
+  quiz:{q:"Пътят в src е сгрешен, но alt е попълнен. Какво ще види потребителят?",o:["Празна страница","Алтернативния текст от alt (и икона за липсващо изображение)","Съобщение за грешка от сървъра","Името на файла"],a:1,
+   why:"Когато изображението не може да се зареди, браузърът показва текста от alt. Опитай сам: смени src на несъществуващ файл."},
+  hints:["Избери <body> и добавяй елементите в него един след друг.","За списък: добави <ul>, избери го и добави вътре <li>. За следващия <li> избери текущия и използвай „след избрания“.","Пътят е относителен – спрямо index.html: images/klas.svg (виж файловете на проекта, когато избереш <img>).","Външният адрес съдържа схемата: https://…"]},
+
+ {nav:"3 • Влагане",t:"Мисия 3 • Вложи елементите правилно",
+  s:"Съдържанието е подредено „на куп“ директно в <body> и има грешки. Организирай го със семантични елементи: <header> (заглавие и меню), <main> с <section>, <footer>. Премествай с „Изрежи“ → избери новия родител → „Постави вътре“.",
+  rel:["header","nav","main","section","footer"],
+  start:`<!DOCTYPE html>
+<html lang="bg"><head><meta charset="UTF-8"><title>Моят клас</title></head>
+<body>
+<h1>Моят клас</h1>
+<a href="#">Начало</a>
+<a href="#deynosti">Дейности</a>
+<h2>Нашите дейности</h2>
+<p>Участваме в олимпиади, проекти и спортни състезания.</p>
+<ul></ul>
+<li>Олимпиади по информатика</li>
+<li>Училищни проекти</li>
+<p>Автор: Иван Иванов, учебна 2026/2027 г.</p>
+</body></html>`,
+  checks:[
+   ["В <body> са само <header>, <main> и <footer> – в този ред.",st=>{const b=parts(st).body;return !!b&&b.children.map(c=>c.tag).join()==="header,main,footer"}],
+   ["<h1> и <nav> са в <header>.",st=>{const h=all(st,"header")[0];return !!h&&kids(h,"h1").length===1&&kids(h,"nav").length===1}],
+   ["Двете връзки са в <nav>.",st=>{const n=all(st,"nav")[0];return !!n&&kids(n,"a").length>=2}],
+   ["В <main> има <section> с id=\"deynosti\" (целта на връзката „Дейности“).",st=>{const m=all(st,"main")[0];return !!m&&kids(m,"section").some(s=>(s.attrs.id||"").trim()==="deynosti")}],
+   ["<h2>, параграфът и списъкът са в тази <section>.",st=>all(st,"section").some(s=>kids(s,"h2").length&&kids(s,"p").length&&kids(s,"ul").length)],
+   ["Двата <li> са в <ul>.",st=>all(st,"ul").some(u=>kids(u,"li").length>=2)],
+   ["Параграфът с автора е в <footer>.",st=>{const f=all(st,"footer")[0];return !!f&&all(st,"p").some(p=>/автор/i.test(txt(p))&&inside(st,p,"footer"))}],
+   ["Няма структурни грешки.",(st,e)=>e.size===0]
+  ],
+  quiz:{q:"Защо <li> не може да бъде директно в <body>?",o:["Защото <li> е вграден елемент","Защото <li> е елемент от списък и винаги е дете на <ul> или <ol>","Защото <body> не може да съдържа текст","Може – това не е грешка"],a:1,
+   why:"<li> има смисъл само като част от списък. Родителят му трябва да е <ul> или <ol>."},
+  hints:["Първо избери <body> и добави в него <header>, <main> и <footer>. Подреди ги с ↑ ↓.","Преместване: избери елемента → „Изрежи“ → избери новия родител → „Постави вътре“.","id задаваш в полетата на избрания елемент. Връзката href=\"#deynosti\" води до елемента с id=\"deynosti\" – провери я с клик в браузъра."]},
+
+ {nav:"4 • Таблица",t:"Мисия 4 • Построй таблица",
+  s:"Създай таблица „Седмична програма“ с колони „Ден“, „Предмет“ и „Кабинет“ и поне три реда с занятия. Ако един ден има два предмета, опитай да обединиш клетките с rowspan.",
+  rel:["table","caption","tr","th","td"],
+  start:TEMPLATE.replace("<body>\n","<body>\n<h2>Учебна програма</h2>\n"),
+  checks:[
+   ["В <body> има <table>.",st=>all(st,"table").some(t=>inside(st,t,"body"))],
+   ["Таблицата има <caption> с твой текст като първи елемент.",st=>all(st,"table").some(t=>t.children[0]&&t.children[0].tag==="caption"&&own(t.children[0]))],
+   ["Първият ред има три <th>: Ден, Предмет, Кабинет.",st=>all(st,"table").some(t=>{const r=kids(t,"tr")[0];return !!r&&kids(r,"th").map(c=>norm(txt(c))).join("|")==="ден|предмет|кабинет"})],
+   ["Поне три реда с данни в <td>.",st=>all(st,"table").some(t=>dataRows(t)>=3)],
+   ["Всички редове имат еднакъв брой колони (като се броят colspan и rowspan).",st=>all(st,"table").some(t=>kids(t,"tr").length>1&&tableEven(t))],
+   ["Няма структурни грешки.",(st,e)=>e.size===0],
+   ["Всички <th> в първия ред имат scope=\"col\" (заглавие на колона).",st=>all(st,"table").some(t=>{const r=kids(t,"tr")[0];const th=r?kids(r,"th"):[];return th.length>0&&th.every(c=>norm(c.attrs.scope||"")==="col")}),true,
+    st=>{const t=all(st,"table")[0],r=t&&kids(t,"tr")[0],th=r?kids(r,"th"):[];return th.length?`${th.filter(c=>norm(c.attrs.scope||"")==="col").length} от ${th.length}`:""}],
+   ["Използван е rowspan или colspan и таблицата остава правилна.",st=>all(st,"table").some(t=>spans(t)&&tableEven(t)),true]
+  ],
+  quiz:{q:"Клетка с rowspan=\"2\" е в ред 2. Какво трябва да се промени в ред 3?",o:["Нищо","Ред 3 трябва да има една клетка по-малко","Ред 3 трябва да има една клетка повече","Ред 3 трябва да се изтрие"],a:1,
+   why:"Клетката заема мястото си и в следващия ред, затова ред 3 има една клетка по-малко. Провери с „Посочи елемент“."},
+  hints:["Избери <body>, добави <table>, после избери <table> и добави <caption> и <tr>.","Избери ред <tr> и добави в него клетки: <th> за първия ред, <td> за останалите. За следващия ред избери текущия <tr> и „след избрания“.","Пример: „Понеделник“ с rowspan=\"2\" в ред 2; ред 3 започва директно с предмета."]},
+
+ {nav:"5 • Моят клас",t:"Мисия 5 • Финален проект: „Моят клас“",
+  s:"Проверките тук съвпадат с упражнението „Моят клас“. Постави кода си от VS Code в „Редактирай“ – проверките се обновяват веднага и показват какво липсва. Това е учебна проверка: окончателно провери файла с валидатора на W3C.",
+  rel:["header","nav","main","section","footer","table"],start:TEMPLATE,
+  checks:[
+   ["Правилна HTML5 структура (DOCTYPE, lang, meta charset, title, head и body).",st=>okDoc(st)],
+   ["Точно едно <h1> и поне едно <h2>.",st=>all(st,"h1").length===1&&all(st,"h2").some(h=>own(h))],
+   ["Поне два параграфа с твой текст.",st=>all(st,"p").filter(p=>own(p)).length>=2],
+   ["<ul> с поне 4 дейности и <ol> с поне 3 стъпки.",st=>all(st,"ul").some(u=>kids(u,"li").filter(l=>own(l,"li")).length>=4)&&all(st,"ol").some(u=>kids(u,"li").filter(l=>own(l,"li")).length>=3)],
+   ["Изображение с относителен път (напр. images/snimka.jpg) и смислен alt.",st=>all(st,"img").some(i=>(imgOk(i)||relImg(i))&&(i.attrs.alt||"").trim().length>=3)],
+   ["Външна хипервръзка (https://…).",st=>all(st,"a").some(extLink)],
+   ["Таблица с caption, заглавни клетки и поне 3 реда с данни.",st=>all(st,"table").some(t=>t.children[0]&&t.children[0].tag==="caption"&&own(t.children[0])&&all({root:t},"th").length>0&&dataRows(t)>=3&&tableEven(t))],
+   ["Семантични области: header, nav, main, section и footer.",st=>["header","nav","main","section","footer"].every(t=>all(st,t).length>0)],
+   ["Няма структурни грешки (учебна проверка – браузърът може сам да е поправил част от кода).",(st,e)=>e.size===0],
+   ["Вътрешна връзка href=\"#…\" към съществуващ id.",st=>{const ids=new Set();walk(st.root,n=>{if(n.attrs&&n.attrs.id)ids.add(n.attrs.id.trim())});return all(st,"a").some(a=>{const h=(a.attrs.href||"").trim();return h.length>1&&h[0]==="#"&&ids.has(h.slice(1))})},true]
+  ],
+  quiz:{q:"Кой елемент е подходящ за самостоятелна новина за класа?",o:["<div>","<article>","<span>","<aside>"],a:1,
+   why:"<article> обозначава самостоятелно съдържание, което има смисъл и извън страницата – например новина."},
+  hints:["Използвай наученото в мисии 1–4. Започни от <header> и <nav>, после <main> с няколко <section>.","Самопроверка: копирай целия код от index.html във VS Code, натисни „✏️ Редактирай“, изтрий кода в полето и постави своя.","Конструкторът не вижда файловете на компютъра ти – дали изображението се зарежда, провери, като отвориш index.html в браузъра."]}
+];
+
+/* ---------- Модел ---------- */
+let NID=1;
+const mk=(tag,attrs)=>({id:NID++,tag,attrs:attrs||{},children:[]});
+const T=t=>({id:NID++,tag:"#text",text:t});
+function conv(node){
+ if(node.nodeType===3){const t=node.nodeValue.replace(/\s+/g," ");return t.trim()?T(t):null}
+ if(node.nodeType!==1)return null;
+ const n=mk(node.tagName.toLowerCase());
+ for(const a of node.attributes)n.attrs[a.name]=a.value;
+ for(const c of node.childNodes){const x=conv(c);if(x)n.children.push(x)}
+ const f=n.children[0],l=n.children[n.children.length-1];
+ if(f&&f.tag==="#text")f.text=f.text.replace(/^\s+/,"");
+ if(l&&l.tag==="#text")l.text=l.text.replace(/\s+$/,"");
+ n.children=n.children.filter(c=>c.tag!=="#text"||c.text!=="");
+ return n;
+}
+function fromSource(src){
+ const doc=new DOMParser().parseFromString(src,"text/html");
+ const has=t=>new RegExp("<"+t+"[\\s>/]","i").test(src);
+ const root={id:0,tag:"#document",children:[]};
+ const html=conv(doc.documentElement);
+ if(html){
+  const head=kids(html,"head")[0];
+  if(head&&!has("head")&&!head.children.length)html.children.splice(html.children.indexOf(head),1);
+  const body=kids(html,"body")[0];
+  if(body&&!has("body"))html.children.splice(html.children.indexOf(body),1,...body.children);
+  if(has("html"))root.children.push(html);else root.children.push(...html.children);
+ }
+ // браузърът добавя <tbody> автоматично – в конструктора редовете са директно в <table>
+ walk(root,n=>{if(n.tag==="table")n.children=n.children.flatMap(c=>["tbody","thead","tfoot"].includes(c.tag)?c.children:[c])});
+ return{doctype:/<!doctype\s+html/i.test(src),root};
+}
+function maxId(n){let m=n.id||0;(n.children||[]).forEach(c=>m=Math.max(m,maxId(c)));return m}
+function pathTo(root,id){
+ const out=[];
+ (function rec(n){out.push(n);if(n.id===id)return true;if(n.children)for(const c of n.children)if(rec(c))return true;out.pop();return false})(root);
+ return out;
+}
+function find(st,id){const p=pathTo(st.root,id);return p.length&&p[p.length-1].id===id?{node:p[p.length-1],parent:p[p.length-2]||null,path:p}:null}
+
+/* ---------- Правила за влагане ---------- */
+const U=t=>t==="#text"?"текстът":"<"+t+">";
+const Uc=t=>t==="#text"?"Текстът":"<"+t+">";
+function canContain(pt,ct,anc){
+ const ok={ok:true},no=m=>({ok:false,msg:m});
+ if(pt==="#document")return ct==="html"?ok:no(`Извън <html> не може да има съдържание. ${Uc(ct)} трябва да е вътре в <html>${ct==="head"||ct==="body"?"":" (видимото съдържание – в <body>)"}.`);
+ if(pt==="#text")return no("Текстът не може да съдържа елементи. Избери елемента, в който е текстът.");
+ if(VOID.has(pt))return no(`<${pt}> е празен елемент – няма съдържание и затварящ таг, затова не може да съдържа ${U(ct)}.`);
+ if(ct==="html")return no("<html> е коренният елемент. Той е само един и не се влага в друг елемент.");
+ if(ct==="head"||ct==="body")return pt==="html"?ok:no(`<${ct}> се поставя директно в <html>.`);
+ if(ct==="title"||ct==="meta")return pt==="head"?ok:no(`<${ct}> съдържа информация за документа и се поставя в <head>, не в ${U(pt)}.`);
+ if(ct==="li")return pt==="ul"||pt==="ol"?ok:no("<li> може да бъде само в списък – <ul> или <ol>. Първо добави списък, избери го и тогава добави <li>.");
+ if(ct==="tr")return pt==="table"?ok:no("<tr> (ред) се поставя в <table>.");
+ if(ct==="td"||ct==="th")return pt==="tr"?ok:no(`<${ct}> (клетка) се поставя в ред <tr>.`);
+ if(ct==="caption")return pt==="table"?ok:no("<caption> е заглавие на таблица и се поставя в <table>.");
+ if(pt==="html")return no(`В <html> има само <head> и <body>. ${Uc(ct)} постави в <body>.`);
+ if(pt==="head")return no(`В <head> са само метаданни – <title>, <meta>. ${Uc(ct)} е видимо съдържание и се поставя в <body>.`);
+ if(pt==="title")return ct==="#text"?ok:no("<title> съдържа само текст.");
+ if(pt==="ul"||pt==="ol")return no(`В <${pt}> може да има само елементи <li>. ${Uc(ct)} постави вътре в <li>.`);
+ if(pt==="table")return no("В <table> се поставят <caption> и редове <tr>. Съдържанието е в клетките <th> и <td>.");
+ if(pt==="tr")return no("В <tr> може да има само клетки <th> и <td>.");
+ if(!KNOWN.has(pt)||!KNOWN.has(ct))return ok;
+ const at=(anc||[]).map(n=>n.tag);
+ if(ct==="a"&&at.includes("a"))return no("Връзка не може да съдържа друга връзка.");
+ if(PHR_PARENT.has(pt)&&!PHRASING.has(ct))return no(`<${pt}> може да съдържа само текст и вградени елементи (a, strong, em, span, img, br). <${ct}> е блоков елемент – постави го след <${pt}>, не вътре в него.`);
+ if(ct==="main"&&pt!=="body"&&pt!=="div")return no("<main> е основното съдържание на страницата – постави го директно в <body>.");
+ if((ct==="header"||ct==="footer")&&(at.includes("header")||at.includes("footer")))return no(`<${ct}> не може да е вътре в <header> или <footer>.`);
+ return ok;
+}
+function validate(st){
+ const errs=new Map();
+ walk(st.root,(n,p,anc)=>{if(!p)return;const r=canContain(p.tag,n.tag,anc);if(!r.ok&&!errs.has(n.id))errs.set(n.id,r.msg)});
+ const html=kids(st.root,"html");
+ html.slice(1).forEach(h=>errs.set(h.id,"Документът има само един <html>."));
+ if(html[0]){const h=html[0],hd=kids(h,"head"),bd=kids(h,"body");
+  hd.slice(1).forEach(x=>errs.set(x.id,"Документът има само един <head>."));
+  bd.slice(1).forEach(x=>errs.set(x.id,"Документът има само един <body>."));
+  if(hd[0]&&bd[0]&&h.children.indexOf(hd[0])>h.children.indexOf(bd[0]))errs.set(hd[0].id,"<head> трябва да е преди <body>. Избери <head> и натисни ↑.");
+  if(hd[0])kids(hd[0],"title").slice(1).forEach(x=>errs.set(x.id,"Документът има само един <title>."));}
+ all(st,"main").slice(1).forEach(x=>errs.set(x.id,"В страницата има само един <main>."));
+ all(st,"table").forEach(t=>{const c=kids(t,"caption");c.forEach((x,i)=>{if(i>0)errs.set(x.id,"Таблицата има само едно <caption>.");else if(t.children[0]!==x)errs.set(x.id,"<caption> трябва да е първият елемент в <table>. Избери го и натисни ↑.")})});
+ all(st,"table").forEach(t=>gridInfo(t).issues.forEach(i=>{if(!errs.has(i.id))errs.set(i.id,i.msg)}));
+ const seen=new Map();walk(st.root,n=>{const v=n.attrs&&(n.attrs.id||"").trim();if(v){if(seen.has(v))errs.set(n.id,`id="${v}" вече е използван. Стойността на id трябва да е уникална.`);seen.set(v,1)}});
+ return errs;
+}
+
+/* ---------- Сериализация ---------- */
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const escA=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;");
+function isInlineFmt(n){
+ if(VOID.has(n.tag))return true;
+ if(!INLINE_FMT.has(n.tag))return false;
+ let ok=true;(n.children||[]).forEach(c=>walk(c,d=>{if(!PHRASING.has(d.tag))ok=false}));return ok;
+}
+function ser(st,mode,errs,selId){
+ const C=mode==="code",P=mode==="prev";
+ const S=n=>{
+  const a=Object.entries(n.attrs).map(([k,v])=>{
+   if(P&&n.tag==="img"&&k==="src"&&FILES[v.trim()])v=dataURI(FILES[v.trim()]);
+   return C?` <span class="an">${esc(k)}</span>=<span class="av">"${esc(escA(v))}"</span>`:` ${k}="${escA(v)}"`}).join("")+(P?` data-cid="${n.id}"`:"");
+  if(!C)return `<${n.tag}${a}>`;
+  const e=errs&&errs.get(n.id);
+  const w=!e&&warns.get(n.id),t=e||w;
+  return `<span class="tok${e?" err":w?" warn":""}" data-id="${n.id}"${t?` title="${escA(t)}"`:""}>&lt;<span class="tn">${n.tag}</span>${a}&gt;</span>`;
+ };
+ const E=n=>VOID.has(n.tag)?"":C?`<span class="tok${errs&&errs.has(n.id)?" err":""}" data-id="${n.id}">&lt;/<span class="tn">${n.tag}</span>&gt;</span>`:`</${n.tag}>`;
+ const W=(n,inner)=>C?`<span class="el${n.id===selId?" sel":""}">${inner}</span>`:inner;
+ const X=(n,t)=>{if(!C)return esc(t);const e=errs&&errs.get(n.id);return `<span class="tok tx${n.id===selId?" selt":""}${e?" err":""}" data-id="${n.id}"${e?` title="${escA(e)}"`:""}>${esc(esc(t))}</span>`};
+ const inl=n=>n.tag==="#text"?X(n,n.text):W(n,S(n)+n.children.map(inl).join("")+E(n));
+ const blk=(n,d)=>{
+  const pad="  ".repeat(d);
+  if(n.tag==="#text"){const t=n.text.trim();return t?pad+X(n,t):null}
+  if(isInlineFmt(n))return pad+inl(n);
+  const ks=n.children.map(c=>blk(c,n.tag==="html"?d:d+1)).filter(x=>x!==null);
+  if(!ks.length)return pad+W(n,S(n)+E(n));
+  return pad+W(n,S(n)+"\n"+ks.join("\n")+"\n"+pad+E(n));
+ };
+ const lines=[];
+ if(st.doctype)lines.push(C?`<span class="tok dt${selId==="doctype"?" selt":""}" data-id="doctype">&lt;!DOCTYPE html&gt;</span>`:"<!DOCTYPE html>");
+ st.root.children.forEach(c=>{const b=blk(c,0);if(b!==null)lines.push(b)});
+ return lines.join("\n");
+}
+
+/* ---------- Състояние ---------- */
+const KEY="html-konstruktor-v2-";
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let cur=0,mode="in",point=false,gridOn=true;
+const isEd=()=>!!st().editing;
+const ST=[];
+function freshState(i){const s=fromSource(M[i].start);const b=parts(s).body;return{doctype:s.doctype,root:s.root,sel:b?b.id:null,clip:null,hist:[],hintN:0,done:false,quiz:null,editing:false,raw:null}}
+function loadState(i){
+ const raw=store.get(KEY+i);
+ if(raw){try{const o=JSON.parse(raw);if(o&&o.root){o.hist=[];o.hintN=0;o.quiz=null;return o}}catch(e){}}
+ return freshState(i);
+}
+for(let i=0;i<M.length;i++)ST.push(loadState(i));
+ST.forEach(s=>{NID=Math.max(NID,maxId(s.root)+1);if(s.clip)NID=Math.max(NID,maxId(s.clip)+1)});
+{const c=parseInt(store.get(KEY+"cur"),10);if(c>=0&&c<M.length)cur=c}
+const st=()=>ST[cur];
+let saveT=null;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{ST.forEach((s,i)=>store.set(KEY+i,JSON.stringify({doctype:s.doctype,root:s.root,sel:s.sel,clip:s.clip,done:s.done,editing:!!s.editing,raw:s.editing?s.raw:null})));store.set(KEY+"cur",String(cur))},250)}
+function snap(){const s=st();s.hist.push(JSON.stringify({doctype:s.doctype,root:s.root,sel:s.sel,clip:s.clip}));if(s.hist.length>80)s.hist.shift()}
+function undo(){const s=st();if(!s.hist.length){say("Няма какво да се отмени.","info");return}const o=JSON.parse(s.hist.pop());Object.assign(s,o);say("Последното действие е отменено.","info");renderAll()}
+
+/* ---------- Действия ---------- */
+function defaultParent(s){const {html,body}=parts(s);return body||html||s.root}
+function create(tag){
+ if(tag==="#text")return T(DEF["#text"]);
+ const n=mk(tag);
+ if(DEF[tag])n.children.push(T(DEF[tag]));
+ if(tag==="meta")n.attrs.charset="UTF-8";
+ return n;
+}
+function placeFor(s,tag,m){
+ // връща {parent, index} или {err, alt}
+ const sel=s.sel!=null&&s.sel!=="doctype"?find(s,s.sel):null;
+ if(!sel||sel.node.tag==="#document"){const p=defaultParent(s);const r=canContain(p.tag,tag,pathTo(s.root,p.id));return r.ok?{parent:p,index:p.children.length}:{err:r.msg}}
+ const tryIn=()=>{const r=canContain(sel.node.tag,tag,sel.path);return r.ok?{parent:sel.node,index:sel.node.children.length}:{err:r.msg}};
+ const tryAfter=()=>{const p=sel.parent;if(!p)return{err:"Избраният елемент няма родител."};const r=canContain(p.tag,tag,sel.path.slice(0,-1));return r.ok?{parent:p,index:p.children.indexOf(sel.node)+1}:{err:r.msg}};
+ if(m==="in"){const a=tryIn();if(a.err){const b=tryAfter();if(!b.err)a.alt="after"}return a}
+ const b=tryAfter();if(b.err){const a=tryIn();if(!a.err)b.alt="in"}return b;
+}
+function add(tag,forceMode){
+ const s=st();
+ if(tag==="!doctype"){if(s.doctype){say("Документът вече има <!DOCTYPE html>. Декларацията е само една – на първия ред.","err");return}snap();s.doctype=true;s.sel="doctype";say("<!DOCTYPE html> казва на браузъра, че това е HTML5 документ. Винаги е на първия ред.","info");renderAll();return}
+ let m=forceMode||mode,pl=placeFor(s,tag,m),why="";
+ if(pl.err&&pl.alt){
+  // вътре/след не е позволено, но другото място е – добавяме там и обясняваме защо
+  const selN=find(s,s.sel),where=selN?(selN.node.tag==="#text"?"текста":`<${selN.node.tag}>`):"";
+  const what=tag==="#text"?"Текстът":"<"+tag+">";
+  why=pl.alt==="after"?`${what} не може да е вътре в ${where}, затова е добавен след него – на същото ниво. `:`${what} не може да е след ${where}, затова е добавен вътре в него. `;
+  if(PHR_PARENT.has(selN&&selN.node.tag)&&!PHRASING.has(tag))why+=`(${where} съдържа само текст и вградени елементи.) `;
+  m=pl.alt;pl=placeFor(s,tag,m);
+ }
+ if(pl.err){say(pl.err,"err");return}
+ snap();
+ const n=create(tag);pl.parent.children.splice(pl.index,0,n);s.sel=n.id;
+ say(why+tip(tag),why?"":"info");renderAll();
+ focusContent();
+}
+function tip(tag){
+ return({ul:"Списъкът е празен – избери го и добави елементи <li>.",ol:"Номерираният списък е празен – добави в него <li>.",table:"Таблицата е празна – добави <caption> и редове <tr>. (В по-големи таблици редовете се групират в <thead> и <tbody> – тук ги поставяме директно в <table>.)",tr:"Редът е празен – добави клетки <th> или <td>.",img:"Попълни src (път до файла) и alt (описание).",a:"Попълни href – адреса, към който води връзката.",html:"Задай lang=\"bg\" – основният език на страницата.",head:"В <head> се поставят <meta> и <title>. Те не се виждат в страницата.",title:"Текстът на <title> се вижда в раздела (таба) на браузъра.",br:"<br> е празен елемент – няма затварящ таг.",hr:"<hr> е празен елемент – няма затварящ таг.",meta:"<meta> е празен елемент. charset=\"UTF-8\" осигурява правилна кирилица."})[tag]||"";
+}
+function delSel(){
+ const s=st();if(s.sel==null)return;
+ if(s.sel==="doctype"){snap();s.doctype=false;s.sel=null;renderAll();return}
+ const f=find(s,s.sel);if(!f||!f.parent)return;
+ snap();const i=f.parent.children.indexOf(f.node);f.parent.children.splice(i,1);
+ s.sel=f.parent.tag==="#document"?(f.parent.children[i]||f.parent.children[i-1]||{id:null}).id:f.parent.id;
+ say(`Изтрит е ${f.node.tag==="#text"?"текст":"<"+f.node.tag+">"} заедно със съдържанието му.`,"info");renderAll();
+}
+function moveSel(d){
+ const s=st(),f=find(s,s.sel);if(!f||!f.parent)return;
+ const a=f.parent.children,i=a.indexOf(f.node),j=i+d;if(j<0||j>=a.length)return;
+ snap();[a[i],a[j]]=[a[j],a[i]];renderAll();
+}
+function cutSel(){
+ const s=st(),f=find(s,s.sel);if(!f||!f.parent)return;
+ if(s.clip){say("В буфера вече има изрязан елемент. Първо го постави.","err");return}
+ snap();f.parent.children.splice(f.parent.children.indexOf(f.node),1);s.clip=f.node;s.sel=f.parent.id;
+ say("Елементът е изрязан. Избери новия родител и натисни „Постави вътре“ (или избери съсед и „Постави след“).","info");renderAll();
+}
+function paste(m){
+ const s=st();if(!s.clip)return;
+ const pl=placeFor(s,s.clip.tag,m);
+ if(pl.err){say(pl.err,"err");return}
+ if(pathTo(s.clip,pl.parent.id).length){say("Елемент не може да се постави сам в себе си.","err");return}
+ snap();pl.parent.children.splice(pl.index,0,s.clip);s.sel=s.clip.id;s.clip=null;say("Елементът е поставен.","info");renderAll();
+}
+function select(id){
+ const s=st();s.sel=id;
+ renderCode();renderProps();updateRowWarn();postSel();
+ scrollCodeTo();
+}
+
+/* ---------- Изобразяване ---------- */
+const $=s=>document.querySelector(s);
+let errs=new Map(),warns=new Map();
+function diag(vs){errs=validate(vs);warns=tableWarn(vs)}
+function renderNav(){
+ $("#mnav").innerHTML=M.map((m,i)=>`<button class="mbtn${i===cur?" active":""}" data-m="${i}">${ST[i].done?'<span class="ok">✓</span> ':""}${esc(m.nav)}</button>`).join("");
+}
+function renderMission(){
+ const m=M[cur],s=st();
+ $("#mTitle").textContent=m.t;$("#mTask").textContent=m.s;
+ $(".mission").classList.toggle("free",!!m.free);
+ $("#quiz").innerHTML=!m.quiz?"":`<div class="q">🤔 ${esc(m.quiz.q)}</div>`+m.quiz.o.map((o,i)=>`<label><input type="radio" name="qz" value="${i}"${s.quiz===i?" checked":""}> <span>${esc(o)}</span></label>`).join("");
+ $("#hints").innerHTML=m.hints.slice(0,s.hintN).map(h=>`<div class="hint">💡 ${esc(h)}</div>`).join("");
+ $("#btnHint").disabled=s.hintN>=m.hints.length;
+ const fb=$("#feedback");fb.className="feedback";fb.textContent=s.done?"✓ Тази мисия вече е изпълнена. Можеш да експериментираш свободно.":"Изгради страницата и натисни „Провери“.";
+ document.querySelectorAll("#palette .tag").forEach(b=>b.classList.toggle("rel",m.rel.includes(b.dataset.tag)));
+}
+let parseCache={raw:null,st:null};
+function viewState(){const s=st();if(!s.editing)return s;if(parseCache.raw!==s.raw){const p=fromSource(s.raw||"");parseCache={raw:s.raw,st:{doctype:p.doctype,root:p.root}}}return parseCache.st}
+function renderChecks(){
+ const m=M[cur],s=viewState();
+ $("#checks").innerHTML=m.checks.map(c=>{let ok=false;try{ok=!!c[1](s,errs)}catch(e){ok=false}return `<li class="${ok?"done":""}${c[2]?" bonus":""}"><span class="m">${ok?"✓":""}</span><span class="lbl">${esc(c[0])}${(()=>{let x="";try{x=!ok&&c[3]?c[3](s):""}catch(e){}return x?` <b>(${esc(x)})</b>`:""})()}</span></li>`}).join("");
+ if(errs.size){
+  $("#errs").innerHTML=isEd()?`<div class="errs plain"><b>⚠ Структурни грешки: ${errs.size}</b>`+[...errs].map(([id,msg])=>`<span>${esc(msg)}</span>`).join("")+"</div>"
+   :`<div class="errs"><b>⚠ Структурни грешки: ${errs.size}</b>`+[...errs].map(([id,msg])=>`<a data-err="${id}">${esc(msg)}</a>`).join("")+"</div>";
+ }else $("#errs").innerHTML="";
+ if(warns.size)$("#errs").insertAdjacentHTML("beforeend",`<div class="warns"><b>💡 Таблица – провери броя на клетките</b>`+[...warns].map(([id,msg])=>isEd()?`<span>${esc(msg)}</span>`:`<a data-err="${id}">${esc(msg)}</a>`).join("")+"</div>");
+}
+function updateRowWarn(){
+ const s=st(),box=$("#rowwarn");if(!box)return;
+ let msg="";if(!s.editing&&s.sel!=null&&s.sel!=="doctype"){const f=find(s,s.sel);if(f){const tr=f.path.slice().reverse().find(n=>n.tag==="tr");if(tr&&warns.has(tr.id))msg=warns.get(tr.id);
+  else if(f.node.tag==="th"&&!(f.node.attrs.scope||"").trim()&&f.parent&&f.parent.tag==="tr"){const tb=f.path[f.path.length-3];const first=tb&&tb.tag==="table"&&kids(tb,"tr")[0]===f.parent;
+   msg=first?"Тази заглавна клетка е в първия ред – тя е заглавие на колона. Попълни scope=\"col\", за да го знаят и екранните четци.":"Заглавна клетка в началото на ред е заглавие на реда – за нея scope=\"row\"."}}}
+ box.innerHTML=msg?`<div class="rowwarn">💡 ${esc(msg)}</div>`:"";
+}
+function renderCode(){
+ const s=st();
+ $("#code").innerHTML=ser(s,"code",errs,s.sel);
+}
+let lastPrev=null,prevT=null;
+function renderPreview(now){
+ clearTimeout(prevT);
+ const go=()=>{
+  const s=st(),ed=!!s.editing;let html,title;
+  if(ed){html=rawPreview(s.raw||"");const m=/<title[^>]*>([\s\S]*?)<\/title>/i.exec(s.raw||"");title=m?decodeHTML(m[1]).replace(/\s+/g," ").trim():""}
+  else{html=ser(s,"prev");const t=all(s,"title")[0];title=t?txt(t).trim():""}
+  $("#tabTitle").textContent=title||"index.html";
+  if(html===lastPrev){if(!ed)postSel();return}
+  lastPrev=html;
+  $("#frame").srcdoc=html+"\n<script>window.__P="+point+";window.__RAW="+ed+";window.__G="+gridOn+";window.__S="+JSON.stringify(ed?null:selCid())+";("+FRAME_SCRIPT.toString()+")()<\/script>";
+ };
+ if(now)go();else prevT=setTimeout(go,180);
+}
+function rawPreview(raw){return raw.replace(/(\bsrc\s*=\s*)(["'])\s*([^"']*?)\s*\2/gi,(m,a,q,path)=>FILES[path]?a+q+dataURI(FILES[path])+q:m)}
+function decodeHTML(t){const d=document.createElement("textarea");d.innerHTML=t;return d.value}
+function selCid(){const s=st();if(s.sel==null||s.sel==="doctype")return null;const f=find(s,s.sel);if(!f)return null;return f.node.tag==="#text"?(f.parent&&f.parent.id):f.node.id}
+function postSel(){const w=$("#frame").contentWindow;if(w)w.postMessage({type:"sel",cid:selCid()},"*")}
+function renderProps(){
+ const s=st(),F=$("#fields"),A=$("#acts"),Cr=$("#crumbs");
+ if(s.editing){$("#clip").innerHTML="";Cr.innerHTML=`<a class="cur">✏️ Режим „Редактор“</a>`;
+  F.innerHTML=`<div class="note">Пишеш кода сам – точно както е написан, той се показва в браузъра, копира се и се сваля. Кликнатите тагове от панела се вмъкват на мястото на курсора (около маркиран текст – обграждат го). За да продължиш с кликове, натисни „🧱 Към конструктора“.<br>Проверките са учебни: браузърът поправя някои грешки сам (например незатворен таг), затова окончателно провери кода с валидатора на W3C.</div>`;A.innerHTML="";return}
+ $("#clip").innerHTML=s.clip?`<div class="clip">✂ В буфера: &lt;${esc(s.clip.tag==="#text"?"текст":s.clip.tag)}&gt; – избери къде да го поставиш.</div>`:"";
+ if(s.sel==="doctype"){
+  Cr.innerHTML=`<a class="cur" data-sel="doctype">&lt;!DOCTYPE html&gt;</a>`;
+  F.innerHTML=`<div class="note">Декларация за HTML5 документ. Не е елемент и няма затварящ таг. Без нея браузърът преминава в „режим на съвместимост“ (quirks mode).</div>`;
+  A.innerHTML=`<button data-act="del" class="danger">🗑 Изтрий</button>`;return;
+ }
+ const f=s.sel!=null?find(s,s.sel):null;
+ if(!f||f.node.tag==="#document"){
+  Cr.innerHTML=`<span style="font-family:Arial;color:#46738d">Нищо не е избрано. Кликни елемент в кода или в браузъра. Новите елементи отиват в ${parts(s).body?"&lt;body&gt;":parts(s).html?"&lt;html&gt;":"документа"}.</span>`;
+  F.innerHTML="";A.innerHTML=s.clip?`<button data-act="pasteIn" class="primary">📋 Постави</button>`:"";return;
+ }
+ const n=f.node,path=f.path.slice(1);
+ Cr.innerHTML=path.map(p=>`<a data-sel="${p.id}" class="${p.id===n.id?"cur":""}">${p.tag==="#text"?"текст":"&lt;"+p.tag+"&gt;"}</a>`).join('<span class="sep">›</span>');
+ let h="";
+ if(n.tag==="#text"){
+  h=`<label class="wide">Текст<textarea rows="1" data-text="1">${esc(n.text)}</textarea></label>`;
+ }else{
+  if(!VOID.has(n.tag)){
+   const ch=n.children;
+   if(ch.length===0||(ch.length===1&&ch[0].tag==="#text")){
+    if(canContain(n.tag,"#text",f.path).ok)h+=`<label class="wide">Съдържание (текст между &lt;${n.tag}&gt; и &lt;/${n.tag}&gt;)<input data-content="1" value="${escA(ch[0]?ch[0].text:"")}"></label>`;
+   }else if(ch.some(c=>c.tag==="#text"))h+=`<div class="note">Съдържанието е съставено от няколко части – кликни част от текста в кода, за да я редактираш.</div>`;
+  }
+  const keys=[...(ATTRS[n.tag]||[])];if(!NO_ID.has(n.tag))keys.push("id");
+  Object.keys(n.attrs).forEach(k=>{if(!keys.includes(k))keys.push(k)});
+  keys.forEach(k=>{h+=`<label>${esc(ALAB[k]||k)}<input data-attr="${escA(k)}" value="${escA(n.attrs[k]||"")}" placeholder="${escA(PH[k]||"")}"></label>`});
+  if(n.tag==="img")h+=`<div class="files">📁 Файлове: index.html • images/klas.svg • images/uchilishte.svg</div>`;
+  if(!h)h=`<div class="note">${n.tag==="body"?"Видимото съдържание на страницата. Добавяй елементите в него.":n.tag==="head"?"Метаданни: <meta> и <title>. Нищо от <head> не се вижда в страницата.":"Добави елементи вътре в <"+n.tag+">."}</div>`.replace(/<(meta|title|head)>/g,"&lt;$1&gt;");
+ }
+ F.innerHTML=h;
+ const i=f.parent.children.indexOf(n),last=f.parent.children.length-1;
+ A.innerHTML=`<button data-act="up"${i<=0?" disabled":""} title="Премести нагоре">↑</button><button data-act="down"${i>=last?" disabled":""} title="Премести надолу">↓</button>`+
+  (f.parent.tag!=="#document"?`<button data-act="parent">⤴ Родител</button>`:"")+
+  `<button data-act="cut"${s.clip?" disabled":""}>✂ Изрежи</button>`+
+  (s.clip?`<button data-act="pasteIn" class="primary">📋 Постави вътре</button><button data-act="pasteAfter" class="primary">📋 Постави след</button>`:"")+
+  `<button data-act="del" class="danger">🗑 Изтрий</button>`;
+}
+function renderAll(){
+ diag(viewState());
+ renderNav();if(!isEd())renderCode();renderChecks();renderProps();updateRowWarn();renderPreview();save();
+ if(!isEd())scrollCodeTo();
+}
+function say(t,cls){const m=$("#msg");m.className="msg "+(cls||"");m.textContent=t}
+function sayHTML(h,cls){const m=$("#msg");m.className="msg "+(cls||"");m.innerHTML=h}
+function focusContent(){const i=document.querySelector("#fields input[data-content],#fields textarea[data-text]");if(i&&window.matchMedia("(min-width:821px)").matches){i.focus();i.select()}}
+
+/* ---------- Скрипт в браузъра (iframe) ---------- */
+function FRAME_SCRIPT(){
+ var P=window.__P,Q=window.__RAW?"body *":"[data-cid]",lb;
+ var s=document.createElement("style");
+ s.textContent=".__h{outline:2px dashed #2b6cb0 !important;outline-offset:2px}.__hi{outline:2px solid #e53e3e !important;outline-offset:1px}.__s{outline:3px solid #ffb62e !important;outline-offset:3px}:where(.__grid) :where(table){border-collapse:collapse}:where(.__grid) :where(th,td){border:1px dashed #7fa6bd;padding:3px 8px}#__lb{position:fixed;z-index:2147483647;background:#174967;color:#fff;font:bold 12px Arial,sans-serif;padding:3px 7px;border-radius:5px;pointer-events:none;display:none;white-space:nowrap}";
+ document.documentElement.appendChild(s);
+ if(window.__G)document.documentElement.classList.add("__grid");
+ lb=document.createElement("div");lb.id="__lb";document.documentElement.appendChild(lb);
+ function clr(c){var l=document.querySelectorAll("."+c);for(var i=0;i<l.length;i++)l[i].classList.remove(c)}
+ function sel(id){clr("__s");if(id==null)return;var e=document.querySelector('[data-cid="'+id+'"]');if(e&&e!==document.documentElement&&e.tagName!=="HEAD"&&e.tagName!=="BODY")e.classList.add("__s")}
+ document.addEventListener("mouseover",function(e){
+  if(!P)return;clr("__h");clr("__hi");
+  var el=e.target.closest&&e.target.closest(Q);
+  if(!el||el===document.documentElement||el.id==="__lb"){lb.style.display="none";return}
+  var inl=getComputedStyle(el).display==="inline";el.classList.add(inl?"__hi":"__h");
+  var r=el.getBoundingClientRect();lb.textContent="<"+el.tagName.toLowerCase()+"> • "+(inl?"вграден":"блоков");
+  lb.style.display="block";lb.style.left=Math.max(2,Math.min(r.left,innerWidth-140))+"px";lb.style.top=(r.top>24?r.top-24:r.bottom+4)+"px";
+ });
+ document.documentElement.addEventListener("mouseleave",function(){clr("__h");clr("__hi");lb.style.display="none"});
+ document.addEventListener("click",function(e){
+  var el=e.target.closest&&e.target.closest("[data-cid]");
+  var a=e.target.closest&&e.target.closest("a");
+  if(window.__RAW)el=null;
+  e.preventDefault();
+  if(a&&!P){var h=a.getAttribute("href");var t=null;
+   if(h&&h.charAt(0)==="#"&&h.length>1){try{t=document.getElementById(decodeURIComponent(h.slice(1)))}catch(x){}if(t)t.scrollIntoView({behavior:"smooth"})}
+   parent.postMessage({type:"link",href:h,found:!!t},"*");}
+  if(el)parent.postMessage({type:"pick",cid:el.getAttribute("data-cid"),link:!!a&&!P},"*");
+ },true);
+ window.addEventListener("message",function(e){var d=e.data||{};
+  if(d.type==="mode"){P=d.point;if(!P){clr("__h");clr("__hi");lb.style.display="none"}}
+  if(d.type==="sel")sel(d.cid);
+  if(d.type==="grid")document.documentElement.classList.toggle("__grid",!!d.on)});
+ sel(window.__S);
+}
+
+/* ---------- Събития ---------- */
+$("#palette").innerHTML=PAL.map(([g,items])=>`<div class="grp"><span>${esc(g)}</span><div>`+items.map(([t,l,d])=>`<button class="tag" data-tag="${t}" title="${escA(d)}" aria-label="${escA(l+" – "+d)}">${esc(l)}</button>`).join("")+"</div></div>").join("");
+$("#palette").addEventListener("click",e=>{const b=e.target.closest("[data-tag]");if(!b)return;if(isEd())insertSnippet(b.dataset.tag);else add(b.dataset.tag)});
+function insertSnippet(tag){
+ const ta=$("#editor"),a=ta.selectionStart,b=ta.selectionEnd,inner=ta.value.slice(a,b);let open,close="";
+ if(tag==="!doctype")open="<!DOCTYPE html>\n";
+ else if(tag==="#text")open=inner?"":DEF["#text"];
+ else{const at={a:' href=""',img:' src="" alt=""',meta:' charset="UTF-8"',html:' lang="bg"',th:' scope="col"'}[tag]||"";open=`<${tag}${at}>`;close=VOID.has(tag)?"":`</${tag}>`}
+ ta.setRangeText(open+inner+close,a,b,"end");
+ const q=open.indexOf('""');const caret=q>=0?a+q+1:a+open.length+inner.length;
+ ta.focus();ta.setSelectionRange(caret,caret);onEditorInput(true);
+}
+$("#msg").addEventListener("click",e=>{const b=e.target.closest("[data-alt]");if(b)add(b.dataset.tag,b.dataset.alt)});
+$("#mnav").addEventListener("click",e=>{const b=e.target.closest("[data-m]");if(!b)return;cur=+b.dataset.m;lastPrev=null;say("");renderMission();applyEditUI();renderAll();renderPreview(true)});
+$("#modeIn").onclick=()=>{mode="in";$("#modeIn").classList.add("on");$("#modeAfter").classList.remove("on")};
+$("#modeAfter").onclick=()=>{mode="after";$("#modeAfter").classList.add("on");$("#modeIn").classList.remove("on")};
+const code=$("#code");
+code.addEventListener("click",e=>{const t=e.target.closest("[data-id]");if(!t)return;const id=t.dataset.id==="doctype"?"doctype":+t.dataset.id;say("");select(id)});
+code.addEventListener("mouseover",e=>{const t=e.target.closest("[data-id]");code.querySelectorAll(".hl").forEach(x=>x.classList.remove("hl"));if(t)code.querySelectorAll(`[data-id="${t.dataset.id}"]`).forEach(x=>x.classList.add("hl"))});
+code.addEventListener("mouseleave",()=>code.querySelectorAll(".hl").forEach(x=>x.classList.remove("hl")));
+$("#crumbs").addEventListener("click",e=>{const a=e.target.closest("[data-sel]");if(a)select(a.dataset.sel==="doctype"?"doctype":+a.dataset.sel)});
+$("#errs").addEventListener("click",e=>{if(isEd())return;const a=e.target.closest("[data-err]");if(a){select(+a.dataset.err);say(a.textContent,"err")}});
+$("#acts").addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;const s=st();
+ ({up:()=>moveSel(-1),down:()=>moveSel(1),del:delSel,cut:cutSel,pasteIn:()=>paste("in"),pasteAfter:()=>paste("after"),parent:()=>{const f=find(s,s.sel);if(f&&f.parent&&f.parent.tag!=="#document")select(f.parent.id)}})[b.dataset.act]()});
+let editSnap=false;
+$("#fields").addEventListener("focusin",()=>{editSnap=false});
+$("#fields").addEventListener("input",e=>{
+ const s=st(),f=find(s,s.sel);if(!f)return;
+ if(!editSnap){snap();editSnap=true}
+ const t=e.target,n=f.node;
+ if(t.dataset.text){n.text=t.value}
+ else if(t.dataset.content){if(n.children[0])n.children[0].text=t.value;else n.children.push(T(t.value))}
+ else if(t.dataset.attr){const k=t.dataset.attr;if(t.value==="")delete n.attrs[k];else n.attrs[k]=t.value}
+ diag(s);renderCode();renderChecks();renderPreview();updateRowWarn();save();
+});
+window.addEventListener("message",e=>{
+ if(e.source!==$("#frame").contentWindow)return;const d=e.data||{};
+ if(d.type==="pick"){const id=+d.cid;if(find(st(),id)){if(!d.link)say("");select(id)}}
+ if(d.type==="link"){const h=d.href;
+  if(h==null)say("Връзката няма атрибут href и не води никъде.","err");
+  else if(h===""||h==="#")say(`href="${h}" води към началото на същата страница.`,"info");
+  else if(h[0]==="#")say(d.found?`Връзката води към елемента с id="${h.slice(1)}" в същата страница.`:`Няма елемент с id="${h.slice(1)}" – вътрешната връзка не води никъде.`,d.found?"info":"err");
+  else if(/^https?:\/\//i.test(h))say(`Абсолютен адрес: връзката води към ${h}. В лабораторията външни сайтове не се отварят – провери я в истински браузър.`,"info");
+  else say(`Относителен адрес: връзката води към файла „${h}“ спрямо index.html.`,"info");}
+});
+$("#btnPoint").onclick=()=>{point=!point;$("#btnPoint").classList.toggle("on",point);
+ $("#legend").innerHTML=legendText();
+ const w=$("#frame").contentWindow;if(w)w.postMessage({type:"mode",point},"*")};
+{const g=store.get(KEY+"grid");if(g==="0")gridOn=false;$("#btnGrid").classList.toggle("on",gridOn)}
+function legendText(){return isEd()?"Страницата се обновява, докато пишеш.":point?'Посочи елемент: <i style="border:2px dashed #2b6cb0"></i>блоков <i style="border:2px solid #e53e3e"></i>вграден • кликни, за да го избереш':"Кликни върху елемент в страницата, за да го намериш в кода."}
+$("#btnGrid").onclick=()=>{gridOn=!gridOn;store.set(KEY+"grid",gridOn?"1":"0");$("#btnGrid").classList.toggle("on",gridOn);
+ const w=$("#frame").contentWindow;if(w)w.postMessage({type:"grid",on:gridOn},"*");lastPrev=null;
+ say(gridOn?"Пунктирната решетка е помощна – показва се само в лабораторията и не е част от кода. В истински проект рамките се задават с CSS.":"Така изглежда таблицата без CSS – браузърът не рисува рамки.","info")};
+$("#btnUndo").onclick=()=>{if(isEd()){say("В редактора отменяш с Ctrl+Z, както във всеки текстов редактор.","info");$("#editor").focus();return}undo()};
+function plain(){return ser(st(),"plain")+"\n"}
+function source(){const s=st();return s.editing?(s.raw||""):plain()}
+$("#btnCopy").onclick=()=>{const t=source();
+ const fb=()=>{const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");say("HTML кодът е копиран. Постави го във VS Code.","info")}catch(e){say("Копирането не успя – маркирай кода ръчно.","err")}a.remove()};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>say("HTML кодът е копиран. Постави го във VS Code.","info"),fb);else fb()};
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC_T[(c^u[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
+function makeZip(files){
+ const enc=new TextEncoder(),chunks=[],central=[];let off=0;const d=new Date();
+ const tm=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1),dt=((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate();
+ for(const f of files){
+  const nm=enc.encode(f.name),data=f.data||new Uint8Array(0),crc=crc32(data);
+  const h=new DataView(new ArrayBuffer(30));
+  h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(10,tm,true);h.setUint16(12,dt,true);
+  h.setUint32(14,crc,true);h.setUint32(18,data.length,true);h.setUint32(22,data.length,true);h.setUint16(26,nm.length,true);
+  chunks.push(new Uint8Array(h.buffer),nm,data);
+  const c=new DataView(new ArrayBuffer(46));
+  c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint16(12,tm,true);c.setUint16(14,dt,true);
+  c.setUint32(16,crc,true);c.setUint32(20,data.length,true);c.setUint32(24,data.length,true);c.setUint16(28,nm.length,true);
+  c.setUint32(38,f.name.endsWith("/")?0x10:0,true);c.setUint32(42,off,true);
+  central.push(new Uint8Array(c.buffer),nm);off+=30+nm.length+data.length;
+ }
+ const size=central.reduce((a,x)=>a+x.length,0),e=new DataView(new ArrayBuffer(22));
+ e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,size,true);e.setUint32(16,off,true);
+ return new Blob([...chunks,...central,new Uint8Array(e.buffer)],{type:"application/zip"});
+}
+$("#btnDown").onclick=()=>{
+ const html=source(),enc=new TextEncoder();
+ const used=Object.keys(FILES).filter(f=>html.includes(f));
+ const files=[{name:"moyat-klas/index.html",data:enc.encode(html)},{name:"moyat-klas/images/"}].concat(used.map(f=>({name:"moyat-klas/"+f,data:enc.encode(FILES[f])})));
+ const a=document.createElement("a");a.href=URL.createObjectURL(makeZip(files));a.download="moyat-klas.zip";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800);
+ const own=[...new Set([...html.matchAll(/<img\b[^>]*?\bsrc\s*=\s*["']([^"']+)["']/gi)].map(m=>m[1].trim()).filter(x=>!FILES[x]&&!/^(https?:|data:)/i.test(x)))];
+ say(`Изтеглен е moyat-klas.zip: index.html и папка images${used.length?" (с примерните "+used.map(f=>f.slice(7)).join(", ")+")":""}.`+(own.length?` Собствените ти изображения (${own.join(", ")}) не са в архива – конструкторът няма достъп до тях. Копирай ги ръчно в папката.`:used.length?"":" Папката images е празна – сложи в нея свои изображения.")+" Разархивирай го и отвори папката във VS Code.",own.length?"":"info");
+};
+function applyEditUI(){
+ const on=isEd();$("#codePane").classList.toggle("editing",on);$("#btnEdit").classList.toggle("on",on);
+ $("#btnEdit").textContent=on?"🧱 Конструктор":"✏️ Редактирай";
+ if(on&&$("#editor").value!==st().raw)$("#editor").value=st().raw||"";
+ $("#legend").innerHTML=legendText();
+ fit();
+}
+function enterEdit(){const s=st();s.raw=plain();s.editing=true;lastPrev=null;applyEditUI();renderAll();renderPreview(true);
+ const t=$("#editor");t.focus();t.setSelectionRange(0,0);t.scrollTop=0;
+ say("Режим „Редактор“: пиши HTML кода. Браузърът се обновява, докато пишеш.","info")}
+let edT=null;
+function onEditorInput(now){const s=st();s.raw=$("#editor").value;clearTimeout(edT);
+ const go=()=>{diag(viewState());renderChecks();renderPreview(true);save()};if(now)go();else edT=setTimeout(go,300)}
+function editLosses(raw){
+ const L=[],nc=(raw.match(/<!--[\s\S]*?-->/g)||[]).length;
+ if(nc)L.push(nc===1?"1 коментар":nc+" коментара");
+ if(/<(tbody|thead|tfoot)[\s>]/i.test(raw))L.push("елементите tbody/thead/tfoot (в конструктора редовете са директно в <table>)");
+ const p=fromSource(raw),out=ser(p,"plain");
+ const sq=x=>x.replace(/<!--[\s\S]*?-->/g,"").replace(/<\/?(tbody|thead|tfoot)\b[^>]*>/gi,"").replace(/\s+/g,"").replace(/["']/g,"").toLowerCase();
+ if(sq(raw)!==sq(out))L.push("части, които браузърът разчита различно от написаното – например незатворен или неправилно вложен таг");
+ return{L,p};
+}
+function commitEdit(p){
+ const s=st();snap();s.doctype=p.doctype;s.root=p.root;NID=Math.max(NID,maxId(p.root)+1);
+ const b=parts(s).body;s.sel=b?b.id:null;s.editing=false;s.raw=null;lastPrev=null;applyEditUI();renderAll();renderPreview(true);
+ say("Кодът е прехвърлен в конструктора. Отстъпите са подредени наново. (С „↶ Отмени“ връщаш предишното състояние.)","info");
+}
+function leaveEdit(){
+ const s=st(),r=editLosses(s.raw||"");
+ if(!r.L.length){commitEdit(r.p);return}
+ sayHTML(`⚠ Конструкторът не може да запази: ${esc(r.L.join("; "))}.<br>Ако останеш в редактора, кодът се показва, копира и сваля точно както е написан.<br><button data-ed="go">Продължи към конструктора</button><button data-ed="stay">Остани в редактора</button>`,"err");
+}
+$("#msg").addEventListener("click",e=>{const b=e.target.closest("[data-ed]");if(!b)return;if(b.dataset.ed==="go")commitEdit(editLosses(st().raw||"").p);else{say("");$("#editor").focus()}});
+$("#btnEdit").onclick=()=>{if(isEd())leaveEdit();else enterEdit()};
+$("#btnBack").onclick=leaveEdit;
+let discArm=false,discT=null;
+$("#btnDiscard").onclick=()=>{
+ if(!discArm){discArm=true;$("#btnDiscard").textContent="Сигурен ли си? Натисни пак";discT=setTimeout(()=>{discArm=false;$("#btnDiscard").textContent="Отхвърли промените"},3500);return}
+ clearTimeout(discT);discArm=false;$("#btnDiscard").textContent="Отхвърли промените";
+ const s=st();s.editing=false;s.raw=null;lastPrev=null;applyEditUI();renderAll();renderPreview(true);say("Промените в редактора са отхвърлени.","info");
+};
+$("#editor").addEventListener("input",()=>onEditorInput(false));
+$("#editor").addEventListener("keydown",e=>{if(e.key==="Tab"){e.preventDefault();const t=e.target,a=t.selectionStart;t.setRangeText("  ",a,t.selectionEnd,"end")}});
+$("#btnHint").onclick=()=>{const s=st();if(s.hintN<M[cur].hints.length)s.hintN++;renderMission()};
+let resetArm=false,resetT=null;
+$("#btnReset").onclick=()=>{
+ if(!resetArm){resetArm=true;$("#btnReset").textContent="Сигурен ли си? Натисни пак";resetT=setTimeout(()=>{resetArm=false;$("#btnReset").textContent="⟲ Започни отначало"},3500);return}
+ clearTimeout(resetT);resetArm=false;$("#btnReset").textContent="⟲ Започни отначало";
+ const old=st();const f=freshState(cur);f.hist=old.hist;old.hist.push(JSON.stringify({doctype:old.doctype,root:old.root,sel:old.sel,clip:old.clip}));
+ NID=Math.max(NID,maxId(f.root)+1);ST[cur]=f;say("Започваш отначало. (Можеш да върнеш с „↶ Отмени“.)","info");renderMission();applyEditUI();renderAll();
+};
+$("#quiz").addEventListener("change",e=>{if(e.target.name==="qz"){st().quiz=+e.target.value;$("#quiz").querySelectorAll("label").forEach(l=>l.classList.remove("right","wrong"))}});
+$("#btnCheck").onclick=()=>{
+ const m=M[cur],s=viewState(),sv=st();diag(s);
+ const res=m.checks.map(c=>{let ok=false;try{ok=!!c[1](s,errs)}catch(e){}return{c,ok}});
+ const req=res.filter(r=>!r.c[2]),miss=req.filter(r=>!r.ok);
+ const qa=sv.quiz,qok=qa===m.quiz.a;
+ $("#quiz").querySelectorAll("label").forEach((l,i)=>{l.classList.remove("right","wrong");if(qa===i)l.classList.add(qok?"right":"wrong")});
+ const fb=$("#feedback");
+ if(!miss.length&&qok){
+  sv.done=true;const b=res.filter(r=>r.c[2]),bd=b.filter(r=>r.ok).length;
+  fb.className="feedback good";
+  fb.innerHTML=`🎉 Мисията е изпълнена! ${esc(m.quiz.why)}`+(b.length?`<br>Допълнителни задачи: ${bd} от ${b.length}.`:"")+(cur<M.length-1?`<br><button class="primary" id="nextM" style="margin-top:8px">Към ${esc(M[cur+1].nav)} →</button>`:"<br>Предай проекта, разработен във VS Code. За окончателна проверка използвай валидатора на W3C.");
+  renderNav();save();
+  const n=$("#nextM");if(n)n.onclick=()=>{cur++;lastPrev=null;say("");renderMission();renderAll();renderPreview(true);scrollTo({top:0,behavior:"smooth"})};
+ }else{
+  fb.className="feedback bad";
+  const parts_=[];
+  if(miss.length)parts_.push(`Изпълнени ${req.length-miss.length} от ${req.length} изисквания. Следващо: ${esc(miss[0].c[0])}`);
+  if(errs.size)parts_.push(`Има структурни грешки (${errs.size}) – кликни върху тях в списъка, за да намериш елемента.`);
+  if(qa==null)parts_.push("Отговори и на въпроса.");else if(!qok)parts_.push("Отговорът на въпроса не е верен – помисли отново.");
+  fb.innerHTML=parts_.join("<br>");
+ }
+ renderChecks();
+};
+document.addEventListener("keydown",e=>{
+ const tg=e.target.tagName;if(tg==="INPUT"||tg==="TEXTAREA"||isEd())return;
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();undo()}
+ else if(e.key==="Delete"&&st().sel!=null){e.preventDefault();delSel()}
+});
+$("#showCode").onclick=()=>{$("#panes").dataset.show="code";$("#showCode").classList.add("primary");$("#showPrev").classList.remove("primary")};
+$("#showPrev").onclick=()=>{$("#panes").dataset.show="preview";$("#showPrev").classList.add("primary");$("#showCode").classList.remove("primary")};
+
+/* ---------- Подредба: кодът и браузърът да се виждат без скролиране ---------- */
+function scrollCodeTo(){
+ const pre=$("#code"),el=pre.querySelector(".el.sel, .selt");if(!el)return;
+ const r=el.getBoundingClientRect(),pr=pre.getBoundingClientRect();
+ const top=r.top-pr.top+pre.scrollTop,line=22;
+ if(r.top<pr.top+line)pre.scrollTop=Math.max(0,top-line*2);
+ else if(r.top>pr.bottom-line*2)pre.scrollTop=top-pre.clientHeight/2;
+}
+function fit(){
+ const root=document.documentElement;
+ root.style.setProperty("--hh",$("header.top").offsetHeight+"px");
+ if(!matchMedia("(min-width:1151px)").matches){root.style.removeProperty("--ph");return}
+ const pre=isEd()?$("#editor"):$("#code");
+ const top=pre.getBoundingClientRect().top+scrollY;
+ root.style.setProperty("--ph",Math.max(300,Math.round(innerHeight-top-58))+"px");
+}
+addEventListener("resize",fit);
+if(window.ResizeObserver){const ro=new ResizeObserver(()=>fit());ro.observe($(".selbar"));ro.observe($("#palette"));ro.observe($("header.top"))}
+
+const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+$("#btnFull").onclick=()=>{const d=document,e=d.documentElement;
+ if(fsEl())(d.exitFullscreen||d.webkitExitFullscreen).call(d);
+ else{const r=e.requestFullscreen||e.webkitRequestFullscreen;if(r){const x=r.call(e);if(x&&x.catch)x.catch(()=>{})}}};
+const fsUpd=()=>{const on=!!fsEl(),b=$("#btnFull");b.textContent=on?"✕":"⛶";b.title=on?"Изход от цял екран":"Цял екран";b.setAttribute("aria-label",b.title);setTimeout(fit,100)};
+document.addEventListener("fullscreenchange",fsUpd);document.addEventListener("webkitfullscreenchange",fsUpd);
+if(!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen))$("#btnFull").style.display="none";
+
+renderMission();applyEditUI();renderAll();renderPreview(true);fit();
+</script>
+</body>
+</html>
