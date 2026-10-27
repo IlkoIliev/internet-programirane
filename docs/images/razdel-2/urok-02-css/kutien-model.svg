@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="440" viewBox="0 0 760 440" font-family="DejaVu Sans, Arial, sans-serif">
+  <rect width="760" height="440" fill="#ffffff"/>
+  <text x="380" y="32" font-size="20" font-weight="bold" fill="#082d46" text-anchor="middle">Кутиен модел (box model)</text>
+  <!-- margin -->
+  <rect x="40" y="52" width="680" height="368" fill="#fde8c8" stroke="#c98a00" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="58" y="80" font-size="17" font-weight="bold" fill="#7a5200">margin – външно отстояние</text>
+  <text x="58" y="100" font-size="13" fill="#7a5200">прозрачно, отделя елемента от съседите</text>
+  <!-- border -->
+  <rect x="110" y="116" width="540" height="248" fill="#2b2b2b"/>
+  <text x="128" y="140" font-size="16" font-weight="bold" fill="#ffffff">border – рамка</text>
+  <!-- padding -->
+  <rect x="124" y="150" width="512" height="200" fill="#c7e8c4"/>
+  <text x="142" y="176" font-size="16" font-weight="bold" fill="#1d5e23">padding – вътрешно отстояние</text>
+  <text x="142" y="195" font-size="13" fill="#1d5e23">има фона на елемента</text>
+  <!-- content -->
+  <rect x="200" y="214" width="360" height="104" fill="#a9d1ef" stroke="#1c6fa3" stroke-width="2"/>
+  <text x="380" y="256" font-size="17" font-weight="bold" fill="#0f4d78" text-anchor="middle">content – съдържание</text>
+  <text x="380" y="280" font-size="14" fill="#0f4d78" text-anchor="middle">текст, изображения</text>
+  <text x="380" y="300" font-size="13" fill="#0f4d78" text-anchor="middle">width × height (при box-sizing: content-box)</text>
+  <!-- size arrows -->
+  <g stroke="#082d46" stroke-width="1.5">
+    <line x1="200" y1="332" x2="560" y2="332"/>
+    <line x1="200" y1="326" x2="200" y2="338"/><line x1="560" y1="326" x2="560" y2="338"/>
+  </g>
+  <text x="380" y="346" font-size="12" fill="#082d46" text-anchor="middle">width</text>
+  <text x="380" y="405" font-size="13" fill="#7a5200" text-anchor="middle">Видима ширина = width + 2 × padding + 2 × border (margin е празно място отвън)</text>
+</svg>

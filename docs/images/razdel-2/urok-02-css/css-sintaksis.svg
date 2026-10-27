@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="260" viewBox="0 0 760 260" font-family="DejaVu Sans, Arial, sans-serif">
+  <rect width="760" height="260" fill="#ffffff"/>
+  <text x="380" y="34" font-size="20" font-weight="bold" fill="#082d46" text-anchor="middle">Анатомия на CSS правило</text>
+  <g font-family="DejaVu Sans Mono, Consolas, monospace" font-size="30">
+    <rect x="40" y="96" width="680" height="64" rx="10" fill="#102f42"/>
+    <text x="64" y="139" fill="#7fd1ff" font-weight="bold">h1</text>
+    <text x="118" y="139" fill="#e9f3f8">{</text>
+    <text x="150" y="139" fill="#ffcf6b">color</text>
+    <text x="240" y="139" fill="#e9f3f8">:</text>
+    <text x="262" y="139" fill="#9be89b">blue</text>
+    <text x="334" y="139" fill="#e9f3f8">;</text>
+    <text x="368" y="139" fill="#ffcf6b">font-size</text>
+    <text x="530" y="139" fill="#e9f3f8">:</text>
+    <text x="552" y="139" fill="#9be89b">12px</text>
+    <text x="624" y="139" fill="#e9f3f8">;</text>
+    <text x="664" y="139" fill="#e9f3f8">}</text>
+  </g>
+  <!-- над кода -->
+  <g stroke="#174967" stroke-width="2" fill="none">
+    <path d="M60 88 v-14 h40 v14"/>
+    <path d="M146 88 v-14 h194 v14"/>
+    <path d="M364 88 v-14 h284 v14"/>
+  </g>
+  <g font-size="15" fill="#174967" text-anchor="middle" font-weight="bold">
+    <text x="80" y="66">селектор</text>
+    <text x="243" y="66">декларация</text>
+    <text x="506" y="66">декларация</text>
+  </g>
+  <!-- под кода -->
+  <g stroke="#c98a00" stroke-width="2" fill="none">
+    <path d="M150 168 v14 h84 v-14"/>
+    <path d="M262 168 v14 h66 v-14"/>
+    <path d="M368 168 v14 h156 v-14"/>
+    <path d="M552 168 v14 h66 v-14"/>
+    <path d="M114 196 v14 h574 v-14" stroke="#46738d"/>
+  </g>
+  <g font-size="14" fill="#7a5200" text-anchor="middle" font-weight="bold">
+    <text x="192" y="200">свойство</text>
+    <text x="295" y="200">стойност</text>
+    <text x="446" y="200">свойство</text>
+    <text x="585" y="200">стойност</text>
+  </g>
+  <text x="401" y="236" font-size="15" fill="#46738d" text-anchor="middle" font-weight="bold">декларационен блок – между фигурните скоби { }</text>
+</svg>
