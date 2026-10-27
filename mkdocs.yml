@@ -26,6 +26,7 @@ nav:
       - Раздел 2:
           - Преглед на раздела: teoria/razdel-2/index.md
           - "Урок 1. Работа с HTML. Основни тагове": teoria/razdel-2/urok-01-html-osnovni-tagove.md
+          - "Урок 2. Работа със CSS. Селектори и основни правила": teoria/razdel-2/urok-02-css-selektori-i-pravila.md
       - Раздел 3: teoria/razdel-3/index.md
       - Раздел 4: teoria/razdel-4/index.md
 
