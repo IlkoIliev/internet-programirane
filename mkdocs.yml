@@ -35,6 +35,7 @@ nav:
       - Раздел 1:
           - Преглед на раздела: praktika/razdel-1/index.md
           - "Упражнение 1. Основи на интернет": praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md
+          - "Упражнение 2. Изпращане и анализ на HTTP заявки с Postman": praktika/razdel-1/uprazhnenie-urok-02-postman.md
       - Раздел 2:
           - Преглед на раздела: praktika/razdel-2/index.md
           - "Упражнение 1. Създаване на HTML страница „Моят клас“": praktika/razdel-2/uprazhnenie-01-html.md
