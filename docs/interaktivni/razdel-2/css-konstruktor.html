@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSS конструктор – Оформи своята страница</title>
+<style>
+:root{--nav:#174967;--bg:#eef6fb;--panel:#fff;--accent:#ffb62e;--ink:#082d46;--ok:#0a9f3f;--bad:#c53030;--soft:#46738d;--line:#cfe2ee}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header.top{position:sticky;top:0;z-index:20;background:var(--nav);color:#fff;padding:8px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.title{font-size:20px;font-weight:800;line-height:1.1}.sub{font-size:13px;font-weight:700;margin-top:2px;opacity:.9}
+nav.missions{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+button{border:0;border-radius:9px;padding:8px 11px;font:800 13.5px Arial,sans-serif;cursor:pointer;background:#f1f4f6;color:var(--ink)}
+button:hover{filter:brightness(.96)}
+button:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid #1c8cbd;outline-offset:2px}
+button:disabled{opacity:.45;cursor:default}
+.mbtn{background:#f7f7f7;padding:6px 8px;font-size:12.5px}.mbtn.active{background:var(--accent)}.mbtn .ok{color:var(--ok)}
+.mbtn.active .ok{color:#05501f}
+.primary{background:var(--accent)}.danger{background:#fde8e8;color:#8a1c1c}
+.fullbtn{background:rgba(255,255,255,.14);color:#fff;font-size:20px;line-height:1;padding:7px 10px;border:2px solid rgba(255,255,255,.35)}
+main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:10px;padding:10px;align-items:start}
+.panel{background:var(--panel);border-radius:14px;padding:12px}
+.mission{position:sticky;top:calc(var(--hh,56px) + 10px);max-height:calc(100vh - var(--hh,56px) - 20px);overflow:auto}
+.mission h1{margin:0 0 8px;font-size:19px}
+.situation{background:#fff8e9;border-left:6px solid var(--accent);padding:9px 10px;font-size:14px;font-weight:700;line-height:1.45}
+.situation code,.hint code,.quiz code,.diag code,.why code{background:#eef3f6;border-radius:4px;padding:0 4px;font:13px Consolas,"DejaVu Sans Mono",monospace;font-weight:700}
+.checks{list-style:none;margin:10px 0 0;padding:0}
+.checks li{display:flex;gap:8px;padding:5px 2px;border-bottom:1px solid #e3eef5;font-size:13.5px;line-height:1.35}
+.checks li .m{flex:0 0 21px;height:21px;border-radius:50%;border:2px solid #9fbfd2;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff}
+.checks li.done .m{background:var(--ok);border-color:var(--ok)}
+.checks li.done{color:#2c5a43}
+.checks li.bonus .lbl::before{content:"★ ";color:#c98a00}
+.status{font-size:12.5px;color:var(--soft);margin-top:6px;line-height:1.45}.status b{color:var(--ink)}.status .ach{color:var(--ok);font-weight:800}.status .bn{color:#7a5200}
+.badge{display:inline-block;background:#e8f5fb;color:#1c6fa3;border-radius:6px;font-size:11px;font-weight:800;padding:2px 6px;vertical-align:2px;margin-left:4px}
+.help{position:fixed;inset:0;background:rgba(8,45,70,.55);z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+.help.show{display:flex}
+.help .box{background:#fff;border-radius:14px;max-width:640px;width:100%;max-height:90vh;overflow:auto;padding:18px 20px;font-size:14.5px;line-height:1.55}
+.help h2{margin:0 0 8px;font-size:19px}.help ol{padding-left:20px;margin:6px 0}.help li{margin-bottom:5px}
+.help code{background:#eef3f6;border-radius:4px;padding:0 4px;font:13px Consolas,"DejaVu Sans Mono",monospace}
+.quiz{margin-top:10px;border:2px solid var(--line);border-radius:12px;padding:9px 11px}
+.quiz .q{font-weight:800;font-size:14px;margin-bottom:5px}
+.quiz label{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:3px 0;cursor:pointer}
+.quiz label.right{color:var(--ok);font-weight:800}.quiz label.wrong{color:var(--bad)}
+.mbar{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.hint{margin-top:8px;background:#e8f5fb;border-left:5px solid #1c8cbd;padding:8px 10px;font-size:13.5px;font-weight:700;line-height:1.4}
+.hint pre{margin:6px 0 0;background:#102f42;color:#e9f3f8;border-radius:8px;padding:8px 10px;font:13px/1.5 Consolas,"DejaVu Sans Mono",monospace;white-space:pre-wrap}
+.feedback{margin-top:10px;padding:10px 11px;border-radius:10px;background:#e8f3fa;font-size:14px;font-weight:800;line-height:1.4}
+.feedback.good{background:#e3f7e9;color:#05501f}.feedback.bad{background:#fff4d8}
+.feedback .why{font-weight:700;margin-top:4px}
+.freeinfo{font-size:13.5px;line-height:1.5;color:#2d5870;margin-top:10px}
+.mission.free .checks,.mission.free .quiz,.mission.free #btnCheck,.mission.free #btnHint,.mission.free #feedback{display:none}
+.mission:not(.free) .freeinfo{display:none}
+.ws{min-width:0}
+.panes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.pane{display:flex;flex-direction:column;min-width:0}
+.ph{display:flex;align-items:center;gap:5px;margin-bottom:6px;flex-wrap:wrap}
+.ph h2{margin:0 auto 0 0;font-size:16px}
+.ph button{padding:6px 8px;font-size:12.5px}
+.ph button.on,.tabs2 button.on{background:var(--accent)}
+.tabs2{display:flex;gap:4px;margin-bottom:6px}
+.tabs2 button{padding:6px 10px;font-size:13px}
+.edwrap{display:flex;background:#102f42;border-radius:12px;overflow:hidden;height:var(--ph,460px);min-height:260px}
+.gutter{margin:0;padding:12px 8px 12px 10px;color:#5f8aa3;font:14.5px/1.6 Consolas,"DejaVu Sans Mono",monospace;text-align:right;user-select:none;overflow:hidden;background:#0c2534;min-width:42px;white-space:pre}
+.gutter .bad{color:#ff8a8a;font-weight:700}.gutter .warn{color:#ffcf6b;font-weight:700}
+textarea.editor{flex:1;border:0;resize:none;background:transparent;color:#e9f3f8;padding:12px;font:14.5px/1.6 Consolas,"DejaVu Sans Mono",monospace;white-space:pre;overflow:auto;tab-size:4;outline:none;caret-color:#ffb62e}
+textarea.editor:focus-visible{outline:none;box-shadow:inset 0 0 0 3px var(--accent)}
+pre.htmlview{display:none;margin:0;background:#102f42;color:#e9f3f8;border-radius:12px;padding:12px;font:13.5px/1.6 Consolas,"DejaVu Sans Mono",monospace;overflow:auto;height:var(--ph,460px);min-height:260px;white-space:pre}
+.showhtml .edwrap{display:none}.showhtml pre.htmlview{display:block}
+.tn{color:#7fd1ff;font-weight:700}.an{color:#ffcf6b}.av{color:#9be89b}
+.diag{margin-top:8px;font-size:13px;line-height:1.4;max-height:118px;overflow:auto}
+.diag .ok{background:#e3f7e9;color:#05501f;border-radius:8px;padding:6px 10px;font-weight:800}
+.diag a{display:block;cursor:pointer;padding:5px 9px;border-radius:7px;margin-bottom:4px;text-decoration:none;font-weight:700}
+.diag a.bad{background:#fff1f1;color:#8a1c1c;border-left:4px solid var(--bad)}
+.diag a.warn{background:#fff8e1;color:#6b4800;border-left:4px solid #e39d12}
+.diag a b{font-family:Consolas,"DejaVu Sans Mono",monospace}
+.browser{border:1px solid #9aa0a6;border-radius:10px;overflow:hidden;background:#fff;display:flex;flex-direction:column;height:calc(var(--ph,460px) - 0px);min-height:260px}
+.btabs{background:#dee1e6;height:32px;display:flex;align-items:flex-end;padding-left:8px;flex:none}
+.btab{background:#fff;border-radius:8px 8px 0 0;height:26px;padding:0 12px;display:flex;align-items:center;gap:8px;font-size:12.5px;min-width:150px}
+.btab .x{margin-left:auto;color:#5f6368}
+.bbar{height:32px;display:flex;align-items:center;gap:10px;padding:0 10px;border-bottom:1px solid #dadce0;color:#5f6368;font-size:14px;flex:none}
+.burl{flex:1;background:#f1f3f4;border-radius:14px;height:22px;display:flex;align-items:center;padding:0 12px;font-size:12.5px;color:#202124}
+.browser iframe{border:0;width:100%;flex:1;min-height:120px;background:#fff}
+.insp{flex:none;max-height:46%;overflow:auto;border-top:2px solid var(--line);background:#f8fbfd;font-size:13px;padding:8px 10px;display:none}
+.insp.show{display:block}
+.insp h3{margin:0 0 6px;font-size:14px;font-family:Consolas,"DejaVu Sans Mono",monospace}
+.insp .row{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:10px;align-items:start}
+.insp table{border-collapse:collapse;width:100%}
+.insp td{padding:2px 6px 2px 0;vertical-align:top;font-size:12.5px}
+.insp td:first-child{color:var(--soft);font-weight:700;white-space:nowrap}
+.sw{display:inline-block;width:12px;height:12px;border:1px solid #888;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.boxm{font:11px Consolas,"DejaVu Sans Mono",monospace;text-align:center}
+.boxm div{padding:4px 6px;position:relative}
+.boxm .bm{background:#fde8c8;border:1px dashed #c98a00}.boxm .bb{background:#2b2b2b;color:#fff}.boxm .bp{background:#c7e8c4;color:#1d5e23}.boxm .bc{background:#a9d1ef;color:#0f4d78;padding:6px}
+.boxm .lab{position:absolute;left:4px;top:1px;font-size:9px;opacity:.85}
+.boxm .n{display:block;min-height:13px}
+.rules{margin:6px 0 0;padding:0;list-style:none}
+.rules li{font:12.5px Consolas,"DejaVu Sans Mono",monospace;padding:2px 0}
+.rules li .sp{color:var(--soft)}
+.legend{font-size:12px;color:var(--soft);font-weight:700;margin-top:5px;min-height:16px}
+.mswitch{display:none;gap:6px;margin-bottom:8px}
+.msg{margin-top:6px;font-size:13px;font-weight:700;border-radius:8px}
+.msg:not(:empty){padding:7px 10px;background:#e8f5fb;border-left:5px solid #1c8cbd}
+footer.foot{padding:2px 16px 14px;font-size:12.5px;color:var(--soft)}
+.pt{min-width:0}
+.tinfo{font-size:12.5px;font-weight:700;color:var(--soft);margin-bottom:6px;line-height:1.35;min-height:34px}
+.tinfo b{color:var(--ink)}
+.tlegend{font:11.5px Consolas,"DejaVu Sans Mono",monospace;margin-bottom:5px}
+.tree{flex:1;overflow:auto;background:#f8fbfd;border:1px solid var(--line);border-radius:10px;padding:6px 4px;font:12.5px/1.8 Consolas,"DejaVu Sans Mono",monospace;min-height:0;height:var(--ph,460px)}
+.tnode{white-space:nowrap;border-radius:5px;padding-right:6px}
+.tnode:hover,.tnode.hov{background:#e3f0f8}
+.tnode.match{background:#fff1bf}
+.tnode.sel{box-shadow:inset 3px 0 0 #ffb62e;background:#fff8e9}
+.tg,.tid,.tcl{cursor:pointer;font-weight:700;border-radius:3px}
+.tg{color:#1b5f8a}.tid{color:#b45309}.tcl{color:#0a7d3b}
+.tg:hover,.tid:hover,.tcl:hover{text-decoration:underline;background:#fff}
+.ttx{color:#7a8c99;font-family:Arial,sans-serif;margin-left:4px;font-size:12px}
+.tp{color:#9bb}
+@media(min-width:1151px){
+ body{height:100vh;overflow:hidden;display:flex;flex-direction:column}
+ header.top{position:static;flex:none}
+ main{flex:1;min-height:0;grid-template-rows:minmax(0,1fr);grid-template-columns:290px minmax(0,1fr)}
+ .mission{position:static;max-height:none;height:100%;overflow:auto}
+ .ws{height:100%;min-height:0}
+ .panes{height:100%;grid-template-columns:minmax(200px,240px) minmax(0,1fr) minmax(0,1fr)}
+ .pane{height:100%;min-height:0}
+ .edwrap,pre.htmlview,.browser,.tree{height:auto;flex:1;min-height:0}
+ footer.foot{display:none}
+}
+@media(min-width:821px) and (max-width:1150px){.panes{grid-template-columns:200px minmax(0,1fr) minmax(0,1fr)}}
+@media(max-width:1150px){main{grid-template-columns:1fr}header.top{position:relative}.mission{position:static;max-height:none}}
+@media(max-width:820px){
+ .panes{grid-template-columns:1fr}.mswitch{display:flex}
+ .panes[data-show="code"] .pv,.panes[data-show="code"] .pt{display:none}.panes[data-show="preview"] .pc,.panes[data-show="preview"] .pt{display:none}.panes[data-show="tree"] .pc,.panes[data-show="tree"] .pv{display:none}
+ .edwrap,pre.htmlview,.browser,.tree{height:420px}
+ .insp .row{grid-template-columns:1fr}
+ main{padding:8px}.panel{padding:10px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+ <div><div class="title">🎨 CSS конструктор</div><div class="sub">Раздел 2 • Урок 2 • <span id="prog"></span></div></div>
+ <nav class="missions" id="mnav" aria-label="Мисии"></nav>
+ <button id="btnHelp" class="fullbtn" title="Как се работи?" aria-label="Как се работи?" style="font-size:17px">?</button>
+ <button id="btnFull" class="fullbtn" title="Цял екран" aria-label="Цял екран">⛶</button>
+</header>
+<main>
+ <section class="panel mission" id="missionPanel" aria-labelledby="mTitle">
+  <h1 id="mTitle"></h1>
+  <div class="situation" id="mTask"></div>
+  <ul class="checks" id="checks"></ul>
+  <div class="status" id="status"></div>
+  <div class="quiz" id="quiz"></div>
+  <div class="mbar">
+   <button class="primary" id="btnCheck">✔ Провери</button>
+   <button id="btnHint">💡 Подсказка</button>
+   <button class="danger" id="btnReset">⟲ Начален код</button>
+  </div>
+  <div id="hints"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="freeinfo">Как се работи:<br>• Пиши CSS вляво – страницата вдясно се обновява веднага.<br>• Грешките в CSS се показват под редактора с номер на реда.<br>• С <b>🎯 Посочи</b> кликни елемент в страницата и виж кои правила се прилагат и неговия кутиен модел.<br>• С <b>⬇ Свали ZIP</b> взимаш <code>index.html</code> и <code>css/style.css</code> за VS Code.</div>
+ </section>
+
+ <section class="ws">
+  <div class="mswitch" id="mswitch"><button data-v="tree">🌳 Структура</button><button data-v="code" class="primary">‹/› Код</button><button data-v="preview">🖥 Браузър</button></div>
+  <div class="panes" id="panes" data-show="code">
+   <div class="pane pt panel">
+    <div class="ph"><h2>Структура</h2></div>
+    <div class="tlegend"><span class="tg">таг</span> <span class="tid">#id</span> <span class="tcl">.клас</span></div>
+    <div class="tinfo" id="tinfo"></div>
+    <div class="tree" id="tree" aria-label="HTML структура на страницата"></div>
+   </div>
+   <div class="pane pc panel" id="codePane">
+    <div class="ph">
+     <div class="tabs2" role="tablist"><button id="tabCss" class="on" role="tab">style.css</button><button id="tabHtml" role="tab" title="HTML кодът на страницата – само за четене">index.html 🔒</button></div>
+     <span style="margin-left:auto"></span>
+     <button id="btnCopy" title="Копирай CSS">⧉ Копирай</button>
+     <button id="btnDown" title="Свали index.html и css/style.css">⬇ Свали ZIP</button>
+    </div>
+    <div class="edwrap"><pre class="gutter" id="gutter" aria-hidden="true">1</pre><textarea class="editor" id="editor" spellcheck="false" aria-label="CSS код (style.css). Tab вмъква отстъп; натисни Esc, за да излезеш с Tab."></textarea></div>
+    <pre class="htmlview" id="htmlview" aria-label="HTML код на страницата"></pre>
+    <div class="diag" id="diag" aria-live="polite"></div>
+    <div class="msg" id="msg"></div>
+   </div>
+   <div class="pane pv panel">
+    <div class="ph">
+     <h2>Браузър</h2>
+     <button id="btnPoint" title="Посочи елемент и виж стиловете му">🎯 Посочи</button>
+    </div>
+    <div class="browser">
+     <div class="btabs"><div class="btab">📄 <span>Моят клас</span><b class="x">✕</b></div></div>
+     <div class="bbar">← → ⟳ <div class="burl">moyat-klas/index.html</div></div>
+     <iframe id="frame" title="Визуализация на страницата"></iframe>
+     <div class="insp" id="insp" aria-live="polite"></div>
+    </div>
+    <div class="legend" id="legend">Страницата се обновява, докато пишеш. Кликни елемент, за да видиш стиловете му.</div>
+   </div>
+  </div>
+ </section>
+</main>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpT"><div class="box">
+ <h2 id="helpT">Как се работи с CSS конструктора</h2>
+ <ol>
+  <li><b>Прочети задачата</b> вляво. Отметките под нея показват кои изисквания изпълнява <b>текущият</b> ти код. Задачите със ★ са допълнителни.</li>
+  <li><b>Виж структурата</b> на страницата в колона „Структура“ – таговете са в синьо, <code>#id</code> в оранжево, <code>.класовете</code> в зелено. Клик върху тях добавя правило в редактора.</li>
+  <li><b>Пиши CSS</b> в редактора: <code>селектор { свойство: стойност; }</code>. Страницата вдясно се обновява веднага. Жълтото оцветяване показва кои елементи избира правилото, в което е курсорът.</li>
+  <li><b>Следи за грешки</b> под редактора – номерът на реда е червен. Клик върху съобщението води до реда. Проверката открива често срещани грешки, но не замества инструментите за разработчици (F12).</li>
+  <li>В редактора <b>Tab</b> вмъква отстъп. За да излезеш от редактора само с клавиатура, натисни <b>Esc</b> и след това <b>Tab</b>.</li>
+  <li><b>🎯 Посочи</b> елемент в браузъра, за да видиш стойностите му, откъде идват и кутиения му модел.</li>
+  <li>Когато всички задължителни отметки са ✓, <b>отговори на въпроса</b> и натисни <b>„✔ Провери“</b>. Мисиите с надпис „надграждаща“ (⁺) са за по-напредналите.</li>
+ </ol>
+ <p style="margin:8px 0 12px">Работата се пази в браузъра. Мисиите са за няколко учебни часа – не е нужно да ги минеш наведнъж.</p>
+ <button class="primary" id="helpClose">Разбрах</button>
+</div></div>
+<footer class="foot">CSS конструкторът работи без интернет. Напредъкът се пази в този браузър, когато браузърът позволява.</footer>
+
+<script>
+"use strict";
+/* ---------- HTML на страницата (не се променя) ---------- */
+const PAGE_HTML=`<header class="site-header">
+    <h1 id="main-title">Моят клас</h1>
+    <p class="subtitle">Нашето място за идеи и успехи</p>
+    <nav class="menu">
+        <a href="#za-nas">За нас</a>
+        <a href="#deynosti">Дейности</a>
+        <a href="#programa">Програма</a>
+    </nav>
+</header>
+<main class="page">
+    <section class="card" id="za-nas">
+        <h2>За нас</h2>
+        <p>Ние сме любознателни, креативни и обичаме технологиите.</p>
+        <p class="important">Учим се да създаваме уеб страници!</p>
+    </section>
+    <section class="card" id="deynosti">
+        <h2>Нашите дейности</h2>
+        <ul>
+            <li>Програмиране</li>
+            <li>Роботика</li>
+            <li>Училищни проекти</li>
+        </ul>
+        <button type="button">Научи повече</button>
+    </section>
+    <section class="card" id="programa">
+        <h2>Седмична програма</h2>
+        <table>
+            <tr><th>Ден</th><th>Дейност</th></tr>
+            <tr><td>Понеделник</td><td>HTML</td></tr>
+            <tr><td>Сряда</td><td>CSS</td></tr>
+        </table>
+    </section>
+</main>
+<footer class="site-footer">
+    <p>Създадено от 12 клас • 2026/2027</p>
+</footer>`;
+const fullDoc=(cssLink)=>`<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моят клас</title>
+    ${cssLink}
+</head>
+<body>
+${PAGE_HTML.split("\n").map(l=>"    "+l).join("\n")}
+</body>
+</html>
+`;
+
+/* ---------- Помощни функции за проверките ---------- */
+let F=null; // документът в браузъра
+const els=sel=>F?[...F.querySelectorAll(sel)]:[];
+const cs=el=>F.defaultView.getComputedStyle(el);
+const px=v=>parseFloat(v)||0;
+function every(sel,fn){const a=els(sel);return a.length>0&&a.every(e=>fn(cs(e),e))}
+function rgb(c){const m=/rgba?\(([^)]+)\)/.exec(c||"");if(!m)return[0,0,0,0];const p=m[1].split(/[ ,\/]+/).filter(Boolean).map(Number);return[p[0],p[1],p[2],p.length>3?p[3]:1]}
+const lum=c=>{const[r,g,b]=rgb(c);return(0.2126*r+0.7152*g+0.0722*b)/255};
+// относителна яркост и контраст по WCAG 2
+function relLum(c){const ch=rgb(c).slice(0,3).map(v=>{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)});return 0.2126*ch[0]+0.7152*ch[1]+0.0722*ch[2]}
+function bgOf(el){ // видим цвят на фона: смесва полупрозрачните фонове на елемента и родителите му върху бял лист
+ const layers=[];while(el&&el.nodeType===1){const c=rgb(cs(el).backgroundColor);if(c[3]>0)layers.push(c);if(c[3]>=1)break;el=el.parentElement}
+ let out=[255,255,255];for(let i=layers.length-1;i>=0;i--){const[r,g,b,a]=layers[i];out=[r*a+out[0]*(1-a),g*a+out[1]*(1-a),b*a+out[2]*(1-a)]}
+ return `rgb(${out.map(Math.round).join(", ")})`}
+function contrast(el){const a=relLum(cs(el).color),b=relLum(bgOf(el));return(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05)}
+const isBlue=c=>{const[r,g,b]=rgb(c);return b>=110&&b>r+40&&b>g+20};
+const isRed=c=>{const[r,g,b]=rgb(c);return r>=150&&g<110&&b<110};
+const isGreen=c=>{const[r,g,b]=rgb(c);return g>=80&&g>r+30&&g>b+25};
+const isGray=c=>{const[r,g,b]=rgb(c);return Math.max(r,g,b)-Math.min(r,g,b)<20&&r>60&&r<200};
+const hasBg=c=>rgb(c)[3]>0;
+const black=c=>{const[r,g,b]=rgb(c);return r<30&&g<30&&b<30};
+function styleRules(){ // правилата от style.css (без @media и без помощните стилове)
+ if(!F||!F.styleSheets[0])return[];const out=[];
+ try{[...F.styleSheets[0].cssRules].forEach(r=>{if(r.selectorText)out.push(r);else if(r.cssRules)[...r.cssRules].forEach(x=>x.selectorText&&out.push(x))})}catch(e){}
+ return out;
+}
+const STATES=/:(hover|focus-visible|focus-within|focus|active|visited|link)\b/g;
+const HAS_STATE=/:(hover|focus-visible|focus-within|focus|active|visited|link)\b/;
+const parts=sel=>sel.split(",").map(s=>s.trim()).filter(Boolean);
+function baseOf(part){let b=part.replace(STATES,"").trim();if(!b||/[>+~]$/.test(b))b+="*";return b}
+function matchesPart(el,part){try{return el.matches(baseOf(part))}catch(e){return false}}
+function ruleWithState(state,targetSel,test){
+ return styleRules().some(r=>parts(r.selectorText).some(p=>p.includes(":"+state)&&els(targetSel).some(el=>matchesPart(el,p)&&test(r.style,el))));
+}
+function resolveColor(v){ // превръща декларирана стойност (име, HEX…) в rgb(...)
+ if(!v||!F)return null;const t=F.createElement("i");t.style.display="none";t.style.color=v;F.body.appendChild(t);const c=cs(t).color;t.remove();return t.style.color?c:null}
+function changes(st,el){ // променя ли правилото видимо вида на елемента спрямо нормалното състояние
+ const n=cs(el),bgDecl=st.backgroundColor||"";
+ const col=st.color&&resolveColor(st.color),bg=bgDecl&&resolveColor(bgDecl);
+ return !!(col&&col!==n.color||bg&&bg!==n.backgroundColor||st.textDecorationLine&&st.textDecorationLine!==n.textDecorationLine||st.textDecoration&&!st.textDecorationLine&&st.textDecoration.split(" ")[0]!==n.textDecorationLine||st.outlineStyle&&st.outlineStyle!=="none"||st.borderColor&&resolveColor(st.borderColor)!==n.borderTopColor)}
+function ruleIndex(pred){return styleRules().findIndex(pred)}
+
+/* ---------- Мисии ---------- */
+const STARTER=`/* Общи стилове */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.page {
+    padding: 16px;
+}
+`;
+const M=[
+ {nav:"✎ Свободен",t:"Свободен режим",free:true,
+  s:"Оформи страницата „Моят клас“ както искаш. Няма задачи и оценки – експериментирай със селектори, цветове, рамки и отстояния. Мисиите 1–11 горе водят стъпка по стъпка.",
+  start:STARTER+`
+/* Твоите правила */
+`},
+ {nav:"1 • Правило",t:"Мисия 1 • Първо CSS правило",
+  s:"Направи основното заглавие <code>&lt;h1&gt;</code> <b>синьо</b> и с размер <b>36px</b>. Използвай селектор по таг.",
+  start:STARTER+`
+/* Напиши правило за h1 */
+`,
+  checks:[["Използвано е правило със селектор по таг h1",()=>styleRules().some(r=>parts(r.selectorText).includes("h1")&&(r.style.color||r.style.fontSize))],
+          ["Заглавието h1 е в син цвят (blue, navy, #1d4ed8…)",()=>every("h1",s=>isBlue(s.color))],
+          ["Размерът на h1 е 36px",()=>every("h1",s=>s.fontSize==="36px")],
+          ["CSS кодът няма грешки",()=>diagErrors===0]],
+  hints:[["Селекторът за всички заглавия от първо ниво е името на тага – <code>h1</code>. После идват фигурните скоби."],
+         ["Цветът се задава със свойството <code>color</code>, а размерът – с <code>font-size</code>:","h1 {\n    color: blue;\n    font-size: 36px;\n}"]],
+  quiz:{q:"Кое е <b>свойството</b> в правилото <code>h1 { color: blue; }</code>?",o:["h1","color","blue","{ }"],a:1,why:"<code>h1</code> е селекторът, <code>color</code> – свойството, а <code>blue</code> – стойността."}},
+
+ {nav:"2 • Клас и id",t:"Мисия 2 • Селектори по клас и id",
+  s:"Оцвети параграфа с клас <code>important</code> в <b>червено</b>, а заглавието с id <code>main-title</code> – в <b>зелено</b>. Подзаглавието с клас <code>subtitle</code> направи в <b>курсив</b>.",
+  start:STARTER+`
+/* Използвай .important, #main-title и .subtitle */
+`,
+  checks:[["Използвани са селекторите .important, #main-title и .subtitle",()=>{const all=styleRules().flatMap(r=>parts(r.selectorText));return[".important","#main-title",".subtitle"].every(x=>all.some(p=>p.includes(x)))}],
+          ["Параграфът .important е червен",()=>every(".important",s=>isRed(s.color))],
+          ["Обикновените параграфи не са червени",()=>every(".card p:not(.important)",s=>!isRed(s.color))],
+          ["Заглавието #main-title е зелено",()=>every("#main-title",s=>isGreen(s.color))],
+          ["Подзаглавието .subtitle е в курсив",()=>every(".subtitle",s=>s.fontStyle==="italic")],
+          ["CSS кодът няма грешки",()=>diagErrors===0]],
+  hints:[["Клас се избира с <b>точка</b> пред името, а id – с <b>диез</b>. В HTML атрибутът е без точката и без диеза."],
+         ["Пример:",".important {\n    color: red;\n}\n\n#main-title {\n    color: green;\n}\n\n.subtitle {\n    font-style: italic;\n}"]],
+  quiz:{q:"Колко елемента в една страница може да имат <code>id=\"main-title\"</code>?",o:["Колкото искаме","Точно един","Само заглавия","Нито един"],a:1,why:"id е уникален в документа. За повтарящи се стилове използвай клас."}},
+
+ {nav:"3 • Група",t:"Мисия 3 • Групиране и селектор за потомък",
+  s:"С <b>едно</b> правило задай на <code>h1</code> и <code>h2</code> шрифт <code>Georgia, serif</code>. После оцвети само заглавията <code>h2</code>, които са <b>вътре в</b> елементи с клас <code>card</code>, като използваш <b>селектор за потомък</b>.",
+  start:STARTER+`
+/* Група: h1 и h2 в едно правило */
+
+
+/* Селектор за потомък: h2 вътре в .card */
+`,
+  checks:[["Има едно правило с група „h1, h2“, което задава шрифт",()=>styleRules().some(r=>{const p=parts(r.selectorText);return p.includes("h1")&&p.includes("h2")&&r.style.fontFamily})],
+          ["h1 и всички h2 са с шрифт Georgia",()=>every("h1, h2",s=>/georgia/i.test(s.fontFamily))],
+          ["Използван е селектор за потомък „.card h2“",()=>styleRules().some(r=>parts(r.selectorText).some(p=>/\.card\s+h2$/.test(p.replace(/\s+/g," "))&&(r.style.color||r.style.backgroundColor)))],
+          ["Всички h2 в картите имат цвят, различен от черния",()=>every(".card h2",s=>!black(s.color))],
+          ["CSS кодът няма грешки",()=>diagErrors===0]],
+  hints:[["Групата се записва със <b>запетая</b> между селекторите: <code>h1, h2</code>."],
+         ["Селекторът за потомък е с <b>интервал</b>: <code>.card h2</code> означава „h2 вътре в елемент с клас card“.","h1, h2 {\n    font-family: Georgia, serif;\n}\n\n.card h2 {\n    color: #0f766e;\n}"]],
+  quiz:{q:"Какво избира селекторът <code>.card h2</code>?",o:["Елементи h2 с клас card","Заглавия h2, вложени в елемент с клас card","Всички h2 и всички .card","Само първото h2"],a:1,why:"Интервалът означава вложеност. За „h2 с клас card“ се пише <code>h2.card</code> – без интервал."}},
+
+ {nav:"4 • Наследяване",t:"Мисия 4 • Наследяване",
+  s:"Задай цвят на текста <code>#1e293b</code> и шрифт <code>Verdana, sans-serif</code> <b>само на</b> <code>body</code>. Провери, че параграфите, списъкът и таблицата ги <b>наследяват</b>, без да пишеш правила за тях.",
+  start:`/* Задай шрифта и цвета само веднъж */
+body {
+    margin: 0;
+}
+
+.page {
+    padding: 16px;
+}
+`,
+  checks:[["Правилото за body задава font-family и color",()=>styleRules().some(r=>parts(r.selectorText).includes("body")&&r.style.fontFamily&&r.style.color)],
+          ["Параграфите, елементите на списъка и клетките са с Verdana",()=>every("p, li, td",s=>/verdana/i.test(s.fontFamily))],
+          ["body е с цвят #1e293b и параграфите го наследяват",()=>{const b=els("body")[0];return !!b&&cs(b).color==="rgb(30, 41, 59)"&&every("p",s=>s.color===cs(b).color)}],
+          ["Няма отделни правила за шрифта на p, li и td",()=>!styleRules().some(r=>r.style.fontFamily&&parts(r.selectorText).some(p=>!/^(body|html|\*)$/.test(p)&&els("p, li, td").some(el=>matchesPart(el,p))))],
+          ["CSS кодът няма грешки",()=>diagErrors===0]],
+  hints:[["Свойствата за текст – <code>color</code>, <code>font-family</code>, <code>font-size</code> – се наследяват от родителя. Всички елементи са вътре в <code>body</code>."],
+         ["Добави двете декларации в правилото за body:","body {\n    margin: 0;\n    font-family: Verdana, sans-serif;\n    color: #1e293b;\n}"]],
+  quiz:{q:"Кое от тези свойства <b>не</b> се наследява?",o:["color","font-family","border","line-height"],a:2,why:"Рамката не се наследява – иначе всеки вложен елемент би получил своя рамка."}},
+
+ {nav:"5 • Фонове",t:"Мисия 5 • Цветове и фонове",
+  s:"Направи фона на страницата (<code>body</code>) <b>светъл цветен</b>, фона на картите <code>.card</code> – <b>бял</b>, а горната част <code>.site-header</code> – <b>тъмна</b> със <b>светъл</b> текст на заглавието.",
+  start:STARTER,
+  checks:[["Фонът на body е светъл цвят (не бял)",()=>every("body",s=>hasBg(s.backgroundColor)&&lum(s.backgroundColor)>0.6&&lum(s.backgroundColor)<0.99)],
+          ["Всички карти са с бял фон",()=>every(".card",s=>hasBg(s.backgroundColor)&&lum(s.backgroundColor)>0.97)],
+          ["Горната част .site-header е с тъмен фон",()=>every(".site-header",s=>hasBg(s.backgroundColor)&&lum(s.backgroundColor)<0.4)],
+          ["Текстът в горната част се чете – контраст поне 4.5 : 1",()=>els(".site-header h1, .site-header p").length>0&&els(".site-header h1, .site-header p").every(e=>contrast(e)>=4.5)],
+          ["Текстът в картите се чете – контраст поне 4.5 : 1",()=>els(".card p, .card li").every(e=>contrast(e)>=4.5)],
+          ["CSS кодът няма грешки",()=>diagErrors===0]],
+  hints:[["Четимостта се мери с <b>контраст</b> между цвета на текста и фона. За обикновен текст е нужен поне <b>4.5 : 1</b> – тъмен текст на светъл фон или светъл текст на тъмен фон."],["Фонът се задава с <code>background-color</code>. Цветът може да е име (<code>lightblue</code>), HEX код (<code>#eef6fb</code>) или <code>rgb(...)</code>."],
+         ["Пример:","body {\n    background-color: #eef6fb;\n}\n\n.card {\n    background-color: white;\n}\n\n.site-header {\n    background-color: #174967;\n    color: white;\n}"]],
+  quiz:{q:"Какво означава <code>rgba(0, 0, 0, 0.5)</code>?",o:["Черно с 50% плътност (полупрозрачно)","Сиво без прозрачност","Бяло","Невалиден цвят"],a:0,why:"Четвъртата стойност е плътността (alpha) от 0 до 1."}},
+
+ {nav:"6 • Рамки",t:"Мисия 6 • Рамки и отстояния",
+  s:"Оформи картите <code>.card</code> с <b>рамка</b>, <b>закръглени ъгли</b>, <b>вътрешно отстояние</b> поне 12px и <b>външно отстояние отдолу</b> поне 12px. Добави решетка на таблицата.",
+  start:STARTER+`
+.card {
+    background-color: white;
+}
+`,
+  checks:[["Всички карти имат рамка",()=>every(".card",s=>px(s.borderTopWidth)>=1&&s.borderTopStyle!=="none")],
+          ["Ъглите на картите са закръглени (border-radius ≥ 6px)",()=>every(".card",s=>px(s.borderTopLeftRadius)>=6)],
+          ["Вътрешно отстояние (padding) поне 12px от всички страни",()=>every(".card",s=>["Top","Right","Bottom","Left"].every(k=>px(s["padding"+k])>=12))],
+          ["Външно отстояние отдолу (margin-bottom) поне 12px",()=>every(".card",s=>px(s.marginBottom)>=12)],
+          ["Таблицата е със слети рамки и рамки на клетките",()=>every("table",s=>s.borderCollapse==="collapse")&&every("th, td",s=>px(s.borderTopWidth)>=1&&s.borderTopStyle!=="none"),true],
+          ["CSS кодът няма грешки",()=>diagErrors===0]],
+  hints:[["<code>border</code> приема дебелина, стил и цвят: <code>border: 2px solid navy;</code>. Закръглянето е <code>border-radius</code>."],
+         ["Пример:",".card {\n    background-color: white;\n    border: 2px solid #174967;\n    border-radius: 10px;\n    padding: 16px 20px;\n    margin-bottom: 16px;\n}\n\ntable {\n    border-collapse: collapse;\n}\n\nth, td {\n    border: 1px solid #9fbfd2;\n    padding: 4px 10px;\n}"]],
+  quiz:{q:"Кое отстояние е <b>оцветено във фона</b> на елемента?",o:["margin","padding","и двете","нито едно"],a:1,why:"padding е вътре в рамката и има фона на елемента. margin е извън рамката и е прозрачен."}},
+
+ {nav:"7 • Кутия",t:"Мисия 7 • Кутиен модел",adv:true,
+  s:"Картите имат <code>width: 300px</code>, <code>padding: 20px</code> и рамка 2px, но на екрана са по-широки. Направи <b>видимата</b> ширина на всяка карта <b>точно 300px</b>, <b>без</b> да променяш тези три стойности. Посочи карта с 🎯 и виж кутиения ѝ модел.",
+  start:STARTER+`
+.card {
+    width: 300px;
+    padding: 20px;
+    border: 2px solid #174967;
+    margin-bottom: 12px;
+}
+`,
+  checks:[["width на картите остава 300px",()=>styleRules().some(r=>r.selectorText===".card"&&r.style.width==="300px")],
+          ["padding остава 20px, а рамката – 2px",()=>every(".card",s=>s.paddingLeft==="20px"&&s.borderLeftWidth==="2px")],
+          ["Картите използват box-sizing: border-box",()=>every(".card",s=>s.boxSizing==="border-box")],
+          ["Няма второ правило, което променя width на картите",()=>every(".card",s=>s.width==="300px")],
+          ["Видимата ширина на всяка карта е точно 300px",()=>els(".card").length>0&&els(".card").every(e=>Math.round(e.getBoundingClientRect().width)===300)],
+          ["CSS кодът няма грешки",()=>diagErrors===0]],
+  hints:[["По подразбиране <code>width</code> е ширината само на съдържанието. padding и border се <b>добавят</b> към нея: 300 + 2×20 + 2×2."],
+         ["Свойството <code>box-sizing: border-box</code> кара width да включва и тях:",".card {\n    box-sizing: border-box;\n    width: 300px;\n    padding: 20px;\n    border: 2px solid #174967;\n    margin-bottom: 12px;\n}"]],
+  quiz:{q:"Колко е видимата ширина при <code>content-box</code>, ако width = 300px, padding = 20px и border = 2px?",o:["300px","320px","344px","342px"],a:2,why:"300 + 2 × 20 + 2 × 2 = 344px. margin не влиза във видимата ширина."}},
+
+ {nav:"8 • Каскада",t:"Мисия 8 • Каскада и специфичност",adv:true,
+  s:"Правилото <code>p { color: gray; }</code> е записано <b>последно</b>. Напиши правило за <code>.important</code> <b>над</b> него (там, където е коментарът), така че само важният параграф да е <b>червен</b>. Защо работи, въпреки че е по-рано?",
+  start:STARTER+`
+/* Напиши правилото за .important ТУК – над правилото за p */
+
+
+p {
+    color: gray;
+}
+`,
+  checks:[["Важният параграф е червен",()=>every(".important",s=>isRed(s.color))],
+          ["Обикновените параграфи остават сиви",()=>every(".card p:not(.important)",s=>isGray(s.color))],
+          ["Правилото за .important е преди правилото за p",()=>{const i=ruleIndex(r=>parts(r.selectorText).some(p=>/\.important/.test(p))&&r.style.color),j=ruleIndex(r=>r.selectorText==="p"&&r.style.color);return i>=0&&j>=0&&i<j}],
+          ["Без !important",()=>!styleRules().some(r=>/!\s*important/i.test(r.cssText))],
+          ["CSS кодът няма грешки",()=>diagErrors===0]],
+  hints:[["Когато две правила задават едно свойство, първо се сравнява <b>специфичността</b>. Редът решава само при еднаква специфичност."],
+         ["Клас (0,1,0) е по-специфичен от таг (0,0,1):",".important {\n    color: red;\n}"]],
+  quiz:{q:"Защо <code>.important</code> печели, макар да е записано преди <code>p</code>?",o:["Защото е по-кратко","Защото селекторът по клас е по-специфичен от селектора по таг","Защото червеното е по-силен цвят","Защото първото правило винаги печели"],a:1,why:"Специфичността се сравнява преди реда. Редът решава само при еднаква специфичност. Посочи параграфа с 🎯 и виж специфичността на правилата."}},
+
+ {nav:"9 • :hover",t:"Мисия 9 • Псевдокласове :hover и :focus-visible",adv:true,
+  s:"Направи връзките в менюто <code>.menu a</code> като бутони: <code>display: inline-block</code> и вътрешно отстояние. Добави промяна на цвета при <b>посочване с мишка</b> (<code>:hover</code>) и ясно видим контур при <b>избор с клавиатура</b> (<code>:focus-visible</code>). Изпробвай с мишката и с клавиша Tab.",
+  start:STARTER+`
+.site-header {
+    background-color: #174967;
+    color: white;
+    padding: 12px 16px;
+}
+
+.menu a {
+    color: white;
+}
+`,
+  checks:[["Връзките в менюто са inline-block с padding",()=>every(".menu a",s=>s.display==="inline-block"&&px(s.paddingLeft)>0)],
+          ["При :hover връзките в менюто видимо променят цвета или фона",()=>ruleWithState("hover",".menu a",(st,el)=>changes(st,el))],
+          ["Има правило :focus-visible с контур (outline)",()=>ruleWithState("focus-visible",".menu a",st=>st.outlineStyle&&st.outlineStyle!=="none"||(st.outline&&!/none/.test(st.outline)))],
+          ["Бутонът „Научи повече“ също се променя при :hover",()=>ruleWithState("hover","button",(st,el)=>changes(st,el)),true],
+          ["CSS кодът няма грешки",()=>diagErrors===0]],
+  hints:[["Псевдокласът се пише след селектора, без интервал: <code>.menu a:hover</code>."],
+         ["Пример:",".menu a {\n    color: white;\n    display: inline-block;\n    padding: 6px 12px;\n    border-radius: 6px;\n}\n\n.menu a:hover {\n    background-color: #ffb62e;\n    color: #082d46;\n}\n\n.menu a:focus-visible {\n    outline: 3px solid #ffb62e;\n    outline-offset: 2px;\n}"]],
+  quiz:{q:"Защо е важен <code>:focus-visible</code>?",o:["Ускорява страницата","Показва къде е фокусът, когато потребителят се движи с клавиатура","Заменя :hover","Скрива контура"],a:1,why:"Много потребители използват клавиатура. Без видим фокус те не знаят коя връзка е избрана."}},
+
+ {nav:"10 • Грешки",t:"Мисия 10 • Намери грешките",
+  s:"В CSS кода има <b>четири грешки</b>, затова част от оформлението не се вижда. Използвай списъка с проблеми под редактора, поправи грешките и постигни: заглавие в <b>тъмносиньо</b> (navy), важен параграф – <b>удебелен и червен</b>, подзаглавие в <b>курсив</b> и карти с <b>padding 20px</b>.",
+  start:`body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    colour: navy;
+}
+
+.important {
+    font-weight: bold
+    color: red;
+}
+
+#subtitle {
+    font-style: italic;
+}
+
+.card {
+    padding = 20px;
+}
+`,
+  checks:[["Заглавието h1 е тъмносиньо",()=>every("h1",s=>s.color==="rgb(0, 0, 128)")],
+          ["Важният параграф е удебелен и червен",()=>every(".important",s=>(s.fontWeight==="700"||s.fontWeight==="bold")&&isRed(s.color))],
+          ["Подзаглавието е в курсив",()=>every(".subtitle",s=>s.fontStyle==="italic")],
+          ["Картите са с padding 20px",()=>every(".card",s=>s.paddingTop==="20px")],
+          ["В CSS няма грешки и предупреждения",()=>diagErrors===0&&diagWarns===0]],
+  hints:[["Кликни върху всеки проблем в списъка под редактора – курсорът отива на съответния ред."],
+         ["Четирите грешки: <code>colour</code> вместо <code>color</code>; липсваща <code>;</code> след <code>bold</code>; <code>#subtitle</code> вместо <code>.subtitle</code> (в HTML е клас); <code>=</code> вместо <code>:</code>."]],
+  quiz:{q:"Какво прави браузърът с декларация с грешно име на свойство?",o:["Показва съобщение за грешка","Спира да чете CSS файла","Пропуска я тихо и продължава с останалите","Заменя я с най-близкото свойство"],a:2,why:"Затова грешките в CSS са трудни за забелязване – трябва да ги търсим с инструменти като DevTools."}},
+
+ {nav:"11 • Финал",t:"Мисия 11 • Финален проект",
+  s:"Оформи цялата страница по свой вкус. Изискванията са общи – цветовете и размерите избираш ти. <b>Какво предаваш:</b> когато задължителните отметки са ✓, натисни „⬇ Свали ZIP“ и предай архива <code>moyat-klas-css.zip</code> – в него са <code>index.html</code> и <code>css/style.css</code>.",
+  start:STARTER+`
+/* Създай собствен дизайн */
+`,
+  checks:[["Страницата има цвят на фона",()=>every("body",s=>hasBg(s.backgroundColor)&&lum(s.backgroundColor)<0.99)],
+          ["Горната част .site-header е оформена с фон",()=>every(".site-header",s=>hasBg(s.backgroundColor))],
+          ["Заглавията h2 имат собствен цвят и се четат (контраст ≥ 3 : 1)",()=>every("h2",s=>!black(s.color))&&els("h2").every(e=>contrast(e)>=3)],
+          ["Текстът на параграфите се чете (контраст ≥ 4.5 : 1)",()=>els("p").every(e=>contrast(e)>=4.5)],
+          ["Картите имат padding и се отличават от фона (рамка или собствен фон)",()=>{const b=els("body")[0];return every(".card",s=>px(s.paddingTop)>=10&&(px(s.borderTopWidth)>=1&&s.borderTopStyle!=="none"||hasBg(s.backgroundColor)&&s.backgroundColor!==cs(b).backgroundColor))}],
+          ["Менюто е оформено и се променя видимо при :hover",()=>every(".menu a",s=>px(s.paddingLeft)>0)&&ruleWithState("hover",".menu a",(st,el)=>changes(st,el))],
+          ["Основното съдържание е центрирано с max-width и margin auto",()=>styleRules().some(r=>parts(r.selectorText).some(p=>els(".page").some(el=>matchesPart(el,p)))&&r.style.maxWidth&&r.style.marginLeft==="auto"&&r.style.marginRight==="auto")],
+          ["Таблицата е с решетка",()=>every("table",s=>s.borderCollapse==="collapse")&&every("td",s=>px(s.borderTopWidth)>=1&&s.borderTopStyle!=="none")],
+          ["CSS кодът няма грешки",()=>diagErrors===0],
+          ["Връзките имат :focus-visible",()=>ruleWithState("focus-visible",".menu a",st=>st.outlineStyle&&st.outlineStyle!=="none"||(st.outline&&!/none/.test(st.outline))),true]],
+  hints:[["Използвай наученото в мисии 1–9. Започни с body и .site-header, после .card и менюто."],
+         ["Центриране:",".page {\n    max-width: 800px;\n    margin: 0 auto;\n    padding: 16px;\n}"]],
+  quiz:null}
+];
+
+/* ---------- Анализ на CSS текста ---------- */
+const PROPS=(()=>{try{return[...getComputedStyle(document.documentElement)].filter(p=>!p.startsWith("-"))}catch(e){return[]}})();
+const LENGTH_PROPS=/^(width|height|max-width|min-width|max-height|min-height|font-size|padding|margin|border-width|border-radius|top|left|right|bottom|letter-spacing|outline-offset|gap)/;
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i]);for(let j=1;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+function suggest(p){let best=null,bd=9;for(const q of PROPS){const d=lev(p,q);if(d<bd){bd=d;best=q}}return bd<=Math.max(2,Math.floor(p.length/4))?best:null}
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function supports(p,v){try{return CSS.supports(p,v)}catch(e){return true}}
+function parseCSS(src){
+ const s=src.replace(/\/\*[\s\S]*?\*\//g,m=>m.replace(/[^\n]/g," "));
+ const probs=[],rules=[],stack=[];
+ const lineAt=pos=>{let n=1;for(let i=0;i<pos&&i<s.length;i++)if(s[i]==="\n")n++;return n};
+ let buf="",bufStart=0;
+ for(let i=0;i<s.length;i++){
+  const ch=s[i];
+  if(ch==="{"){
+   const lead=buf.search(/\S/);const sel=buf.trim();const selPos=lead<0?i:bufStart+lead;
+   if(stack.length)stack[stack.length-1].hasChild=true;
+   if(!sel)probs.push({line:lineAt(i),lvl:"bad",msg:"Липсва селектор преди „{“."});
+   stack.push({sel,selPos,open:i,hasChild:false});buf="";bufStart=i+1;
+  }else if(ch==="}"){
+   if(!stack.length){probs.push({line:lineAt(i),lvl:"bad",msg:"Излишна затваряща скоба „}“."});buf="";bufStart=i+1;continue}
+   if(buf.trim()&&stack[stack.length-1].hasChild)probs.push({line:lineAt(bufStart+buf.search(/\S/)),lvl:"bad",msg:"Текст извън правило – липсва селектор и „{“?"});
+   const top=stack.pop();
+   if(!top.sel.startsWith("@")&&!top.hasChild)rules.push({sel:top.sel,line:lineAt(top.selPos),body:s.slice(top.open+1,i),bodyStart:top.open+1});
+   buf="";bufStart=i+1;
+  }else{if(buf==="")bufStart=i;buf+=ch}
+ }
+ stack.forEach(t=>probs.push({line:lineAt(t.open),lvl:"bad",msg:`Липсва затваряща скоба „}“ за правилото <b>${esc(t.sel||"{")}</b>.`}));
+ if(buf.trim()&&!stack.length)probs.push({line:lineAt(bufStart+buf.search(/\S/)),lvl:"bad",msg:/[:;]/.test(buf)?"Декларация извън фигурни скоби – липсва селектор и „{“?":`Незавършено правило: <b>${esc(buf.trim().slice(0,30))}</b> – липсва „{“?`});
+ for(const r of rules){
+  // селектори
+  for(const part of parts(r.sel)){try{document.querySelector(baseOf(part).replace(/::?(before|after|first-line|first-letter|placeholder|marker|selection)/g,""))}catch(e){probs.push({line:r.line,lvl:"bad",msg:`Невалиден селектор <b>${esc(part)}</b>.`})}}
+  // декларации
+  let q=null,depth=0,start=0;const b=r.body;const decls=[];
+  for(let i=0;i<=b.length;i++){const ch=b[i];
+   if(q){if(ch===q)q=null;continue}
+   if(ch==='"'||ch==="'"){q=ch;continue}
+   if(ch==="(")depth++;else if(ch===")")depth=Math.max(0,depth-1);
+   if((ch===";"&&depth===0)||i===b.length){const raw=b.slice(start,i);if(raw.trim())decls.push({raw,pos:r.bodyStart+start+raw.search(/\S/)});start=i+1}}
+  for(const d of decls){
+   const line=lineAt(d.pos),t=d.raw.trim();
+   const ci=t.indexOf(":");
+   if(ci<0){probs.push({line,lvl:"bad",msg:t.includes("=")?`Използвай двоеточие „:“ вместо „=“: <b>${esc(t.replace(/\s*=\s*/,": "))};</b>`:`Липсва двоеточие между свойството и стойността в <b>${esc(t)}</b>.`});continue}
+   const prop=t.slice(0,ci).trim().toLowerCase();let val=t.slice(ci+1).trim();
+   if(/^--/.test(prop))continue;
+   if(!/^[a-z-]+$/.test(prop)){probs.push({line,lvl:"bad",msg:`Невалидно име на свойство <b>${esc(prop)}</b>.`});continue}
+   if(!supports(prop,"inherit")){const sg=suggest(prop);probs.push({line,lvl:"bad",msg:`<b>${esc(prop)}</b> не е CSS свойство.`+(sg?` Може би <b>${esc(sg)}</b>?`:"")});continue}
+   if(/\n\s*[a-z-]+\s*:/i.test(val)){probs.push({line,lvl:"bad",msg:`Липсва „;“ в края на реда след <b>${esc(prop)}: ${esc(val.split("\n")[0].trim())}</b> – следващата декларация се слива с тази.`});continue}
+   if(!val){probs.push({line,lvl:"bad",msg:`Липсва стойност за <b>${esc(prop)}</b>.`});continue}
+   const v2=val.replace(/!\s*important\s*$/i,"").trim();
+   if(!supports(prop,v2)){
+    let tip="";
+    if(/^(["']).*\1$/.test(v2)&&!/font-family|content|quotes/.test(prop))tip=" Стойностите не се пишат в кавички.";
+    else if(/^\d+(\.\d+)?$/.test(v2)&&v2!=="0"&&LENGTH_PROPS.test(prop))tip=` Липсва мерна единица – напр. <b>${esc(v2)}px</b>.`;
+    else if(/\d\s+(px|em|rem|%|vh|vw|pt)\b/.test(v2))tip=" Между числото и мерната единица няма интервал.";
+    probs.push({line,lvl:"bad",msg:`Стойността <b>${esc(v2)}</b> не е валидна за <b>${esc(prop)}</b>.`+tip});
+   }
+  }
+ }
+ return{rules,probs};
+}
+function selectorWarnings(rules){
+ const w=[];if(!F)return w;
+ for(const r of rules)for(const part of parts(r.sel)){
+  let base=baseOf(part).replace(/::?(before|after|first-line|first-letter|placeholder|marker|selection)/g,"");
+  let n=0;try{n=F.querySelectorAll(base).length}catch(e){continue}
+  if(n>0||/^(html|body|\*)$/.test(base))continue;
+  let tip="";const name=base.replace(/^[#.]/,"");
+  if(/^#[\w-]+$/.test(base)&&F.querySelector("."+name))tip=` В HTML <b>${esc(name)}</b> е <b>клас</b> – използвай <b>.${esc(name)}</b>.`;
+  else if(/^\.[\w-]+$/.test(base)&&F.getElementById(name))tip=` В HTML <b>${esc(name)}</b> е <b>id</b> – използвай <b>#${esc(name)}</b>.`;
+  else if(/^[\w-]+$/.test(base)&&F.querySelector("."+name))tip=` Липсва точка – клас се пише <b>.${esc(name)}</b>.`;
+  else if(/^[\w-]+$/.test(base)&&F.getElementById(name))tip=` Липсва диез – id се пише <b>#${esc(name)}</b>.`;
+  w.push({line:r.line,lvl:"warn",msg:`Селекторът <b>${esc(part)}</b> не намира нито един елемент в страницата.`+tip});
+ }
+ return w;
+}
+
+/* ---------- Състояние ---------- */
+const KEY="css-konstruktor-v4-"; // версия на запазените данни – при несъвместими промени се сменя
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let cur=0,point=false,diagErrors=0,diagWarns=0,lastProbs=[];
+const ST=M.map((m,i)=>{let o=null;try{o=JSON.parse(store.get(KEY+i)||"null")}catch(e){}return{css:o&&typeof o.css==="string"?o.css:m.start,done:!!(o&&o.done),quiz:null,hintN:0}});
+{const c=parseInt(store.get(KEY+"cur"),10);if(c>=0&&c<M.length)cur=c}
+const st=()=>ST[cur];
+let saveT=null;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{ST.forEach((s,i)=>store.set(KEY+i,JSON.stringify({css:s.css,done:s.done})));store.set(KEY+"cur",String(cur))},300)}
+
+/* ---------- Изобразяване ---------- */
+const $=s=>document.querySelector(s);
+const ed=$("#editor"),gut=$("#gutter"),frame=$("#frame");
+function renderNav(){$("#mnav").innerHTML=M.map((m,i)=>`<button class="mbtn${i===cur?" active":""}" data-m="${i}"${m.adv?' title="Надграждаща мисия"':""}>${ST[i].done?'<span class="ok">✓</span> ':""}${esc(m.nav)}${m.adv?"⁺":""}</button>`).join("");
+ const n=ST.filter((s,i)=>s.done&&!M[i].free).length;$("#prog").textContent=`Изпълнени ${n} от ${M.length-1} мисии`}
+function renderMission(){
+ const m=M[cur],s=st();
+ $("#mTitle").innerHTML=esc(m.t)+(m.adv?'<span class="badge" title="Надграждаща мисия – за ученици, които искат да научат повече">надграждаща</span>':"");$("#mTask").innerHTML=m.s;
+ $("#missionPanel").classList.toggle("free",!!m.free);
+ $("#quiz").innerHTML=m.quiz?`<div class="q">🤔 ${m.quiz.q}</div>`+m.quiz.o.map((o,i)=>`<label><input type="radio" name="qz" value="${i}"${s.quiz===i?" checked":""}> <span>${esc(o).replace(/`([^`]+)`/g,"<code>$1</code>")}</span></label>`).join(""):"";
+ $("#quiz").style.display=m.quiz?"":"none";
+ renderHints();
+ const fb=$("#feedback");fb.className="feedback";fb.innerHTML=s.done?"Тази мисия е завършвана успешно. Отметките горе показват дали <b>текущият</b> код още изпълнява изискванията.":"Пиши CSS – отметките се обновяват веднага. Накрая отговори на въпроса и натисни „Провери“.";lastRes=null;
+ if(ed.value!==s.css)ed.value=s.css;
+ updGutter();
+}
+function renderHints(){const m=M[cur],s=st();const h=m.hints||[];
+ $("#hints").innerHTML=h.slice(0,s.hintN).map(([t,code])=>`<div class="hint">💡 ${t}${code?`<pre>${esc(code)}</pre>`:""}</div>`).join("");
+ $("#btnHint").disabled=s.hintN>=h.length;
+ $("#btnHint").textContent=s.hintN?`💡 Още подсказка (${s.hintN}/${h.length})`:"💡 Подсказка";}
+function updGutter(){
+ const n=ed.value.split("\n").length,bad=new Set(lastProbs.filter(p=>p.lvl==="bad").map(p=>p.line)),warn=new Set(lastProbs.filter(p=>p.lvl==="warn").map(p=>p.line));
+ let h="";for(let i=1;i<=n;i++)h+=(bad.has(i)?`<span class="bad">${i}</span>`:warn.has(i)?`<span class="warn">${i}</span>`:i)+"\n";
+ gut.innerHTML=h;gut.scrollTop=ed.scrollTop;
+}
+let lastRes=null;
+function renderChecks(){
+ const m=M[cur],s=st();
+ const res=(m.checks||[]).map(c=>{let ok=false;try{ok=!!c[1]()}catch(e){}return{c,ok}});
+ $("#checks").innerHTML=res.map(({c,ok})=>`<li class="${ok?"done":""}${c[2]?" bonus":""}"><span class="m">${ok?"✓":""}</span><span class="lbl">${esc(c[0])}</span></li>`).join("");
+ const req=res.filter(r=>!r.c[2]),okN=req.filter(r=>r.ok).length,hasBonus=res.some(r=>r.c[2]);
+ $("#status").innerHTML=m.free?"":`<b>Текущият код:</b> ${okN} от ${req.length} изисквания${okN===req.length?" ✓":""}`+(s.done?` • <span class="ach">✓ Мисията е завършвана успешно</span>`:"")+(hasBonus?`<div class="bn">★ – допълнителна задача, не е задължителна</div>`:"");
+ // ако мисията е отбелязана като изпълнена, но кодът вече не отговаря – обясни
+ const fb=$("#feedback");
+ if(lastRes&&fb.classList.contains("good")&&okN<req.length){fb.className="feedback";fb.innerHTML="Кодът е променен и вече не изпълнява всички изисквания. Постижението ти се пази, но провери отметките горе."}
+ lastRes=res;
+}
+function renderDiag(){
+ const p=lastProbs;
+ diagErrors=p.filter(x=>x.lvl==="bad").length;diagWarns=p.filter(x=>x.lvl==="warn").length;
+ $("#diag").innerHTML=p.length?p.map(x=>`<a class="${x.lvl}" data-line="${x.line}" tabindex="0">ред ${x.line}: ${x.msg}</a>`).join(""):(ed.value.trim()?'<div class="ok" title="Проверката открива често срещани грешки, но не замества инструментите за разработчици (F12) в браузъра.">✓ Не са открити често срещани грешки в CSS кода.</div>':"");
+}
+let prevT=null,keepScroll=0;
+function scheduleRender(now){clearTimeout(prevT);if(now)renderPreview();else prevT=setTimeout(renderPreview,250)}
+function renderPreview(){
+ const css=st().css.replace(/<\/style/gi,"<\\/style");
+ try{keepScroll=frame.contentWindow?frame.contentWindow.scrollY:0}catch(e){keepScroll=0}
+ frame.srcdoc=`<!DOCTYPE html><html lang="bg"><head><meta charset="utf-8"><style>${css}</style></head><body>${PAGE_HTML}</body></html>`;
+}
+frame.addEventListener("load",()=>{
+ F=frame.contentDocument;if(!F)return;
+ const hs=F.createElement("style");hs.textContent=".__m{outline:2px solid rgba(232,160,0,.9) !important;outline-offset:1px}.__h{outline:2px dashed #2b6cb0 !important;outline-offset:2px}.__s{outline:3px solid #ffb62e !important;outline-offset:2px}";F.head.appendChild(hs);
+ try{frame.contentWindow.scrollTo(0,keepScroll)}catch(e){}
+ F.addEventListener("click",onFrameClick,true);
+ F.addEventListener("mouseover",e=>{$("#tree").querySelectorAll(".hov").forEach(x=>x.classList.remove("hov"));const t=e.target.closest("body *");if(t){const n=nodeOf(t);if(n){n.classList.add("hov");n.scrollIntoView({block:"nearest"})}}if(!point)return;F.querySelectorAll(".__h").forEach(x=>x.classList.remove("__h"));if(t)t.classList.add("__h")});
+ F.addEventListener("mouseleave",()=>F.querySelectorAll(".__h").forEach(x=>x.classList.remove("__h")),true);
+ analyze();
+ renderTree();
+ if(selPath)reselect();
+});
+function analyze(){
+ const p=parseCSS(st().css);
+ lastProbs=p.probs.concat(selectorWarnings(p.rules)).sort((a,b)=>a.line-b.line);
+ renderDiag();updGutter();renderChecks();
+}
+
+/* ---------- Структура (дърво) ---------- */
+let elMap=[];
+function renderTree(){
+ if(!F)return;elMap=[];let h="";
+ (function walk(el,d){
+  for(const c of el.children){
+   if(c.tagName==="SCRIPT"||c.tagName==="STYLE")continue;
+   if(c.tagName==="TBODY"&&!/<tbody/i.test(PAGE_HTML)){walk(c,d);continue}
+   const i=elMap.push(c)-1,tag=c.tagName.toLowerCase();
+   const cls=[...c.classList].filter(x=>!x.startsWith("__"));
+   let own="";for(const n of c.childNodes)if(n.nodeType===3)own+=n.nodeValue;own=own.replace(/\s+/g," ").trim();
+   h+=`<div class="tnode" data-i="${i}" style="padding-left:${6+d*13}px"><span class="tp">&lt;</span><span class="tg" data-sel="${tag}" title="Добави правило за всички &lt;${tag}&gt;">${tag}</span>`+
+      (c.id?`<span class="tid" data-sel="#${esc(c.id)}" title="Добави правило за id=&quot;${esc(c.id)}&quot;">#${esc(c.id)}</span>`:"")+
+      cls.map(x=>`<span class="tcl" data-sel=".${esc(x)}" title="Добави правило за клас ${esc(x)}">.${esc(x)}</span>`).join("")+
+      `<span class="tp">&gt;</span>${own?`<span class="ttx">${esc(own.length>22?own.slice(0,22)+"…":own)}</span>`:""}</div>`;
+   walk(c,d+1);
+  }
+ })(F.body,0);
+ $("#tree").innerHTML=h;
+ markCaretRule();
+ if(selPath){const el=byPath(selPath);markTreeSel(el)}
+}
+function nodeOf(el){const i=elMap.indexOf(el);return i<0?null:$(`#tree .tnode[data-i="${i}"]`)}
+function markTreeSel(el){$("#tree").querySelectorAll(".sel").forEach(x=>x.classList.remove("sel"));const n=el&&nodeOf(el);if(n){n.classList.add("sel");n.scrollIntoView({block:"nearest"})}}
+function caretRule(){
+ const v=ed.value,c=ed.selectionStart,before=v.slice(0,c).replace(/\/\*[\s\S]*?\*\//g,m=>" ".repeat(m.length));
+ const lo=before.lastIndexOf("{"),lc=before.lastIndexOf("}");
+ let sel="";
+ if(lo>lc){const prev=before.lastIndexOf("}",lo);sel=before.slice(prev+1,lo)}
+ else{const rest=v.slice(c),no=rest.indexOf("{"),nc=rest.indexOf("}");if(no>=0&&(nc<0||no<nc))sel=before.slice(lc+1)+rest.slice(0,no)}
+ return sel.replace(/\/\*[\s\S]*?\*\//g,"").replace(/\s+/g," ").trim();
+}
+function markCaretRule(){
+ if(!F)return;
+ F.querySelectorAll(".__m").forEach(x=>x.classList.remove("__m"));
+ $("#tree").querySelectorAll(".match").forEach(x=>x.classList.remove("match"));
+ const sel=caretRule(),info=$("#tinfo");
+ if(!sel||sel.startsWith("@")){info.innerHTML="Кликни <b>таг</b>, <b>#id</b> или <b>.клас</b>, за да добавиш правило. Посочи ред, за да видиш елемента.";return}
+ let found=new Set(),bad=false;
+ for(const part of parts(sel)){try{F.querySelectorAll(baseOf(part).replace(/::?(before|after|first-line|first-letter|placeholder|marker|selection)/g,"")).forEach(e=>found.add(e))}catch(e){bad=true}}
+ found.forEach(e=>{e.classList.add("__m");const n=nodeOf(e);if(n)n.classList.add("match")});
+ const first=[...found][0];if(first){const n=nodeOf(first);if(n)n.scrollIntoView({block:"nearest"})}
+ info.innerHTML=bad&&!found.size?`Селекторът <b>${esc(sel)}</b> не е валиден.`:found.size?`Правилото <b>${esc(sel)}</b> избира <b>${found.size}</b> ${found.size===1?"елемент – оцветен е":"елемента – оцветени са"} в жълто.`:`Правилото <b>${esc(sel)}</b> не избира нито един елемент.`;
+}
+function insertRule(sel){
+ const v=ed.value;let c=ed.selectionStart;
+ const before=v.slice(0,c),lo=before.lastIndexOf("{"),lc=before.lastIndexOf("}");
+ if(lo>lc){const nc=v.indexOf("}",c);c=nc<0?v.length:nc+1}
+ else{const ls=v.lastIndexOf("\n",c-1)+1,le=v.indexOf("\n",c);const line=v.slice(ls,le<0?v.length:le);if(line.trim())c=le<0?v.length:le}
+ const pre=(c>0&&v[c-1]!=="\n"?"\n":"")+(c>1&&v.slice(Math.max(0,c-2),c)!=="\n\n"&&c>0?"\n":"");
+ const txt=`${pre}${sel} {\n    \n}\n`;
+ ed.focus();ed.setSelectionRange(c,c);ed.setRangeText(txt,c,c,"end");
+ const caret=c+pre.length+sel.length+7;ed.setSelectionRange(caret,caret);
+ ed.dispatchEvent(new Event("input"));
+ $("#msg").textContent=`Добавено е правило за ${sel}. Напиши декларациите между фигурните скоби.`;
+ if(matchMedia("(max-width:820px)").matches)showPane("code");
+}
+$("#tree").addEventListener("click",e=>{
+ const t=e.target.closest("[data-sel]");if(t){insertRule(t.dataset.sel);return}
+ const n=e.target.closest(".tnode");if(!n)return;const el=elMap[+n.dataset.i];if(!el)return;
+ selPath=pathOf(el);showInspector(el);el.scrollIntoView({block:"nearest"});
+});
+$("#tree").addEventListener("mouseover",e=>{if(!F)return;F.querySelectorAll(".__h").forEach(x=>x.classList.remove("__h"));const n=e.target.closest(".tnode");if(n){const el=elMap[+n.dataset.i];if(el){el.classList.add("__h");el.scrollIntoView({block:"nearest"})}}});
+$("#tree").addEventListener("mouseleave",()=>{if(F)F.querySelectorAll(".__h").forEach(x=>x.classList.remove("__h"))});
+["keyup","click","focus"].forEach(ev=>ed.addEventListener(ev,()=>markCaretRule()));
+
+/* ---------- Инспектор ---------- */
+let selPath=null;
+function pathOf(el){const p=[];while(el&&el!==F.body){p.unshift([...el.parentNode.children].indexOf(el));el=el.parentNode}return p}
+function byPath(p){let el=F.body;for(const i of p){el=el&&el.children[i]}return el}
+function label(el){return el.tagName.toLowerCase()+(el.id?"#"+el.id:"")+[...el.classList].filter(c=>!c.startsWith("__")).map(c=>"."+c).join("")}
+function specificity(sel){
+ const s=sel.replace(/:where\([^)]*\)/g,"").replace(/:(not|is)\(([^)]*)\)/g," $2");
+ const a=(s.match(/#[\w-]+/g)||[]).length;
+ const b=(s.match(/\.[\w-]+|\[[^\]]+\]|:(?!:)[\w-]+/g)||[]).length;
+ const c=(s.replace(/#[\w-]+|\.[\w-]+|\[[^\]]+\]|:(?!:)[\w-]+/g," ").match(/(^|[\s>+~])[a-z][\w-]*|::[\w-]+/gi)||[]).length;
+ return[a,b,c];
+}
+function onFrameClick(e){
+ const a=e.target.closest("a");e.preventDefault();
+ const el=e.target.closest("body *")||F.body;
+ if(a&&!point){const h=a.getAttribute("href");const t=h&&h[0]==="#"&&F.getElementById(h.slice(1));if(t)t.scrollIntoView({behavior:"smooth"})}
+ selPath=pathOf(el);showInspector(el);
+}
+function reselect(){const el=byPath(selPath);if(el)showInspector(el);else{selPath=null;$("#insp").classList.remove("show")}}
+function showInspector(el){
+ F.querySelectorAll(".__s").forEach(x=>x.classList.remove("__s"));el.classList.add("__s");markTreeSel(el);
+ const s=cs(el),sw=c=>`<span class="sw" style="background:${c}"></span>${esc(c)}`;
+ const n=v=>Math.round(px(v)*10)/10;
+ const rules=[];styleRules().forEach((r,i)=>{const ps=parts(r.selectorText).filter(p=>{try{return el.matches(p.replace(STATES,"")||"*")}catch(e){return false}});if(ps.length){const best=ps.map(specificity).sort((x,y)=>y[0]-x[0]||y[1]-x[1]||y[2]-x[2])[0];const state=(ps.join(",").match(STATES)||[]).join("");rules.push({sel:r.selectorText,sp:best,i,state})}});
+ const r=el.getBoundingClientRect();
+ const INH={color:1,"font-family":1,"font-size":1,"font-weight":1,"font-style":1};
+ function winner(target,prop){ // правило от style.css, което определя стойността: !important > специфичност > ред
+  let best=null;
+  styleRules().forEach((rule,i)=>{if(!rule.style.getPropertyValue(prop))return;const imp=rule.style.getPropertyPriority(prop)==="important"?1:0;
+   parts(rule.selectorText).forEach(p=>{if(HAS_STATE.test(p))return;let ok=false;try{ok=target.matches(p)}catch(e){}if(!ok)return;
+    const k=[imp,...specificity(p),i];
+    const greater=(x,y)=>{for(let j=0;j<x.length;j++)if(x[j]!==y[j])return x[j]>y[j];return false};
+    if(!best||greater(k,best.k))best={sel:p,imp,k}})});
+  return best;
+ }
+ function from(prop){
+  const w=winner(el,prop);
+  if(w)return `<span class="sp">← ${esc(w.sel)}${w.imp?" (!important)":""}</span>`;
+  if(INH[prop]){let a=el.parentElement;while(a&&a!==F.documentElement){const wa=winner(a,prop);if(wa)return `<span class="sp">← наследено от &lt;${esc(label(a))}&gt; (${esc(wa.sel)})</span>`;a=a.parentElement}
+   if(el.parentElement&&el.parentElement!==F.documentElement)return '<span class="sp">← наследено (стойност по подразбиране)</span>'}
+  return '<span class="sp">← по подразбиране</span>';
+ }
+ $("#insp").innerHTML=`<h3>&lt;${esc(label(el))}&gt;</h3><div class="row"><div>
+<div style="font-weight:700;color:#46738d;margin-bottom:2px">Изчислени стойности и откъде идват <span style="font-weight:400" title="Изчислената стойност е точна. Източникът е определен от правилата в style.css – ориентировъчно; точният произход се вижда в DevTools (F12).">(източникът е ориентировъчен)</span>:</div><table>
+<tr><td>color</td><td>${sw(s.color)} ${from("color")}</td></tr>
+<tr><td>background-color</td><td>${sw(s.backgroundColor)} ${from("background-color")}</td></tr>
+<tr><td>font-family</td><td>${esc(s.fontFamily)} ${from("font-family")}</td></tr>
+<tr><td>font-size</td><td>${esc(s.fontSize)} ${from("font-size")} • font-weight ${esc(s.fontWeight)}${s.fontStyle!=="normal"?" • "+esc(s.fontStyle):""}</td></tr>
+<tr><td>display</td><td>${esc(s.display)} • box-sizing ${esc(s.boxSizing)}</td></tr>
+<tr><td>видим размер</td><td>${Math.round(r.width*10)/10} × ${Math.round(r.height*10)/10} px</td></tr>
+</table>
+<div style="margin-top:6px;font-weight:700;color:#46738d">Правила, които могат да се приложат${rules.length?" (специфичност; по-долу е по-късно записаното):":":"}</div>
+<ul class="rules">${rules.length?rules.map(x=>`<li>${esc(x.sel)} <span class="sp">(${x.sp.join(",")})${x.state?" – действа само при "+esc(x.state)+", сега не е активно":""}</span></li>`).join(""):"<li class=\"sp\">няма – стиловете са по подразбиране или наследени</li>"}</ul></div>
+<div class="boxm" aria-label="Кутиен модел"><div class="bm"><span class="lab">margin</span><span class="n">${n(s.marginTop)}</span>
+<div style="display:flex;align-items:center"><span>${n(s.marginLeft)}</span><div class="bb" style="flex:1"><span class="lab">border</span><span class="n">${n(s.borderTopWidth)}</span>
+<div style="display:flex;align-items:center"><span>${n(s.borderLeftWidth)}</span><div class="bp" style="flex:1"><span class="lab">padding</span><span class="n">${n(s.paddingTop)}</span>
+<div style="display:flex;align-items:center"><span>${n(s.paddingLeft)}</span><div class="bc" style="flex:1">${Math.round(px(s.width))}×${Math.round(px(s.height))}</div><span>${n(s.paddingRight)}</span></div><span class="n">${n(s.paddingBottom)}</span></div><span>${n(s.borderRightWidth)}</span></div><span class="n">${n(s.borderBottomWidth)}</span></div><span>${n(s.marginRight)}</span></div><span class="n">${n(s.marginBottom)}</span></div></div></div>`;
+ $("#insp").classList.add("show");
+}
+
+/* ---------- Събития ---------- */
+let inT=null;
+ed.addEventListener("input",()=>{st().css=ed.value;updGutter();save();scheduleRender()});
+ed.addEventListener("scroll",()=>{gut.scrollTop=ed.scrollTop});
+let tabFree=false;
+ed.addEventListener("blur",()=>{tabFree=false});
+ed.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){tabFree=true;$("#msg").textContent="Tab вече премества фокуса към следващия бутон. Щракни в редактора или пиши, за да върнеш отстъпите с Tab.";return}
+ if(e.key==="Tab"&&tabFree)return;
+ if(e.key!=="Tab"&&e.key!=="Shift")tabFree=false;
+ if(e.key==="Tab"&&!e.shiftKey){e.preventDefault();ed.setRangeText("    ",ed.selectionStart,ed.selectionEnd,"end");ed.dispatchEvent(new Event("input"))}
+ else if(e.key==="Enter"){const v=ed.value,a=ed.selectionStart,ls=v.lastIndexOf("\n",a-1)+1,ind=(/^[ \t]*/.exec(v.slice(ls,a))||[""])[0],extra=v[a-1]==="{"?"    ":"";e.preventDefault();ed.setRangeText("\n"+ind+extra,a,ed.selectionEnd,"end");ed.dispatchEvent(new Event("input"))}
+});
+function gotoLine(line){const lines=ed.value.split("\n");let pos=0;for(let i=0;i<line-1&&i<lines.length;i++)pos+=lines[i].length+1;const end=pos+(lines[line-1]||"").length;
+ if(document.querySelector("#codePane").classList.contains("showhtml"))$("#tabCss").click();
+ showPane("code");ed.focus();ed.setSelectionRange(pos,end);const lh=parseFloat(getComputedStyle(ed).lineHeight)||23;ed.scrollTop=Math.max(0,(line-4)*lh)}
+$("#diag").addEventListener("click",e=>{const a=e.target.closest("[data-line]");if(a)gotoLine(+a.dataset.line)});
+$("#diag").addEventListener("keydown",e=>{if(e.key==="Enter"){const a=e.target.closest("[data-line]");if(a)gotoLine(+a.dataset.line)}});
+$("#mnav").addEventListener("click",e=>{const b=e.target.closest("[data-m]");if(!b)return;cur=+b.dataset.m;selPath=null;$("#insp").classList.remove("show");$("#msg").textContent="";renderNav();renderMission();scheduleRender(true);save()});
+$("#btnHint").onclick=()=>{const s=st();if(s.hintN<(M[cur].hints||[]).length)s.hintN++;renderHints()};
+let resetArm=false,resetT=null;
+$("#btnReset").onclick=()=>{
+ const b=$("#btnReset");
+ if(!resetArm){resetArm=true;b.textContent="Сигурен ли си? Натисни пак";resetT=setTimeout(()=>{resetArm=false;b.textContent="⟲ Начален код"},3500);return}
+ clearTimeout(resetT);resetArm=false;b.textContent="⟲ Начален код";
+ const s=st();s.prev=s.css;s.css=M[cur].start;s.hintN=0;ed.value=s.css;updGutter();save();scheduleRender(true);renderHints();
+ $("#msg").innerHTML='Върнат е началният CSS код. <button id="undoReset" class="primary" style="margin-left:6px;padding:4px 9px">↶ Върни моя код</button>';
+ $("#undoReset").onclick=()=>{const t=st();if(t.prev==null)return;t.css=t.prev;t.prev=null;ed.value=t.css;updGutter();save();scheduleRender(true);$("#msg").textContent="Твоят код е върнат."};
+};
+$("#quiz").addEventListener("change",e=>{if(e.target.name==="qz"){st().quiz=+e.target.value;$("#quiz").querySelectorAll("label").forEach(l=>l.classList.remove("right","wrong"))}});
+$("#btnCheck").onclick=()=>{
+ const m=M[cur],s=st();analyze();
+ const res=(m.checks||[]).map(c=>{let ok=false;try{ok=!!c[1]()}catch(e){}return{c,ok}});
+ const req=res.filter(r=>!r.c[2]),miss=req.filter(r=>!r.ok);
+ const qa=s.quiz,qok=!m.quiz||qa===m.quiz.a;
+ if(m.quiz)$("#quiz").querySelectorAll("label").forEach((l,i)=>{l.classList.remove("right","wrong");if(qa===i)l.classList.add(qok?"right":"wrong")});
+ const fb=$("#feedback");
+ if(!miss.length&&qok){
+  s.done=true;save();renderNav();
+  const b=res.filter(r=>r.c[2]),bd=b.filter(r=>r.ok).length;
+  fb.className="feedback good";
+  fb.innerHTML="🎉 Мисията е изпълнена!"+(m.quiz?`<div class="why">${m.quiz.why}</div>`:"")+(b.length?`<div class="why">Допълнителни задачи: ${bd} от ${b.length}.</div>`:"")+(cur<M.length-1?`<button class="primary" id="nextM" style="margin-top:8px">Към ${esc(M[cur+1].nav)} →</button>`:`<div class="why">Свали ZIP архива и продължи във VS Code.</div>`);
+  const n=$("#nextM");if(n)n.onclick=()=>{cur++;selPath=null;$("#insp").classList.remove("show");renderNav();renderMission();scheduleRender(true);save();scrollTo({top:0,behavior:"smooth"})};
+ }else{
+  fb.className="feedback bad";const out=[];
+  if(miss.length)out.push(`Изпълнени ${req.length-miss.length} от ${req.length} изисквания. Следващо: ${esc(miss[0].c[0])}.`);
+  if(diagErrors)out.push(`В CSS има ${diagErrors} ${diagErrors===1?"грешка":"грешки"} – виж списъка под редактора.`);
+  if(m.quiz&&qa==null)out.push("Отговори и на въпроса.");else if(m.quiz&&!qok)out.push("Отговорът на въпроса не е верен – помисли отново.");
+  fb.innerHTML=out.join("<br>");
+ }
+};
+$("#btnPoint").onclick=()=>{point=!point;$("#btnPoint").classList.toggle("on",point);
+ $("#legend").textContent=point?"Посочи елемент – границите му се очертават. Кликни, за да видиш стиловете и кутиения му модел.":"Страницата се обновява, докато пишеш. Кликни елемент, за да видиш стиловете му.";
+ if(!point&&F)F.querySelectorAll(".__h").forEach(x=>x.classList.remove("__h"))};
+$("#tabCss").onclick=()=>{$("#codePane").classList.remove("showhtml");$("#tabCss").classList.add("on");$("#tabHtml").classList.remove("on");ed.focus()};
+$("#tabHtml").onclick=()=>{$("#codePane").classList.add("showhtml");$("#tabHtml").classList.add("on");$("#tabCss").classList.remove("on")};
+$("#htmlview").innerHTML=esc(fullDoc('<link rel="stylesheet" href="css/style.css">')).replace(/&lt;(\/?)([a-z0-9!]+)((?:\s[^&]*?)?)(\/?)&gt;/gi,(m,sl,tag,attrs,se)=>`&lt;${sl}<span class="tn">${tag}</span>${attrs.replace(/([\w-]+)=("[^"]*")/g,'<span class="an">$1</span>=<span class="av">$2</span>')}${se}&gt;`);
+$("#btnCopy").onclick=()=>{const t=st().css;const ok=()=>$("#msg").textContent="CSS кодът е копиран.";
+ const fb=()=>{ed.focus();ed.select();try{document.execCommand("copy");ok()}catch(e){$("#msg").textContent="Маркирай кода и го копирай с Ctrl+C."}};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,fb);else fb()};
+/* ZIP без компресия */
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC_T[(c^u[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
+function makeZip(files){const enc=new TextEncoder(),chunks=[],central=[];let off=0;const d=new Date();
+ const tm=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1),dt=((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate();
+ for(const f of files){const nm=enc.encode(f.name),data=f.data||new Uint8Array(0),crc=crc32(data);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(10,tm,true);h.setUint16(12,dt,true);h.setUint32(14,crc,true);h.setUint32(18,data.length,true);h.setUint32(22,data.length,true);h.setUint16(26,nm.length,true);
+  chunks.push(new Uint8Array(h.buffer),nm,data);
+  const c=new DataView(new ArrayBuffer(46));c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint16(12,tm,true);c.setUint16(14,dt,true);c.setUint32(16,crc,true);c.setUint32(20,data.length,true);c.setUint32(24,data.length,true);c.setUint16(28,nm.length,true);c.setUint32(38,f.name.endsWith("/")?0x10:0,true);c.setUint32(42,off,true);
+  central.push(new Uint8Array(c.buffer),nm);off+=30+nm.length+data.length}
+ const size=central.reduce((a,x)=>a+x.length,0),e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,size,true);e.setUint32(16,off,true);
+ return new Blob([...chunks,...central,new Uint8Array(e.buffer)],{type:"application/zip"})}
+$("#btnDown").onclick=()=>{const enc=new TextEncoder();
+ const z=makeZip([{name:"moyat-klas/index.html",data:enc.encode(fullDoc('<link rel="stylesheet" href="css/style.css">'))},{name:"moyat-klas/css/"},{name:"moyat-klas/css/style.css",data:enc.encode(st().css.replace(/\s*$/,"\n"))}]);
+ const a=document.createElement("a");a.href=URL.createObjectURL(z);a.download="moyat-klas-css.zip";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800);
+ const mm=$("#msg");mm.innerHTML="✅ <b>Изтеглен е moyat-klas-css.zip</b> – в него са <code>index.html</code> и <code>css/style.css</code>. Разархивирай го и отвори папката във VS Code.";mm.style.background="#e3f7e9";mm.style.borderLeftColor="#0a9f3f";setTimeout(()=>{mm.style.background="";mm.style.borderLeftColor=""},6000)};
+function showPane(v){$("#panes").dataset.show=v;$("#mswitch").querySelectorAll("button").forEach(b=>b.classList.toggle("primary",b.dataset.v===v))}
+$("#mswitch").addEventListener("click",e=>{const b=e.target.closest("[data-v]");if(b)showPane(b.dataset.v)});
+/* подредба */
+function fit(){document.documentElement.style.setProperty("--hh",$("header.top").offsetHeight+"px")}
+addEventListener("resize",fit);
+if(window.ResizeObserver){new ResizeObserver(()=>fit()).observe($("header.top"))}
+const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+$("#btnFull").onclick=()=>{const d=document,e=d.documentElement;if(fsEl())(d.exitFullscreen||d.webkitExitFullscreen).call(d);else{const r=e.requestFullscreen||e.webkitRequestFullscreen;if(r){const x=r.call(e);if(x&&x.catch)x.catch(()=>{})}}};
+const fsUpd=()=>{const on=!!fsEl(),b=$("#btnFull");b.textContent=on?"✕":"⛶";b.title=on?"Изход от цял екран":"Цял екран";b.setAttribute("aria-label",b.title);setTimeout(fit,100)};
+document.addEventListener("fullscreenchange",fsUpd);document.addEventListener("webkitfullscreenchange",fsUpd);
+if(!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen))$("#btnFull").style.display="none";
+
+const help=$("#help");
+$("#btnHelp").onclick=()=>{help.classList.add("show");$("#helpClose").focus()};
+$("#helpClose").onclick=()=>{help.classList.remove("show");store.set(KEY+"help","1");$("#btnHelp").focus()};
+help.addEventListener("click",e=>{if(e.target===help)$("#helpClose").click()});
+document.addEventListener("keydown",e=>{if(!help.classList.contains("show"))return;
+ if(e.key==="Escape"){e.preventDefault();$("#helpClose").click()}
+ else if(e.key==="Tab"){e.preventDefault();$("#helpClose").focus()}});
+if(!store.get(KEY+"help")){help.classList.add("show");setTimeout(()=>$("#helpClose").focus(),50)}
+renderNav();renderMission();scheduleRender(true);fit();
+</script>
+</body>
+</html>
