@@ -36,6 +36,8 @@ nav:
           - Преглед на раздела: praktika/razdel-1/index.md
           - "Упражнение 1. Основи на интернет": praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md
           - "Упражнение 2. Изпращане и анализ на HTTP заявки с Postman": praktika/razdel-1/uprazhnenie-urok-02-postman.md
+          - "Упражнение 3. HTTP GET и POST заявки с C# — конзолно приложение": praktika/razdel-1/uprazhnenie-urok-02-csharp-http.md
+          - "Упражнение 4. HTTP клиент с графичен интерфейс (Windows Forms)": praktika/razdel-1/uprazhnenie-urok-02-csharp-winforms.md
       - Раздел 2:
           - Преглед на раздела: praktika/razdel-2/index.md
           - "Упражнение 1. Създаване на HTML страница „Моят клас“": praktika/razdel-2/uprazhnenie-01-html.md
