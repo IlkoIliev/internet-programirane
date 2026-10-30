@@ -662,18 +662,31 @@ Content-Type: application/json; charset=utf-8
 
 Когато искате да зададете **заглавки** на конкретна заявка, създавате `HttpRequestMessage` сами – както в Мисия 1, начин А – и я изпращате със `SendAsync`.
 
-Временно добавете следния код в `Main` **след** двата реда с `Encoding.UTF8` и **преди** `while (true)`. Така той се изпълнява веднъж при стартиране, а след това програмата продължава както досега с цикъла. Стартирайте и разгледайте отговора:
+Временно добавете следния код в `Main` **след** двата реда с `Encoding.UTF8` и **преди** `while (true)`. Така той се изпълнява веднъж при стартиране, а след това програмата продължава както досега с цикъла. Временният код е извън `try`–`catch` в цикъла, затова има **собствен** `try`–`catch` – иначе при липса на връзка програмата би спряла още при стартиране. Стартирайте и разгледайте отговора:
 
 ```csharp
-        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://httpbin.org/headers");
-        request.Headers.Add("X-Student", "Ivan Petrov");           // собствена заглавка
-        request.Headers.UserAgent.ParseAdd("HttpKlient/1.0");      // кой клиент изпраща заявката
+        // ВРЕМЕНЕН КОД – Мисия 6
+        try
+        {
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://httpbin.org/headers");
+            request.Headers.Add("X-Student", "Ivan Petrov");           // собствена заглавка
+            request.Headers.UserAgent.ParseAdd("HttpKlient/1.0");      // кой клиент изпраща заявката
 
-        using HttpResponseMessage test = await client.SendAsync(request);
-        Console.WriteLine(await test.Content.ReadAsStringAsync());
+            using HttpResponseMessage test = await client.SendAsync(request);
+            Console.WriteLine(await test.Content.ReadAsStringAsync());
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"Грешка при пробната заявка: {e.Message}\n");
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Пробната заявка не получи отговор навреме.\n");
+        }
+        // КРАЙ НА ВРЕМЕННИЯ КОД
 ```
 
-Отговорът съдържа изпратените заглавки:
+`https://httpbin.org/headers` връща в JSON обекта `headers` заглавките, **които сървърът е получил**. Така проверявате, че вашите заглавки наистина са изпратени:
 
 ```text
 {
@@ -686,13 +699,13 @@ Content-Type: application/json; charset=utf-8
 ```
 
 !!! note "Кирилица в заглавките"
-    Сменете `"Ivan Petrov"` с `"Иван Петров"` и стартирайте. В .NET 10 `HttpClient` по подразбиране **отказва** да изпрати заявката и хвърля `HttpRequestException` със съобщение, че заглавките трябва да съдържат само ASCII знаци. Точният текст може да се различава според версията.
+    Сменете `"Ivan Petrov"` с `"Иван Петров"` и стартирайте. В .NET 10 `HttpClient` по подразбиране **отказва** да изпрати заявката и хвърля `HttpRequestException` със съобщение, че заглавките трябва да съдържат само ASCII знаци – програмата го извежда като „Грешка при пробната заявка: …“. Точният текст може да се различава според версията.
 
     Това е ограничение на **клиента**, а не забрана в HTTP. Стандартът препоръчва стойностите на заглавките да са в ASCII, защото не всички сървъри и междинни устройства разчитат правилно други знаци. Когато все пак е нужен текст извън ASCII, той се **кодира** – например с percent-encoding, както в URL, или по специални правила за конкретни заглавки (така сървърът изпраща име на файл на кирилица в заглавката `Content-Disposition` при изтегляне). В .NET кодировката на заглавките може да се настрои, но в учебни и в повечето реални приложения текст на кирилица се изпраща в **тялото** на заявката.
 
 Ако една заглавка трябва да се изпраща с **всички** заявки, задайте я веднъж на клиента: `client.DefaultRequestHeaders.UserAgent.ParseAdd("HttpKlient/1.0");`.
 
-След като разгледате резултата, **изтрийте** временния код (шестте реда от `using HttpRequestMessage request` до `Console.WriteLine(await test...)`) и стартирайте програмата отново, за да се уверите, че работи както преди.
+След като разгледате резултата, **изтрийте** временния код – всичко от коментара `// ВРЕМЕНЕН КОД – Мисия 6` до `// КРАЙ НА ВРЕМЕННИЯ КОД` включително – и стартирайте програмата отново, за да се уверите, че работи както преди.
 
 ## 9. Пълният код на конзолното приложение
 
