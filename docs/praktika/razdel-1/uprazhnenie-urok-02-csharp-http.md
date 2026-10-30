@@ -104,7 +104,7 @@ HttpResponseMessage response = await client.GetAsync("https://httpbin.org/get");
 | `FormUrlEncodedContent` | Наследник на `HttpContent`: тяло с данни от формуляр `ключ=стойност&ключ=стойност` | задава `Content-Type: application/x-www-form-urlencoded` |
 | `StringContent` | Наследник на `HttpContent`: тяло с произволен текст, напр. JSON | задава посочения `Content-Type`, напр. `application/json` |
 | `HttpRequestException` | Изключение при неуспешна връзка – няма такъв сървър, няма мрежа | `Message`, `HttpRequestError`, `StatusCode` |
-| `TaskCanceledException` | Изключение, когато сървърът не отговори навреме (изтекъл `Timeout`) или заявката е отказана | `Message` |
+| `OperationCanceledException` | Изключение при прекратена операция – когато сървърът не отговори навреме (изтекъл `Timeout`) или заявката е отказана. `HttpClient` хвърля неговия наследник `TaskCanceledException`, затова `catch (OperationCanceledException)` хваща и двата | `Message` |
 
 Методи от `System.Net.Http.Json` – по-кратък запис при работа с JSON (използват се в самостоятелните задачи и в домашната работа):
 
@@ -409,6 +409,8 @@ URL адрес (или exit за изход): exit
 
 1. Запишете статуса, времето за отговор и големината на тялото. Изпратете същата заявка още 2 пъти. Променя ли се времето? Защо първата заявка обикновено е най-бавна?
 2. Съвпада ли `Content-Length` с „Големина на тялото“? Какво показва тази заглавка?
+
+    *Уточнение:* при нашите заявки двете стойности съвпадат, но това не е задължително. `Content-Length` може да липсва – например когато сървърът изпраща тялото на части (`Transfer-Encoding: chunked`). Ако клиентът е настроен да разархивира автоматично сгъстени отговори (`Content-Encoding: gzip`), прочетеното тяло е по-голямо от изпратеното. `HttpClient`, създаден с `new HttpClient()`, не разархивира автоматично, затова тук получаваме точно изпратените байтове.
 3. В коя група заглавки е `Content-Type` и защо?
 4. Въведете `httpbin.org/get` (без `https://`). Какво се случва? Защо проверката с `Uri.TryCreate` е направена **преди** изпращането?
 
@@ -607,12 +609,12 @@ Content-Type: application/json; charset=utf-8
 | Случай | Изключение | Причина |
 |---|---|---|
 | 2 | `HttpRequestException` | Няма сървър с такова име (DNS не намира адреса) или няма мрежа. В Windows съобщението е подобно на `No such host is known. (nyama-takav-sarvar.bg:443)`. Свойството `HttpRequestError` е `NameResolutionError`. |
-| 3 | `TaskCanceledException` | Сървърът отговаря след 8 секунди, а `Timeout` е 5 секунди. |
+| 3 | `TaskCanceledException` (наследник на `OperationCanceledException`) | Сървърът отговаря след 8 секунди, а `Timeout` е 5 секунди. |
 
 !!! info "`HttpRequestError` – какъв точно е проблемът?"
     Свойството `HttpRequestError` на `HttpRequestException` казва **вида** на грешката, без да се разчита на текста на съобщението: `NameResolutionError` (няма такъв сървър), `ConnectionError` (сървърът не приема връзка), `SecureConnectionError` (проблем с HTTPS сертификата) и др. Текстът на съобщението (`Message`) зависи от операционната система, а `HttpRequestError` – не.
 
-**Поправката – една промяна в `Main`.** Оградете целия блок `if (method == "GET") ... else { ... }` с `try` и добавете два блока `catch`. След промяната тази част на `Main` изглежда така:
+**Поправката – една промяна в `Main`.** Оградете целия блок `if (method == "GET") ... else { ... }` с `try` и добавете два блока `catch`. Заменете в `Main` всичко от `if (method == "GET")` до затварящата скоба на последния `else` със следния код (клонът за POST е същият като в Мисия 4 – показан е целият, за да може да се копира):
 
 ```csharp
             try
@@ -623,7 +625,18 @@ Content-Type: application/json; charset=utf-8
                 }
                 else if (method == "POST")
                 {
-                    // ... кодът от Мисия 4 – без промяна ...
+                    Console.Write("Формат на тялото (1 – формуляр, 2 – JSON): ");
+                    string format = (Console.ReadLine() ?? "").Trim();
+                    Console.Write("Потребителско име: ");
+                    string username = Console.ReadLine() ?? "";
+                    Console.Write("Парола: ");
+                    string password = Console.ReadLine() ?? "";
+
+                    using HttpContent content = format == "2"
+                        ? CreateJsonContent(username, password)
+                        : CreateFormContent(username, password);
+
+                    await SendPostRequest(uri, content);
                 }
                 else
                 {
@@ -634,13 +647,13 @@ Content-Type: application/json; charset=utf-8
             {
                 Console.WriteLine($"\nГрешка при връзката ({e.HttpRequestError}): {e.Message}\n");
             }
-            catch (TaskCanceledException)
+            catch (OperationCanceledException)
             {
                 Console.WriteLine($"\nСървърът не отговори за {client.Timeout.TotalSeconds} секунди.\n");
             }
 ```
 
-Методите `SendGetRequest`, `SendPostRequest` и `PrintResponse` **не се променят**: изключението, възникнало в тях, „изплува“ до `Main` и се прихваща там. Така обработката на грешките е на **едно** място. Повторете трите случая – програмата вече не спира, а извежда съобщение и пита за нов адрес.
+Методите `SendGetRequest`, `SendPostRequest` и `PrintResponse` **не се променят**: изключението, възникнало в тях, „изплува“ до `Main` и се прихваща там. Така обработката на грешките е на **едно** място. `HttpClient` при изтекло време хвърля `TaskCanceledException`; прихващаме по-общия тип `OperationCanceledException`, който обхваща и него – така, както и в упражнение 4. Повторете трите случая – програмата вече не спира, а извежда съобщение и пита за нов адрес.
 
 !!! question "А `EnsureSuccessStatusCode()`?"
     В много примери след заявката се извиква `response.EnsureSuccessStatusCode();`. Методът хвърля `HttpRequestException`, ако статусът **не е** 2xx. Това е удобно, когато програмата се нуждае само от успешен отговор. Нашата програма обаче трябва да **покаже** и неуспешните отговори – статус, заглавки и тяло. Ако извикаме метода веднага след `GetAsync`, при 404 ще получим само съобщение за грешка и ще загубим информацията от отговора. Затова използваме свойството `IsSuccessStatusCode`.
@@ -649,7 +662,7 @@ Content-Type: application/json; charset=utf-8
 
 Когато искате да зададете **заглавки** на конкретна заявка, създавате `HttpRequestMessage` сами – както в Мисия 1, начин А – и я изпращате със `SendAsync`.
 
-Временно добавете в началото на `Main` следния код, стартирайте и разгледайте отговора:
+Временно добавете следния код в `Main` **след** двата реда с `Encoding.UTF8` и **преди** `while (true)`. Така той се изпълнява веднъж при стартиране, а след това програмата продължава както досега с цикъла. Стартирайте и разгледайте отговора:
 
 ```csharp
         using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://httpbin.org/headers");
@@ -672,12 +685,14 @@ Content-Type: application/json; charset=utf-8
 }
 ```
 
-!!! note "Заглавките – само с латиница"
-    Сменете `"Ivan Petrov"` с `"Иван Петров"` и стартирайте. Получавате `HttpRequestException: Request headers must contain only ASCII characters.` Стойностите на HTTP заглавките по правило съдържат само ASCII знаци. Затова текст на кирилица се изпраща в **тялото** или се кодира, както в URL.
+!!! note "Кирилица в заглавките"
+    Сменете `"Ivan Petrov"` с `"Иван Петров"` и стартирайте. В .NET 10 `HttpClient` по подразбиране **отказва** да изпрати заявката и хвърля `HttpRequestException` със съобщение, че заглавките трябва да съдържат само ASCII знаци. Точният текст може да се различава според версията.
+
+    Това е ограничение на **клиента**, а не забрана в HTTP. Стандартът препоръчва стойностите на заглавките да са в ASCII, защото не всички сървъри и междинни устройства разчитат правилно други знаци. Когато все пак е нужен текст извън ASCII, той се **кодира** – например с percent-encoding, както в URL, или по специални правила за конкретни заглавки (така сървърът изпраща име на файл на кирилица в заглавката `Content-Disposition` при изтегляне). В .NET кодировката на заглавките може да се настрои, но в учебни и в повечето реални приложения текст на кирилица се изпраща в **тялото** на заявката.
 
 Ако една заглавка трябва да се изпраща с **всички** заявки, задайте я веднъж на клиента: `client.DefaultRequestHeaders.UserAgent.ParseAdd("HttpKlient/1.0");`.
 
-След като разгледате резултата, изтрийте временния код.
+След като разгледате резултата, **изтрийте** временния код (шестте реда от `using HttpRequestMessage request` до `Console.WriteLine(await test...)`) и стартирайте програмата отново, за да се уверите, че работи както преди.
 
 ## 9. Пълният код на конзолното приложение
 
@@ -753,7 +768,7 @@ class Program
             {
                 Console.WriteLine($"\nГрешка при връзката ({e.HttpRequestError}): {e.Message}\n");
             }
-            catch (TaskCanceledException)
+            catch (OperationCanceledException)
             {
                 Console.WriteLine($"\nСървърът не отговори за {client.Timeout.TotalSeconds} секунди.\n");
             }
@@ -916,7 +931,7 @@ string json = JsonSerializer.Serialize(new { username = username, password = pas
 | Мисии 1–2 — GET заявка по двата начина; извеждане на статус, двете групи заглавки, време, размер и тяло | 2 |
 | Мисия 3 — POST с `FormUrlEncodedContent`; обяснение на кодирането и на размера на тялото | 2 |
 | Мисия 4 — POST с JSON; попълнена таблица за сравнение на двата формата | 2 |
-| Мисия 5 — обработка на `HttpRequestException` и `TaskCanceledException` на едно място | 2 |
+| Мисия 5 — обработка на `HttpRequestException` и `OperationCanceledException` на едно място | 2 |
 | Мисия 6 и сравнителната таблица с Postman | 2 |
 | Протокол — отговори на въпросите и екранни снимки | 2 |
 | **Общо** | **12** |
@@ -925,7 +940,7 @@ string json = JsonSerializer.Serialize(new { username = username, password = pas
 
 ## Ключови понятия
 
-**`HttpClient`**, **`HttpRequestMessage`**, **`HttpMethod`**, **`HttpResponseMessage`**, **`HttpContent`**, **`FormUrlEncodedContent`**, **`StringContent`**, **`JsonSerializer`**, **`HttpStatusCode`**, **`HttpRequestException`**, **`TaskCanceledException`**, **`IDisposable` и `using`**, **асинхронен метод**, **`async`/`await`**, **`Task`**, **timeout**, **percent-encoding**, **`application/x-www-form-urlencoded`**, **`application/json`**.
+**`HttpClient`**, **`HttpRequestMessage`**, **`HttpMethod`**, **`HttpResponseMessage`**, **`HttpContent`**, **`FormUrlEncodedContent`**, **`StringContent`**, **`JsonSerializer`**, **`HttpStatusCode`**, **`HttpRequestException`**, **`OperationCanceledException`** и **`TaskCanceledException`**, **`IDisposable` и `using`**, **асинхронен метод**, **`async`/`await`**, **`Task`**, **timeout**, **percent-encoding**, **`application/x-www-form-urlencoded`**, **`application/json`**.
 
 ## Домашна работа (по избор)
 
