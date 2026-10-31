@@ -444,7 +444,7 @@ Content-Type: text/plain
 
 **Задача 6. Минипроект.** Начертайте схема „Клиент → HTTP заявка → Сървър → HTTP отговор → Клиент“. Добавете примерен метод, URL, статус код и MIME тип.
 
-!!! tip "Връзка с практиката"
+!!! tip "Връзка с учебната практика"
     В [Упражнение 2. Изпращане и анализ на HTTP заявки с Postman](../../praktika/razdel-1/uprazhnenie-urok-02-postman.md) ще изпращате GET, POST, PUT и DELETE заявки към тестов сървър и ще анализирате истински HTTP отговори и статус кодове.
 
     В [Упражнение 3. HTTP GET и POST заявки с C# — конзолно приложение](../../praktika/razdel-1/uprazhnenie-urok-02-csharp-http.md) ще изпращате същите заявки от собствена програма на C# с класа `HttpClient`, а в [Упражнение 4. HTTP клиент с графичен интерфейс (Windows Forms)](../../praktika/razdel-1/uprazhnenie-urok-02-csharp-winforms.md) ще ѝ създадете прозорец.

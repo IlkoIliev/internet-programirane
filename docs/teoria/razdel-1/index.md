@@ -38,7 +38,7 @@
 
 В хода на раздела ще работим с примери, схеми и интерактивни лаборатории. Ще анализираме HTTP съобщения, ще разпознаваме техните компоненти и ще решаваме практически задачи, свързани с комуникацията между клиент и сървър.
 
-| Урок | Интерактивни лаборатории | Упражнения в практиката |
+| Урок | Интерактивни лаборатории | Упражнения в учебната практика |
 |---|---|---|
 | Урок 1 | [Работен модел на уеб сървър](../../interaktivni/raboten-model-web-sarvar.html){: target="_blank" } · [DNS, пакети, TCP и UDP](../../interaktivni/dns-paketi-tcp-udp.html){: target="_blank" } · [OSI модел](../../interaktivni/osi-model.html){: target="_blank" } | [Упражнение 1. Мрежов детектив](../../praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) |
 | Урок 2 | [Построй HTTP заявката](../../interaktivni/http-postroi-zayavkata.html){: target="_blank" } · [Построй HTTP отговора](../../interaktivni/http-postroi-otgovora.html){: target="_blank" } · [URL](../../interaktivni/url-laboratoria.html){: target="_blank" } · [MIME](../../interaktivni/mime-laboratoria.html){: target="_blank" } | [Упражнение 2. Postman](../../praktika/razdel-1/uprazhnenie-urok-02-postman.md) · [Упражнение 3. C# конзолно приложение](../../praktika/razdel-1/uprazhnenie-urok-02-csharp-http.md) · [Упражнение 4. Windows Forms](../../praktika/razdel-1/uprazhnenie-urok-02-csharp-winforms.md) |

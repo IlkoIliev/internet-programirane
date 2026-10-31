@@ -6,8 +6,8 @@
 
 | Файл | Към | Формат |
 |---|---|---|
-| Протокол „Мрежов детектив“ – за разпечатване | [Практика, Раздел 1, Упражнение 1](../praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) | [PDF](protokol-01-mrezhov-detektiv.pdf) |
-| Протокол „Мрежов детектив“ – за попълване на компютър | [Практика, Раздел 1, Упражнение 1](../praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) | [Word](protokol-01-mrezhov-detektiv.docx) |
+| Протокол „Мрежов детектив“ – за разпечатване | [Учебна практика, Раздел 1, Упражнение 1](../praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) | [PDF](protokol-01-mrezhov-detektiv.pdf) |
+| Протокол „Мрежов детектив“ – за попълване на компютър | [Учебна практика, Раздел 1, Упражнение 1](../praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) | [Word](protokol-01-mrezhov-detektiv.docx) |
 
 ## Програми
 

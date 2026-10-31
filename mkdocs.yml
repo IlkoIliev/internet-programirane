@@ -30,11 +30,11 @@ nav:
       - Раздел 3: teoria/razdel-3/index.md
       - Раздел 4: teoria/razdel-4/index.md
 
-  - Практика:
+  - Учебна практика:
       - Въведение: praktika/index.md
       - Раздел 1:
           - Преглед на раздела: praktika/razdel-1/index.md
-          - "Упражнение 1. Основи на интернет": praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md
+          - "Упражнение 1. Мрежов детектив — изследвай собствената си мрежа": praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md
           - "Упражнение 2. Изпращане и анализ на HTTP заявки с Postman": praktika/razdel-1/uprazhnenie-urok-02-postman.md
           - "Упражнение 3. HTTP GET и POST заявки с C# — конзолно приложение": praktika/razdel-1/uprazhnenie-urok-02-csharp-http.md
           - "Упражнение 4. HTTP клиент с графичен интерфейс (Windows Forms)": praktika/razdel-1/uprazhnenie-urok-02-csharp-winforms.md
