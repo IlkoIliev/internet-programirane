@@ -22,21 +22,27 @@
 
 ## Уроци в раздела
 
-### Урок 1. Основи на интернет. Мрежови протоколи. HTTP
+### [Урок 1. Основи на интернет и мрежови протоколи](urok-01-osnovi-na-internet.md)
 
 Ще се запознаем с устройството на интернет, основните мрежови протоколи и начина, по който информацията се предава между устройствата.
 
-### Урок 2. HTTP. Видове HTTP заявки
+### [Урок 2. HTTP. Видове HTTP заявки](urok-02-http-vidove-zayavki.md)
 
 Ще разгледаме структурата на HTTP заявките и отговорите, основните HTTP методи и значението на кодовете за състояние.
 
-### Урок 3. Клиент–сървър комуникация
+### [Урок 3. Клиент–сървър комуникация](urok-03-klient-sarvar-komunikatsia.md)
 
 Ще проследим как браузърът изпраща заявка, как сървърът я обработва и как полученият отговор се представя на потребителя.
 
 ## Как ще упражняваме наученото?
 
 В хода на раздела ще работим с примери, схеми и интерактивни лаборатории. Ще анализираме HTTP съобщения, ще разпознаваме техните компоненти и ще решаваме практически задачи, свързани с комуникацията между клиент и сървър.
+
+| Урок | Интерактивни лаборатории | Упражнения в практиката |
+|---|---|---|
+| Урок 1 | [Работен модел на уеб сървър](../../interaktivni/raboten-model-web-sarvar.html){: target="_blank" } · [DNS, пакети, TCP и UDP](../../interaktivni/dns-paketi-tcp-udp.html){: target="_blank" } · [OSI модел](../../interaktivni/osi-model.html){: target="_blank" } | [Упражнение 1. Мрежов детектив](../../praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) |
+| Урок 2 | [Построй HTTP заявката](../../interaktivni/http-postroi-zayavkata.html){: target="_blank" } · [Построй HTTP отговора](../../interaktivni/http-postroi-otgovora.html){: target="_blank" } · [URL](../../interaktivni/url-laboratoria.html){: target="_blank" } · [MIME](../../interaktivni/mime-laboratoria.html){: target="_blank" } | [Упражнение 2. Postman](../../praktika/razdel-1/uprazhnenie-urok-02-postman.md) · [Упражнение 3. C# конзолно приложение](../../praktika/razdel-1/uprazhnenie-urok-02-csharp-http.md) · [Упражнение 4. Windows Forms](../../praktika/razdel-1/uprazhnenie-urok-02-csharp-winforms.md) |
+| Урок 3 | [Кой каква роля изпълнява?](../../interaktivni/klient-sarvar-roli.html){: target="_blank" } · [Пътят на една заявка](../../interaktivni/patyat-na-zayavkata.html){: target="_blank" } · [Архитектурно предизвикателство](../../interaktivni/arhitekturno-predizvikatelstvo.html){: target="_blank" } | – |
 
 ## Въпрос за размисъл
 
