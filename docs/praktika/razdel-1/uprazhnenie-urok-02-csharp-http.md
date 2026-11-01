@@ -241,7 +241,7 @@ HTTP/1.1 200 OK
 
 | Ред | Обяснение |
 |---|---|
-| `Console.OutputEncoding = Encoding.UTF8;` | Кирилицата в конзолата се изписва правилно. |
+| `Console.OutputEncoding = Encoding.UTF8;` | Кирилицата в конзолата се изписва правилно. `Console.InputEncoding` (как се чете от клавиатурата) оставяме със стойността по подразбиране: в нашата среда – конзолата на Windows, стартирана от Visual Studio – задаването му на `Encoding.UTF8` поврежда въведената кирилица, а стойността по подразбиране я разчита правилно. Това не означава, че настройката е излишна по принцип. |
 | `new HttpRequestMessage(HttpMethod.Get, ...)` | Създава обект „заявка“ с метод GET и адрес. |
 | `client.SendAsync(request)` | Изпраща заявката и връща `HttpResponseMessage`. |
 | `response.Version` | Версията на протокола – `1.1`. |
@@ -277,9 +277,8 @@ class Program
 
     static async Task Main(string[] args)
     {
-        // Кирилицата в конзолата да се изписва и въвежда правилно
+        // Кирилицата в конзолата да се изписва правилно
         Console.OutputEncoding = Encoding.UTF8;
-        Console.InputEncoding = Encoding.UTF8;
 
         while (true)
         {
@@ -728,9 +727,8 @@ class Program
 
     static async Task Main(string[] args)
     {
-        // Кирилицата в конзолата да се изписва и въвежда правилно
+        // Кирилицата в конзолата да се изписва правилно
         Console.OutputEncoding = Encoding.UTF8;
-        Console.InputEncoding = Encoding.UTF8;
 
         while (true)
         {

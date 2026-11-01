@@ -12,6 +12,9 @@
 | 2 | [**Изпращане и анализ на HTTP заявки с Postman**](uprazhnenie-urok-02-postman.md) | [Урок 2. HTTP. Видове HTTP заявки](../../teoria/razdel-1/urok-02-http-vidove-zayavki.md) | Postman, httpbin.org | 2 часа |
 | 3 | [**HTTP GET и POST заявки с C#** – конзолно приложение](uprazhnenie-urok-02-csharp-http.md) | [Урок 2. HTTP. Видове HTTP заявки](../../teoria/razdel-1/urok-02-http-vidove-zayavki.md) | Visual Studio 2026, .NET 10 | 2 часа |
 | 4 | [**HTTP клиент с графичен интерфейс** (Windows Forms)](uprazhnenie-urok-02-csharp-winforms.md) | [Урок 2. HTTP. Видове HTTP заявки](../../teoria/razdel-1/urok-02-http-vidove-zayavki.md) | Visual Studio 2026, .NET 10 | 2 часа |
+| 5 | [**Чат сървър и клиент** – конзолни приложения](uprazhnenie-urok-03-chat-konzola.md) | [Урок 3. Клиент-сървър комуникация](../../teoria/razdel-1/urok-03-klient-sarvar-komunikatsia.md) | Visual Studio 2026, .NET 10, два компютъра | 2 часа |
+| 6 | [**Чат клиент с графичен интерфейс** (Windows Forms)](uprazhnenie-urok-03-chat-winforms.md) | [Урок 3. Клиент-сървър комуникация](../../teoria/razdel-1/urok-03-klient-sarvar-komunikatsia.md) | Visual Studio 2026, .NET 10, два компютъра | 2 часа |
+| П | [**Практически проект. Чат приложение в модел „Клиент-сървър“**](proekt-chat-prilozhenie.md) | [Урок 3. Клиент-сървър комуникация](../../teoria/razdel-1/urok-03-klient-sarvar-komunikatsia.md) | Екип от 2–3 ученици | около 4 часа |
 
 ## Как са свързани упражненията?
 
@@ -21,7 +24,9 @@
 2. **Конзолно приложение на C#** – пишете собствен HTTP клиент и виждате кои класове на .NET вършат работата на Postman.
 3. **Windows Forms** – същият клиент получава прозорец с полета, бутони и асинхронна обработка на събитията.
 
+Упражнения 5 и 6 правят следващата стъпка: вместо да използвате готов протокол (HTTP), пишете **собствен сървър и собствен протокол** с класовете `TcpListener` и `TcpClient` и си пишете със съучениците от различни компютри в класната стая. В **практическия проект** разширявате чата в екип.
+
 !!! tip "Преди упражненията"
-    Преди всяко упражнение прочетете съответния урок и изпълнете интерактивните лаборатории към него. Упражнения 3 и 4 изискват Visual Studio 2026 с работното натоварване **.NET desktop development**.
+    Преди всяко упражнение прочетете съответния урок и изпълнете интерактивните лаборатории към него. Упражнения 3–6 изискват Visual Studio 2026 с работното натоварване **.NET desktop development**. За упражнения 5 и 6 са нужни поне два компютъра в една локална мрежа.
 
 [Към началото на учебната практика](../index.md)

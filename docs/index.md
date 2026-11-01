@@ -22,7 +22,7 @@
 
 | Раздел | Теория | Учебна практика | Състояние |
 |---|---|---|---|
-| **1. Интернет и HTTP** | [3 урока](teoria/razdel-1/index.md) | [4 упражнения](praktika/razdel-1/index.md) | ✅ Публикуван |
+| **1. Интернет и HTTP** | [3 урока](teoria/razdel-1/index.md) | [6 упражнения и проект](praktika/razdel-1/index.md) | ✅ Публикуван |
 | **2. Външен интерфейс (front-end): HTML, CSS, JavaScript** | [2 урока](teoria/razdel-2/index.md) | [2 упражнения](praktika/razdel-2/index.md) | 🛠️ Попълва се |
 | **3. ASP.NET Core MVC и бази данни** | [Преглед](teoria/razdel-3/index.md) | [Преглед](praktika/razdel-3/index.md) | ⏳ В подготовка |
 | **4. REST API** | [Преглед](teoria/razdel-4/index.md) | [Преглед](praktika/razdel-4/index.md) | ⏳ В подготовка |
@@ -38,7 +38,7 @@
 |---|---|
 | [Урок 1. Основи на интернет и мрежови протоколи](teoria/razdel-1/urok-01-osnovi-na-internet.md) | [Упражнение 1. Мрежов детектив](praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) |
 | [Урок 2. HTTP. Видове HTTP заявки](teoria/razdel-1/urok-02-http-vidove-zayavki.md) | [Упражнение 2. HTTP заявки с Postman](praktika/razdel-1/uprazhnenie-urok-02-postman.md)<br>[Упражнение 3. HTTP клиент на C# – конзолно приложение](praktika/razdel-1/uprazhnenie-urok-02-csharp-http.md)<br>[Упражнение 4. HTTP клиент с Windows Forms](praktika/razdel-1/uprazhnenie-urok-02-csharp-winforms.md) |
-| [Урок 3. Клиент-сървър комуникация](teoria/razdel-1/urok-03-klient-sarvar-komunikatsia.md) | – |
+| [Урок 3. Клиент-сървър комуникация](teoria/razdel-1/urok-03-klient-sarvar-komunikatsia.md) | [Упражнение 5. Чат сървър и клиент – конзола](praktika/razdel-1/uprazhnenie-urok-03-chat-konzola.md)<br>[Упражнение 6. Чат клиент с Windows Forms](praktika/razdel-1/uprazhnenie-urok-03-chat-winforms.md)<br>[Практически проект. Чат приложение](praktika/razdel-1/proekt-chat-prilozhenie.md) |
 
 ### Раздел 2. Външен интерфейс (front-end)
 
