@@ -50,7 +50,7 @@ h2{margin:0 0 8px}.help{margin:5px 0 11px;color:#506b7b}
 <main>
 <section class="panel">
 <h2>HTTP заявка</h2>
-<p class="help">Докосни карта → докосни поле, или влачи картата. Не всички карти трябва да се използват.</p>
+<p class="help">Докосни карта → докосни поле, или влачи картата. Не всички карти трябва да се използват. При заявка с тяло <code>Content-Length</code> е броят на байтовете в него (UTF-8).</p>
 
 <div class="request">
  <div class="zone">
@@ -99,7 +99,8 @@ const ALL=[
  {id:"hmon",text:"Host: www.mon.bg",type:"headers"},
  {id:"hloc",text:"Host: localhost",type:"headers"},
  {id:"ua",text:"User-Agent: Mozilla/5.0",type:"headers"},
- {id:"len",text:"Content-Length: 59",type:"headers"},
+ {id:"len",text:"Content-Length: 35",type:"headers"},
+ {id:"lenput",text:"Content-Length: 23",type:"headers"},
  {id:"server",text:"Server: Apache/2.2.14",type:"distractor"},
  {id:"ctype",text:"Content-Type: text/html",type:"distractor"},
  {id:"crlf",text:"<CRLF>",type:"crlf"},
@@ -122,7 +123,7 @@ const MISSIONS={
  },
  put:{
   text:"Мисия 4: Данните за потребител 8 на localhost трябва да бъдат актуализирани изцяло. Ресурсът е /users/8, а новите данни са name=Maria&city=Dobrich. Построй правилната HTTP заявка.",
-  need:{method:["put"],path:["puser"],protocol:["http"],headers:["hloc"],crlf:["crlf"],body:["bodyput"]}
+  need:{method:["put"],path:["puser"],protocol:["http"],headers:["hloc","lenput"],crlf:["crlf"],body:["bodyput"]}
  }
 };
 
@@ -182,8 +183,14 @@ function countProblems(){
  }
  const actualHeaders=idsIn("headers");
  problems+=need.headers.filter(id=>!actualHeaders.includes(id)).length;
- const allowedHeaders=[...need.headers,"ua",...(mode==="put"?["len"]:[])];
+ const allowedHeaders=[...need.headers,"ua"];
  problems+=actualHeaders.filter(id=>!allowedHeaders.includes(id)).length;
+ const body=idsIn("body").map(id=>ALL.find(c=>c.id===id)?.text??"").join("");
+ const lengthId=need.headers.find(id=>ALL.find(c=>c.id===id)?.text.startsWith("Content-Length:"));
+ if(body && lengthId && actualHeaders.includes(lengthId)){
+   const stated=Number(ALL.find(c=>c.id===lengthId).text.slice("Content-Length:".length).trim());
+   if(stated!==new TextEncoder().encode(body).length)problems++;
+ }
  return problems;
 }
 function validate(){ return countProblems()===0; }

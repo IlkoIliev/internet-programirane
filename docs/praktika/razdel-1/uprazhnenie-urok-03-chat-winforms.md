@@ -468,16 +468,19 @@ internal sealed class ChatSession : IDisposable
 ```csharp
     private async void btnSend_Click(object? sender, EventArgs e)
     {
-        string message = txtMessage.Text.Trim();
+        string draft = txtMessage.Text;
+        string message = draft.Trim();
         ChatSession? session = current;
-        if (session == null || message.Length == 0)
+        if (session == null || message.Length == 0 || !btnSend.Enabled)
             return;
+        btnSend.Enabled = false;
         try
         {
             await session.SendAsync(message);
             if (ReferenceEquals(current, session) && !closing)
             {
-                txtMessage.Clear();
+                if (txtMessage.Text == draft)
+                    txtMessage.Clear();
                 txtMessage.Focus();
             }
         }
@@ -486,10 +489,26 @@ internal sealed class ChatSession : IDisposable
             if (ReferenceEquals(current, session))
                 SetStatus("Съобщението не е изпратено – връзката е прекъсната.");
         }
+        finally
+        {
+            if (ReferenceEquals(current, session) && !closing)
+                btnSend.Enabled = true;
+        }
     }
 ```
 
-Изпращането минава през `session.SendAsync`, т.е. през `sendLock`. Ако междувременно връзката се смени, полето за съобщение не се изчиства.
+Първата версия изпращаше текста и после винаги изчистваше полето. Това крие два проблема: бързо двойно натискане може да изпрати едно и също съобщение два пъти, а текст, който сте започнали да пишете, докато първото съобщение се изпраща, може да бъде изтрит. Новата версия решава и двата:
+
+| Ред | Какъв проблем решава |
+|---|---|
+| `string draft = txtMessage.Text;` | Запомняме **точно** какво е било в полето в момента на натискането. По-късно ще сравним с него, за да разберем дали потребителят е писал нещо ново. |
+| `if (session == null` … `return;` | Не изпращаме нищо в три случая: няма връзка (`session == null`), съобщението е празно (`message.Length == 0`) или предишното изпращане още не е приключило (`!btnSend.Enabled`). Третата проверка е допълнителна защита: ако обработчикът все пак бъде извикан, докато изпращането тече, той не прави нищо. |
+| `btnSend.Enabled = false;` | **Двойно изпращане.** Докато съобщението се записва, бутонът е забранен и не може да се натисне втори път. |
+| `await session.SendAsync(message);` | Изпращаме съобщението през `ChatSession`. Методът е асинхронен: докато записът трае, прозорецът не замръзва и можете да пишете. Записът минава през `sendLock`, затова не се смесва с друго записване, например с `/exit`. |
+| `ReferenceEquals(current, session)` | Докато чакахме изпращането, потребителят може да е натиснал **Изключи** или да се е свързал отново. Тогава `current` вече сочи друга връзка (или е `null`) и не бива да пипаме полето заради старата. Проверката `!closing` пази от промяна на прозорец, който се затваря. |
+| `if (txtMessage.Text == draft)` `txtMessage.Clear();` | **Изтрит нов текст.** Изчистваме полето само ако в него е все още изпратеният текст. Ако междувременно сте започнали ново съобщение, то остава. |
+| `catch (...)` | Ако връзката е прекъсната, изпращането хвърля изключение. Програмата не спира, а показва в `lblStatus`, че съобщението не е изпратено. Текстът остава в полето и може да се изпрати отново след ново свързване. |
+| `finally { ... btnSend.Enabled = true; }` | `finally` се изпълнява независимо дали изпращането е успешно. Бутонът се разрешава отново само ако връзката все още е текуща и прозорецът не се затваря. При прекъсната връзка той правилно остава неактивен, а при изключване и ново свързване бутоните се управляват от `SetConnected`. |
 
 **г) Изключването и затварянето.** Попълнете двата обработчика от Стъпка 2:
 
@@ -557,7 +576,7 @@ internal sealed class ChatSession : IDisposable
 
 ### 4.6. Изпитайте окончателната версия
 
-Повторете ситуациите от 4.1 и добавете още три. Запишете в протокола какво показва `lblStatus`:
+Повторете ситуациите от 4.1 и добавете още няколко. Запишете в протокола какво показва `lblStatus`:
 
 | № | Ситуация | Очакван резултат |
 |---|---|---|
@@ -567,7 +586,8 @@ internal sealed class ChatSession : IDisposable
 | 4 | Сървърът се стартира отново, клиентът натиска **Свържи** | „Свързан със …“. **Старите съобщения остават** в списъка, а новите се добавят под тях. Изпращането работи отново. |
 | 5 | **Изключи** | „Изключен.“; другите участници виждат `*** ... излезе от чата.` |
 | 6 | **Изключи** и веднага **Свържи** | Новата връзка работи нормално – старият опит не я разваля. |
-| 7 | Затваряне на прозореца, докато пристигат съобщения или докато трае свързване към `10.255.255.1` | Прозорецът се затваря без грешка. |
+| 7 | **Изпрати** (или **Enter**) два пъти много бързо | Съобщението се изпраща **веднъж**: докато трае изпращането, бутонът е забранен. |
+| 8 | Затваряне на прозореца, докато пристигат съобщения или докато трае свързване към `10.255.255.1` | Прозорецът се затваря без грешка. |
 
 Състоянието на бутоните винаги отговаря на връзката:
 
@@ -672,16 +692,19 @@ public partial class Form1 : Form
 
     private async void btnSend_Click(object? sender, EventArgs e)
     {
-        string message = txtMessage.Text.Trim();
+        string draft = txtMessage.Text;
+        string message = draft.Trim();
         ChatSession? session = current;
-        if (session == null || message.Length == 0)
+        if (session == null || message.Length == 0 || !btnSend.Enabled)
             return;
+        btnSend.Enabled = false;
         try
         {
             await session.SendAsync(message);
             if (ReferenceEquals(current, session) && !closing)
             {
-                txtMessage.Clear();
+                if (txtMessage.Text == draft)
+                    txtMessage.Clear();
                 txtMessage.Focus();
             }
         }
@@ -689,6 +712,11 @@ public partial class Form1 : Form
         {
             if (ReferenceEquals(current, session))
                 SetStatus("Съобщението не е изпратено – връзката е прекъсната.");
+        }
+        finally
+        {
+            if (ReferenceEquals(current, session) && !closing)
+                btnSend.Enabled = true;
         }
     }
 
