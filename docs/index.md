@@ -23,7 +23,7 @@
 | Раздел | Теория | Учебна практика | Състояние |
 |---|---|---|---|
 | **1. Интернет и HTTP** | [3 урока](teoria/razdel-1/index.md) | [6 упражнения и проект](praktika/razdel-1/index.md) | ✅ Публикуван |
-| **2. Външен интерфейс (front-end): HTML, CSS, JavaScript** | [2 урока](teoria/razdel-2/index.md) | [2 упражнения](praktika/razdel-2/index.md) | 🛠️ Попълва се |
+| **2. Външен интерфейс (front-end): HTML, CSS, JavaScript** | [3 урока](teoria/razdel-2/index.md) | [3 упражнения](praktika/razdel-2/index.md) | 🛠️ Попълва се |
 | **3. ASP.NET Core MVC и бази данни** | [Преглед](teoria/razdel-3/index.md) | [Преглед](praktika/razdel-3/index.md) | ⏳ В подготовка |
 | **4. REST API** | [Преглед](teoria/razdel-4/index.md) | [Преглед](praktika/razdel-4/index.md) | ⏳ В подготовка |
 | **5. Финален проект и публикуване** | – | [Преглед](praktika/razdel-5/index.md) | ⏳ В подготовка |
@@ -46,6 +46,7 @@
 |---|---|
 | [Урок 1. Работа с HTML. Основни тагове](teoria/razdel-2/urok-01-html-osnovni-tagove.md) | [Упражнение 1. HTML страница „Моят клас“](praktika/razdel-2/uprazhnenie-01-html.md) |
 | [Урок 2. Работа със CSS. Селектори и основни правила](teoria/razdel-2/urok-02-css-selektori-i-pravila.md) | [Упражнение 2. Оформяне на „Моят клас“ със CSS](praktika/razdel-2/uprazhnenie-02-css.md) |
+| [Урок 3. Работа с инструментите за разработчици](teoria/razdel-2/urok-03-instrumenti-za-razrabotchitsi.md) | [Упражнение 3. Детектив в DevTools](praktika/razdel-2/uprazhnenie-03-devtools.md) |
 
 ## Интерактивни лаборатории
 
@@ -65,6 +66,7 @@
 | [Архитектурно предизвикателство](interaktivni/arhitekturno-predizvikatelstvo.html){: target="_blank" } | Двуслоен или трислоен модел | Раздел 1, урок 3 |
 | [HTML конструктор](interaktivni/razdel-2/html-konstruktor.html){: target="_blank" } | Изграждане на структурата на страница с HTML елементи | Раздел 2, урок 1 |
 | [CSS конструктор](interaktivni/razdel-2/css-konstruktor.html){: target="_blank" } | Селектори, свойства, кутиен модел и контраст | Раздел 2, урок 2 |
+| [Симулатор на DevTools](interaktivni/razdel-2/devtools-simulator.html){: target="_blank" } | Elements, Styles, Computed, Console, Sources, Network и Application върху страница с повреди | Раздел 2, урок 3 |
 
 ## Как да използвате учебника?
 

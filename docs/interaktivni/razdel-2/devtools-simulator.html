@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Симулатор на DevTools – Детектив в браузъра</title>
+<style>
+:root{--nav:#174967;--bg:#eef6fb;--panel:#fff;--accent:#ffb62e;--ink:#082d46;--ok:#0a9f3f;--bad:#c53030;--soft:#46738d;--line:#cfe2ee;
+--dt-bg:#fff;--dt-bar:#f1f3f4;--dt-line:#d6dadf;--dt-sel:#cfe8fc;--dt-tag:#881280;--dt-attr:#994500;--dt-val:#1a1aa6;--dt-prop:#c80000;--mono:Consolas,"DejaVu Sans Mono",Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header.top{position:sticky;top:0;z-index:20;background:var(--nav);color:#fff;padding:8px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.title{font-size:20px;font-weight:800;line-height:1.1}.sub{font-size:13px;font-weight:700;margin-top:2px;opacity:.9}
+nav.missions{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+button{border:0;border-radius:9px;padding:8px 11px;font:800 13.5px Arial,sans-serif;cursor:pointer;background:#f1f4f6;color:var(--ink)}
+button:hover{filter:brightness(.96)}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid #1c8cbd;outline-offset:2px}
+.mbtn{background:#f7f7f7;padding:6px 8px;font-size:12.5px}.mbtn.active{background:var(--accent)}.mbtn .ok{color:var(--ok)}.mbtn.active .ok{color:#05501f}
+.fullbtn{background:rgba(255,255,255,.14);color:#fff;font-size:18px;line-height:1;padding:7px 10px;border:2px solid rgba(255,255,255,.35)}
+main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:10px;padding:10px;align-items:start}
+.panel{background:var(--panel);border-radius:14px;padding:12px}
+.mission{position:sticky;top:64px;max-height:calc(100vh - 74px);overflow:auto}
+.mission h1{margin:0 0 8px;font-size:19px}
+.situation{background:#fff8e9;border-left:6px solid var(--accent);padding:9px 10px;font-size:14px;font-weight:700;line-height:1.45}
+.situation code,.task code,.quiz code,.hint code{background:#eef3f6;border-radius:4px;padding:0 4px;font:13px var(--mono);font-weight:700}
+.task{font-size:14px;line-height:1.5;margin:8px 0}
+.task ol{margin:4px 0;padding-left:20px}.task li{margin-bottom:3px}
+.checks{list-style:none;margin:10px 0 0;padding:0}
+.checks li{display:flex;gap:8px;padding:5px 2px;border-bottom:1px solid #e3eef5;font-size:13.5px;line-height:1.35}
+.checks li .m{flex:0 0 21px;height:21px;border-radius:50%;border:2px solid #9fbfd2;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff}
+.checks li.done .m{background:var(--ok);border-color:var(--ok)}.checks li.done{color:#2c5a43}
+.quiz{margin:10px 0;padding:9px 10px;background:#f4f9fc;border-radius:10px;font-size:13.5px}
+.quiz b{display:block;margin-bottom:6px}
+.quiz label{display:block;padding:4px 6px;border-radius:6px;cursor:pointer}
+.quiz label:hover{background:#e6f1f8}
+.quiz input[type=number]{width:90px;padding:5px;border:1px solid #9fbfd2;border-radius:6px;font:14px Arial}
+.qres{font-weight:800;margin-top:4px;font-size:13px}.qres.ok{color:var(--ok)}.qres.bad{color:var(--bad)}
+.hintbtn{background:#e8f5fb;color:#1c6fa3;font-size:12.5px;padding:6px 9px;margin-top:8px}
+.hint{display:none;margin-top:6px;font-size:13px;line-height:1.45;background:#eef6fb;border-radius:8px;padding:7px 9px}
+.hint.show{display:block}
+.done-msg{display:none;margin-top:10px;background:#e7f7ec;border-radius:10px;padding:9px 10px;font-weight:800;color:#0a6a2c;font-size:14px}
+.done-msg.show{display:block}
+.simnote{font-size:12.5px;color:var(--soft);line-height:1.45;margin:12px 0 6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#082d46;color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;font-size:14px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1}
+/* ----- браузър ----- */
+.browser{border:1px solid #b9cfdd;border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column;height:calc(100vh - 84px);min-height:620px}
+.bbar{display:flex;align-items:center;gap:8px;background:#dee3e8;padding:6px 10px}
+.bbar .dots{display:flex;gap:5px}.bbar .dots i{width:11px;height:11px;border-radius:50%;background:#fff;opacity:.8}
+.bbar .url{flex:1;background:#fff;border-radius:16px;padding:5px 12px;font-size:13px;color:#3c4043;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bbar button{padding:4px 9px;font-size:15px;background:#fff}
+.viewport{flex:1 1 45%;min-height:180px;position:relative;background:#fff}
+.viewport iframe{border:0;width:100%;height:100%;display:block}
+/* ----- DevTools ----- */
+.devtools{flex:1 1 55%;min-height:260px;display:flex;flex-direction:column;border-top:2px solid var(--dt-line);background:var(--dt-bg);font:12.5px Arial,sans-serif;color:#202124}
+.dtabs{display:flex;align-items:stretch;background:var(--dt-bar);border-bottom:1px solid var(--dt-line);overflow-x:auto}
+.dtabs .pick{background:none;border-radius:0;padding:6px 10px;font-size:15px;font-weight:400}
+.dtabs .pick.on{color:#1a73e8;background:#e3effd}
+.dtab{background:none;border-radius:0;padding:7px 12px;font:500 12.5px Arial,sans-serif;color:#3c4043;border-bottom:2px solid transparent;white-space:nowrap}
+.dtab.active{color:#1a73e8;border-bottom-color:#1a73e8}
+.dtab .badge{display:inline-block;background:#d93025;color:#fff;border-radius:8px;font-size:10px;padding:0 5px;margin-left:4px}
+.dpanes{flex:1;min-height:0;position:relative}
+.dpane{position:absolute;inset:0;display:none}.dpane.active{display:flex}
+.split{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);width:100%;min-height:0}
+.split>div{min-height:0;overflow:auto}
+.tree{padding:6px 4px;font:12.5px/1.55 var(--mono);border-right:1px solid var(--dt-line)}
+.node{white-space:nowrap;cursor:default;padding-left:calc(var(--d)*14px + 14px);position:relative;border-radius:2px}
+.node:hover{background:#f1f6fd}.node.sel{background:var(--dt-sel)}
+.node .tw{position:absolute;left:calc(var(--d)*14px);width:14px;text-align:center;color:#5f6368;cursor:pointer;font-family:Arial}
+.t{color:var(--dt-tag)}.an{color:var(--dt-attr)}.av{color:var(--dt-val)}.tx{color:#202124}
+.av.edit{outline:1px solid #1a73e8;background:#fff;padding:0 2px}
+.node .eq{color:#5f6368;margin-left:6px}
+.side{display:flex;flex-direction:column}
+.stabs{display:flex;background:var(--dt-bar);border-bottom:1px solid var(--dt-line);flex:0 0 auto}
+.stab{background:none;border-radius:0;padding:6px 10px;font:500 12px Arial;color:#3c4043;border-bottom:2px solid transparent}
+.stab.active{color:#1a73e8;border-bottom-color:#1a73e8}
+.sbody{overflow:auto;flex:1;min-height:0}
+.rule{border-bottom:1px solid var(--dt-line);padding:5px 8px 6px;font:12.5px/1.6 var(--mono)}
+.rule .src{float:right;color:#5f6368;text-decoration:underline;font-family:Arial;font-size:11.5px}
+.rule .selr{color:#202124;cursor:text}.rule .selr:hover{background:#eef3fd}
+.decl{padding-left:14px;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.decl input[type=checkbox]{margin:0 2px 0 -14px;width:12px;height:12px;opacity:0}
+.decl:hover input[type=checkbox],.decl:focus-within input[type=checkbox],.decl.off input[type=checkbox]{opacity:1}
+.decl input[type=checkbox]:focus-visible,.decl [tabindex]:focus-visible,.rule .selr:focus-visible,.node:focus-visible,.lnk:focus-visible,.nt tr:focus-visible{outline:2px solid #1a73e8;outline-offset:1px}
+.decl .p{color:var(--dt-prop);cursor:text}.decl .v{color:#202124;cursor:text}
+.decl.over .p,.decl.over .v,.decl.off .p,.decl.off .v{text-decoration:line-through;opacity:.65}
+.decl .warn{color:#e37400;cursor:help;font-family:Arial}
+.decl.bad .p,.decl.bad .v{text-decoration:line-through;text-decoration-color:#e37400}
+.addp{background:none;color:#1a73e8;font:12px Arial;padding:0 0 0 14px}
+.inl{font:12.5px var(--mono);border:1px solid #1a73e8;border-radius:2px;padding:0 3px;min-width:60px}
+.empty{color:#80868b;padding:10px;font-style:italic}
+.boxm{margin:14px auto;width:min(330px,94%);font:11px Arial;text-align:center;color:#202124}
+.bx{border:1px dashed #333;padding:4px 10px;position:relative}
+.bx>.lab{position:absolute;left:5px;top:2px;font-size:10.5px}
+.bx .tn{display:block}.bx .row{display:flex;align-items:center;gap:6px}.bx .row>.bx{flex:1}
+.bm{background:#f9cc9d}.bb{background:#fddd9b;border-style:solid}.bp{background:#c3d08b}.bc{background:#8cb6c0;border-style:solid;padding:8px 4px;font-weight:700}
+.cprops{font:12px/1.6 var(--mono);padding:4px 10px}.cprops div{display:flex;justify-content:space-between;border-bottom:1px solid #f1f3f4}
+.cprops .k{color:var(--dt-prop)}
+/* console */
+.cons{flex-direction:column;width:100%}
+.ctool{display:flex;gap:8px;align-items:center;padding:4px 8px;border-bottom:1px solid var(--dt-line);background:var(--dt-bar);font-size:12px;color:#5f6368}
+.cmsgs{flex:1;overflow:auto;font:12.5px/1.45 var(--mono)}
+.msg{padding:3px 8px 3px 26px;border-bottom:1px solid #f0f0f0;position:relative;white-space:pre-wrap;word-break:break-word}
+.msg::before{position:absolute;left:8px;top:3px}
+.msg.err{background:#fff0f0;color:#c5221f;border-color:#fdd}.msg.err::before{content:"⛔"}
+.msg.warn{background:#fffbe5;color:#5c3c00}.msg.warn::before{content:"⚠"}
+.msg.info::before{content:"ℹ";color:#1a73e8}
+.msg.in{color:#1a73e8}.msg.in::before{content:"›";font-weight:900}
+.msg.out{color:#202124}.msg.out::before{content:"‹";color:#80868b}
+.msg .lnk{float:right;color:#5f6368;text-decoration:underline;cursor:pointer;margin-left:10px}
+.cin{display:flex;align-items:center;border-top:1px solid var(--dt-line);padding:3px 8px}
+.cin span{color:#1a73e8;font-weight:900;margin-right:6px}
+.cin input{flex:1;border:0;font:12.5px var(--mono);padding:4px;outline:none}
+/* sources */
+.files{padding:6px;font-size:12.5px;border-right:1px solid var(--dt-line);overflow:auto}
+.files div{padding:2px 4px;cursor:pointer;white-space:nowrap;border-radius:3px}.files div:hover{background:#f1f6fd}.files div.sel{background:var(--dt-sel)}
+.code{font:12.5px/1.55 var(--mono);overflow:auto;padding:4px 0}
+.ln{display:flex;white-space:pre}.ln .n{flex:0 0 38px;text-align:right;padding-right:10px;color:#80868b;user-select:none}
+.ln.hl{background:#fff3c4}.ln.hl .n{color:#202124;font-weight:700}
+/* network */
+.net{flex-direction:column;width:100%}
+.ntool{display:flex;gap:6px;align-items:center;padding:4px 8px;border-bottom:1px solid var(--dt-line);background:var(--dt-bar);font-size:12px;flex-wrap:wrap}
+.ntool .demo{color:#80868b}.ntool .demo i{font-size:11px}
+.ntool .f{background:none;border-radius:4px;padding:2px 7px;font:500 12px Arial;color:#3c4043}.ntool .f.on{background:#d2e3fc;color:#174ea6}
+.nwrap{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr)}
+.nwrap.det{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+.ntab{overflow:auto}
+table.nt{border-collapse:collapse;width:100%;font-size:12px}
+.nt th{background:var(--dt-bar);text-align:left;font-weight:500;padding:4px 6px;border-bottom:1px solid var(--dt-line);position:sticky;top:0}
+.nt td{padding:4px 6px;border-bottom:1px solid #f1f3f4;white-space:nowrap}
+.nt tr{cursor:pointer}.nt tr:hover td{background:#f1f6fd}.nt tr.sel td{background:var(--dt-sel)}
+.nt tr.e td{color:#c5221f}
+.nsum{padding:4px 8px;border-top:1px solid var(--dt-line);font-size:12px;color:#5f6368}
+.ndet{border-left:1px solid var(--dt-line);overflow:auto;font-size:12px}
+.ndet h4{margin:0;padding:5px 8px;background:var(--dt-bar);font-size:12px;border-bottom:1px solid var(--dt-line)}
+.kv{padding:3px 8px;display:grid;grid-template-columns:140px 1fr;gap:6px;font:12px/1.5 var(--mono)}
+.kv b{font-family:Arial;color:#5f6368;font-weight:500}
+/* application */
+.app{width:100%;display:grid;grid-template-columns:200px minmax(0,1fr)}
+.anav{border-right:1px solid var(--dt-line);padding:6px;font-size:12.5px;overflow:auto}
+.anav div{padding:3px 6px;border-radius:3px}.anav .h{font-weight:700;color:#5f6368;margin-top:6px}.anav .sel{background:var(--dt-sel)}
+.abody{overflow:auto}
+table.st{border-collapse:collapse;width:100%;font:12.5px var(--mono)}
+.st th{background:var(--dt-bar);font:500 12px Arial;text-align:left;padding:4px 8px;border-bottom:1px solid var(--dt-line)}
+.st td{padding:3px 8px;border-bottom:1px solid #f1f3f4}
+.st td input{width:100%;font:12.5px var(--mono);border:1px solid transparent;padding:2px}
+.st td input:focus{border-color:#1a73e8}
+.st .del{background:none;color:#c5221f;padding:0 6px;font-size:14px}
+.pickmode iframe{cursor:crosshair}
+@media (max-width:1000px){main{grid-template-columns:1fr}.mission{position:static;max-height:none}.split{grid-template-columns:1fr}.tree{border-right:0;border-bottom:1px solid var(--dt-line);max-height:220px}.app{grid-template-columns:1fr}.nwrap.det{grid-template-columns:1fr}.browser{height:auto}.viewport{height:300px;flex:none}.devtools{height:460px;flex:none}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div><div class="title">🕵️ Симулатор на DevTools</div><div class="sub">Урок 3 • Детектив в браузъра</div></div>
+ <nav class="missions" id="mnav" aria-label="Мисии"></nav>
+ <button class="fullbtn" id="fs" title="Цял екран" aria-label="Цял екран">⛶</button>
+</header>
+<main>
+ <section class="panel mission" aria-live="polite">
+  <h1 id="mtitle"></h1>
+  <div class="situation" id="msit"></div>
+  <div class="task" id="mtask"></div>
+  <div id="mquiz"></div>
+  <ul class="checks" id="mchecks"></ul>
+  <button class="hintbtn" id="hintbtn">💡 Подсказка</button>
+  <div class="hint" id="hint"></div>
+  <div class="done-msg" id="donemsg">✅ Мисията е изпълнена!<div id="donewhy" style="font-weight:400;color:#0d3b1f;margin-top:6px;line-height:1.45;font-size:13.5px"></div></div>
+  <p class="simnote">Симулаторът е <b>опростен модел</b> на Chrome DevTools. Истинските инструменти (<b>F12</b>) имат много повече възможности – след мисиите изследвай същата страница в Chrome.</p>
+  <button class="hintbtn" id="resetbtn" style="background:#fde8e8;color:#8a1c1c">↺ Започни отначало</button>
+ </section>
+ <section class="browser" id="browser" aria-label="Симулиран браузър">
+  <div class="bbar"><div class="dots"><i></i><i></i><i></i></div>
+   <button id="reload" title="Презареди (F5)" aria-label="Презареди страницата">⟳</button>
+   <div class="url">https://ilkoiliev.github.io/internet-programirane/primeri/razdel-2/moyat-klas-detektiv/</div></div>
+  <div class="viewport"><iframe id="page" title="Страницата „Моят клас“"></iframe></div>
+  <div class="devtools">
+   <div class="dtabs" role="tablist">
+    <button class="pick" id="pick" title="Посочи елемент в страницата (Ctrl+Shift+C)" aria-label="Посочи елемент">⬚↖</button>
+    <button class="dtab active" data-p="elements">Elements</button>
+    <button class="dtab" data-p="console">Console<span class="badge" id="errbadge">2</span></button>
+    <button class="dtab" data-p="sources">Sources</button>
+    <button class="dtab" data-p="network">Network</button>
+    <button class="dtab" data-p="application">Application</button>
+   </div>
+   <div class="dpanes">
+    <div class="dpane active" id="p-elements"><div class="split"><div class="tree" id="tree" role="tree" aria-label="HTML дърво"></div>
+     <div class="side"><div class="stabs"><button class="stab active" data-s="styles">Styles</button><button class="stab" data-s="computed">Computed</button></div>
+      <div class="sbody" id="sbody"></div></div></div></div>
+    <div class="dpane cons" id="p-console"><div class="ctool" title="Лентата е само за показ – в симулатора филтрите не действат."><span aria-hidden="true">🚫 top ▾ Филтър</span><span style="margin-left:auto" aria-hidden="true">Default levels ▾</span><i style="font-size:11px">(само за показ)</i></div>
+     <div class="cmsgs" id="cmsgs"></div><div class="cin"><span>›</span><input id="cinput" aria-label="Команда в конзолата" placeholder="напр. document.title" autocomplete="off"></div></div>
+    <div class="dpane" id="p-sources"><div class="split" style="grid-template-columns:170px minmax(0,1fr)"><div class="files" id="files"></div><div class="code" id="code"></div></div></div>
+    <div class="dpane net" id="p-network"><div class="ntool"><span aria-hidden="true" title="В истинския Chrome: запис (червен = записва) и изчистване">⏺ 🚫</span> <span class="demo" title="Само за показ – в симулатора тези настройки не действат. В Chrome вижте Урок 3, т. 7.3."><label><input type="checkbox" disabled> Preserve log</label> <label><input type="checkbox" disabled> Disable cache</label> <i>(само за показ)</i></span>
+     <span style="margin-left:8px"></span><button class="f on" data-f="all">All</button><button class="f" data-f="document">Doc</button><button class="f" data-f="stylesheet">CSS</button><button class="f" data-f="script">JS</button><button class="f" data-f="png">Img</button></div>
+     <div class="nwrap" id="nwrap"><div class="ntab"><table class="nt" id="nt"></table></div><div class="ndet" id="ndet" hidden></div></div><div class="nsum" id="nsum"></div></div>
+    <div class="dpane" id="p-application"><div class="app"><div class="anav"><div class="h">Application</div><div>Manifest</div><div class="h">Storage</div><div class="sel">▾ Local storage</div><div style="padding-left:18px" class="sel">https://ilkoiliev.github.io</div><div>▸ Session storage</div><div>▸ Cookies</div></div>
+     <div class="abody"><table class="st" id="st"></table><p class="empty" style="font-style:normal">Попълни празния ред, за да добавиш запис. Промените в Local storage остават и след презареждане.</p></div></div></div>
+   </div>
+  </div>
+ </section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+/* ================= Изходен код на страницата (като в упражнението) ================= */
+const BASE="../../primeri/razdel-2/moyat-klas-detektiv/";
+const ORIG_CSS=[
+ ["body",[["margin","0"],["font-family","Arial, Helvetica, sans-serif"],["line-height","1.5"],["color","#082d46"],["background-color","#eef6fb"]]],
+ [".site-header",[["background-color","#174967"],["color","white"],["padding","12px 18px"]]],
+ [".site-header h1",[["margin","0 0 4px"],["font-size","24px"]]],
+ [".subtitle, .greeting",[["margin","0 0 6px"]]],
+ [".menu a",[["display","inline-block"],["padding","4px 10px"],["margin-right","6px"],["border-radius","6px"],["background-color","#ffb62e"],["color","#082d46"],["text-decoration","none"]]],
+ [".page",[["max-width","400px"],["margin","16px auto"]]],
+ [".card",[["width","100%"],["padding","20px"],["border","4px solid #cfe2ee"],["border-radius","10px"],["margin-bottom","14px"],["background-color","white"]]],
+ [".card h2",[["margin-top","0"],["color","#174967"],["font-size","20px"]]],
+ [".card img",[["max-width","100%"],["height","auto"],["border-radius","8px"]]],
+ [".card p",[["color","#082d46"]]],
+ [".important",[["color","#b35200"],["font-weight","bold"]]],
+ ["button",[["padding","6px 12px"],["border","0"],["border-radius","8px"],["background-color","#ffb62e"],["color","#082d46"],["font-weight","bold"],["cursor","pointer"]]],
+ [".site-footer",[["backgrond-color","#174967"],["color","white"],["text-align","center"],["padding","10px"]]]
+];
+const LINES={};(function(){let ln=3;ORIG_CSS.forEach(([s,d])=>{LINES[s]=ln;ln+=d.length+3})})();
+const PAGE_BODY=`<header class="site-header">
+    <h1 id="main-title">Моят клас</h1>
+    <p class="subtitle">Нашето място за идеи и успехи</p>
+    <p class="greeting" id="greeting">Здравей!</p>
+    <nav class="menu">
+        <a href="#za-nas">За нас</a>
+        <a href="#deynosti">Дейности</a>
+    </nav>
+</header>
+<main class="page">
+    <section class="card" id="za-nas">
+        <h2>За нас</h2>
+        <img src="img/klas.png" alt="Рисунка: класна стая с дъска, компютри и лупа" width="760" height="300">
+        <p>Ние сме любознателни, креативни и обичаме технологиите.</p>
+        <p class="important">Учим се да създаваме уеб страници!</p>
+    </section>
+    <section class="card" id="deynosti">
+        <h2>Нашите дейности</h2>
+        <p class="more" id="more-text" hidden>Участваме в олимпиади и хакатони.</p>
+        <button type="button">Научи повече</button>
+    </section>
+</main>
+<footer class="site-footer">
+    <p>Създадено от 12 клас • 2026/2027</p>
+</footer>`;
+const SCRIPT_TXT=`// Скрипт за страницата „Моят клас“
+console.info("🕵️ Добре дошъл, детективе! В тази страница има скрити повреди. Намери ги с инструментите за разработчици.");
+
+// Поздрав с името, записано в Local storage (ключ "ime")
+const ime = localStorage.getItem("ime");
+document.querySelector("#greeting").textContent = ime ? "Здравей, " + ime + "!" : "Здравей, гост!";
+localStorage.setItem("posledno-poseshtenie", new Date().toLocaleString("bg-BG"));
+
+// Брояч на харесванията
+document.querySelector("#like-btn").addEventListener("click", function () {
+    const broyach = document.querySelector("#like-count");
+    const broy = broyach.textContent;
+    broyach.textContent = broy + 1;
+});
+
+// Бутонът „Научи повече“ показва скрития текст
+document.querySelector("#more-btn").addEventListener("click", function () {
+    document.querySelector("#more-text").hidden = false;
+});`;
+let NET=[];const NET_DEF=()=>[
+ {name:"moyat-klas-detektiv/",path:"",status:200,type:"document",init:"Other",size:"2.1 kB",time:"38 ms",ctype:"text/html; charset=utf-8"},
+ {name:"style.css",path:"css/style.css",status:200,type:"stylesheet",init:"(index):"+LN("stylesheet"),size:"1.6 kB",time:"21 ms",ctype:"text/css; charset=utf-8"},
+ {name:"favicon.png",path:"images/favicon.png",status:200,type:"png",init:"(index):"+LN("rel=\"icon"),size:"0.4 kB",time:"12 ms",ctype:"image/png"},
+ {name:"klas.png",path:"img/klas.png",status:404,type:"png",init:"(index):"+LN("<img"),size:"9.1 kB",time:"17 ms",ctype:"text/html; charset=utf-8"},
+ {name:"script.js",path:"js/script.js",status:200,type:"script",init:"(index):"+LN("<script"),size:"1.1 kB",time:"15 ms",ctype:"application/javascript; charset=utf-8"}
+];
+const LN=t=>FILES["index.html"]().split("\n").findIndex(l=>l.includes(t))+1;
+const ORIGIN="https://ilkoiliev.github.io/internet-programirane/primeri/razdel-2/moyat-klas-detektiv/";
+
+/* ================= Състояние ================= */
+let rules=[],doc=null,win=null,selected=null,pickOn=false,openNodes=new Set(),sideTab="styles";
+let storage=[["posledno-poseshtenie",new Date().toLocaleString("bg-BG")]];
+const flags={inspectedImportant:false,sourcesLine:false,netRow:false,reloadedWithName:false,cardSelected:false};
+const quizState={};
+const $=s=>document.querySelector(s);
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),3200)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function cloneRules(){return ORIG_CSS.map(([s,d],i)=>({sel:s,src:"style.css:"+LINES[s],decls:d.map(([p,v])=>({p,v,on:true}))}))}
+function cssText(){return rules.map(r=>r.sel+"{"+r.decls.filter(d=>d.on&&d.p).map(d=>d.p+":"+d.v).join(";")+"}").join("\n")}
+function applyCss(){if(doc)doc.getElementById("sim-css").textContent=cssText();refresh()}
+
+/* ================= Зареждане на страницата ================= */
+function loadPage(){
+ rules=cloneRules();
+ const ime=(storage.find(r=>r[0]==="ime")||[])[1];
+ const html=`<!DOCTYPE html><html lang="bg"><head><meta charset="UTF-8"><base href="${BASE}"><title>Моят клас</title><style id="sim-css">${cssText()}</style>
+<style id="sim-hl">.__hl{outline:2px solid #1a73e8!important;outline-offset:-2px;background-image:linear-gradient(rgba(111,168,220,.35),rgba(111,168,220,.35))!important}</style></head><body>${PAGE_BODY}</body></html>`;
+ const fr=$("#page");
+ fr.onload=()=>{
+  doc=fr.contentDocument;win=fr.contentWindow;
+  const g=doc.getElementById("greeting");if(g)g.textContent=ime?"Здравей, "+ime+"!":"Здравей, гост!";
+  doc.addEventListener("click",e=>{if(!pickOn)return;e.preventDefault();e.stopPropagation();setPick(false);selectEl(e.target);tab("elements")},true);
+  doc.addEventListener("mouseover",e=>{if(pickOn)hl(e.target)});
+  doc.addEventListener("mouseout",()=>{if(pickOn)hl(null)});
+  doc.addEventListener("load",()=>evalAll(),true);doc.addEventListener("error",()=>evalAll(),true);
+  selected=doc.body;openNodes=new Set([doc.body,doc.querySelector("main"),doc.querySelector("#za-nas")]);
+  selectEl(selected,true);
+ };
+ fr.srcdoc=html;
+}
+function hl(el){if(!doc)return;doc.querySelectorAll(".__hl").forEach(x=>x.classList.remove("__hl"));if(el&&el.nodeType===1&&el!==doc.body&&el!==doc.documentElement)el.classList.add("__hl")}
+
+/* ================= Elements: дърво ================= */
+function attrsHtml(el){return [...el.attributes].filter(a=>a.name!=="class"||a.value.replace("__hl","").trim()).map(a=>{const v=a.name==="class"?a.value.replace(/\s*__hl\s*/,"").trim():a.value;return ` <span class="an">${a.name}</span>=<span class="av" data-attr="${esc(a.name)}" tabindex="0" title="Двоен клик (или Enter) – промени стойността">"${esc(v)}"</span>`}).join("")}
+function renderTree(){
+ const t=$("#tree");if(!doc){t.innerHTML="";return}
+ const out=[];
+ function walk(el,d){
+  const kids=[...el.childNodes].filter(n=>n.nodeType===1||(n.nodeType===3&&n.textContent.trim()));
+  const elKids=kids.filter(n=>n.nodeType===1);
+  const open=openNodes.has(el);
+  const onlyText=kids.length===1&&kids[0].nodeType===3;
+  const tag=el.tagName.toLowerCase();
+  const tw=elKids.length?`<span class="tw" data-tw="1">${open?"▾":"▸"}</span>`:"";
+  if(onlyText||!kids.length){
+   out.push(`<div class="node${el===selected?" sel":""}" style="--d:${d}" data-i="${idx(el)}" tabindex="0" role="treeitem">${tw}<span class="t">&lt;${tag}</span>${attrsHtml(el)}<span class="t">&gt;</span>${onlyText?`<span class="tx">${esc(kids[0].textContent.trim())}</span>`:""}${["img","br","meta","link","input"].includes(tag)?"":`<span class="t">&lt;/${tag}&gt;</span>`}${el===selected?'<span class="eq">== $0</span>':""}</div>`);
+   return;
+  }
+  out.push(`<div class="node${el===selected?" sel":""}" style="--d:${d}" data-i="${idx(el)}" tabindex="0" role="treeitem" aria-expanded="${open}">${tw}<span class="t">&lt;${tag}</span>${attrsHtml(el)}<span class="t">&gt;</span>${open?"":'<span class="tx">…</span><span class="t">&lt;/'+tag+'&gt;</span>'}${el===selected?'<span class="eq">== $0</span>':""}</div>`);
+  if(open){kids.forEach(k=>{if(k.nodeType===1)walk(k,d+1);else out.push(`<div class="node" style="--d:${d+1}"><span class="tx">"${esc(k.textContent.trim())}"</span></div>`)});
+   out.push(`<div class="node" style="--d:${d}"><span class="t">&lt;/${tag}&gt;</span></div>`)}
+ }
+ walk(doc.body,0);t.innerHTML=out.join("");
+}
+let ELS=[];function idx(el){let i=ELS.indexOf(el);if(i<0){ELS.push(el);i=ELS.length-1}return i}
+$("#tree").addEventListener("click",e=>{const n=e.target.closest(".node[data-i]");if(!n)return;const el=ELS[+n.dataset.i];
+ if(e.target.dataset.tw){openNodes.has(el)?openNodes.delete(el):openNodes.add(el);renderTree();return}selectEl(el)});
+$("#tree").addEventListener("mouseover",e=>{const n=e.target.closest(".node[data-i]");hl(n?ELS[+n.dataset.i]:null)});
+$("#tree").addEventListener("mouseleave",()=>hl(null));
+$("#tree").addEventListener("keydown",e=>{
+ if(e.target.classList.contains("av")&&e.key==="Enter"){e.preventDefault();e.target.dispatchEvent(new MouseEvent("dblclick",{bubbles:true}));return}
+ const n=e.target.closest(".node[data-i]");if(!n||e.target!==n)return;const el=ELS[+n.dataset.i];
+ if(e.key==="Enter"||e.key===" "){e.preventDefault();selectEl(el);const again=document.querySelector(`#tree .node[data-i="${n.dataset.i}"]`);if(again)again.focus()}
+ else if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();e.key==="ArrowRight"?openNodes.add(el):openNodes.delete(el);renderTree();const a=document.querySelector(`#tree .node[data-i="${n.dataset.i}"]`);if(a)a.focus()}
+ else if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();const all=[...document.querySelectorAll("#tree .node[data-i]")];const k=all.indexOf(n)+(e.key==="ArrowDown"?1:-1);if(all[k])all[k].focus()}});
+$("#tree").addEventListener("dblclick",e=>{const a=e.target.closest(".av");if(!a)return;const n=a.closest(".node");const el=ELS[+n.dataset.i];const name=a.dataset.attr;
+ const inp=document.createElement("input");inp.className="inl";inp.value=el.getAttribute(name).replace(/\s*__hl\s*/,"").trim();inp.size=Math.max(8,inp.value.length+1);a.replaceWith(inp);inp.focus();inp.select();
+ const done=ok=>{if(ok){el.setAttribute(name,inp.value);if(name==="src")toast("Атрибутът е променен – браузърът изпраща нова заявка за изображението.")}renderTree();refresh()};
+ inp.addEventListener("keydown",k=>{if(k.key==="Enter")done(true);if(k.key==="Escape")done(false)});inp.addEventListener("blur",()=>done(true),{once:true})});
+function selectEl(el,silent){
+ if(!el||el.nodeType!==1)return;selected=el;win.$0=el;
+ let p=el.parentElement,needOpen=false;while(p){if(!openNodes.has(p)){openNodes.add(p);needOpen=true}p=p.parentElement}
+ if(!silent&&el.matches(".important"))flags.inspectedImportant=true;
+ if(!silent&&el.matches(".card"))flags.cardSelected=true;
+ const i=ELS.indexOf(el),node=i>=0?document.querySelector(`#tree .node[data-i="${i}"]`):null;
+ if(node&&!needOpen){document.querySelectorAll("#tree .node.sel").forEach(x=>{x.classList.remove("sel");const q=x.querySelector(".eq");if(q)q.remove()});node.classList.add("sel");node.insertAdjacentHTML("beforeend",'<span class="eq">== $0</span>')}
+ else renderTree();
+ renderSide();if(!silent)evalAll();
+}
+
+/* ================= Styles ================= */
+function spec(sel){const s=sel.replace(/::?[a-z-]+(\([^)]*\))?/g,m=>m.startsWith("::")?" t":" .c");const ids=(s.match(/#[\w-]+/g)||[]).length,cls=(s.match(/\.[\w-]+|\[[^\]]+\]/g)||[]).length,tags=(s.replace(/[#.][\w-]+|\[[^\]]+\]/g," ").match(/(^|[\s>+~])[a-z][\w-]*/gi)||[]).length;return [ids,cls,tags]}
+function cmpSpec(a,b){for(let i=0;i<3;i++)if(a[i]!==b[i])return a[i]-b[i];return 0}
+function valid(p,v){try{return CSS.supports(p,v)}catch(e){return false}}
+function matched(el){
+ const out=[];rules.forEach((r,i)=>{let best=null;r.sel.split(",").map(s=>s.trim()).forEach(part=>{try{if(el.matches(part)){const sp=spec(part);if(!best||cmpSpec(sp,best)>0)best=sp}}catch(e){}});if(best)out.push({r,i,sp:best})});
+ out.sort((a,b)=>cmpSpec(b.sp,a.sp)||b.i-a.i);return out;
+}
+function renderSide(){
+ document.querySelectorAll(".stab").forEach(b=>b.classList.toggle("active",b.dataset.s===sideTab));
+ sideTab==="styles"?renderStyles():renderComputed();
+}
+function renderStyles(){
+ const sb=$("#sbody");if(!selected){sb.innerHTML='<div class="empty">Избери елемент.</div>';return}
+ const m=matched(selected);const seen=new Set();
+ let h=`<div class="rule"><span class="selr">element.style</span> {<br>}</div>`;
+ m.forEach(({r,i})=>{
+  h+=`<div class="rule" data-r="${i}"><span class="src" title="Файл и ред">${r.src}</span><span class="selr" data-edit="sel" tabindex="0" title="Клик (или Enter) – промени селектора">${esc(r.sel)}</span> {`;
+  r.decls.forEach((d,j)=>{const ok=valid(d.p,d.v);let cls="decl";
+   if(!d.on)cls+=" off";else if(!ok)cls+=" bad";else if(seen.has(d.p))cls+=" over";else seen.add(d.p);
+   h+=`<div class="${cls}" data-d="${j}"><input type="checkbox" ${d.on?"checked":""} aria-label="Включи или изключи ${esc(d.p)}"><span class="p" data-edit="p" tabindex="0">${esc(d.p)}</span>: <span class="v" data-edit="v" tabindex="0">${esc(d.v)}</span>;${(!ok&&d.on)?' <span class="warn" title="Invalid property value / Unknown property name – браузърът пропуска тази декларация">⚠</span>':""}</div>`});
+  h+=`<button class="addp" data-add="${i}">+ свойство</button>}</div>`;
+ });
+ sb.innerHTML=h;
+}
+$("#sbody").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.dataset&&e.target.dataset.edit){e.preventDefault();e.target.click()}});
+$("#sbody").addEventListener("change",e=>{if(e.target.type!=="checkbox")return;const r=rules[+e.target.closest(".rule").dataset.r],d=r.decls[+e.target.closest(".decl").dataset.d];d.on=e.target.checked;applyCss()});
+$("#sbody").addEventListener("click",e=>{
+ const add=e.target.dataset.add;if(add!==undefined){const btn=e.target;const inp=document.createElement("input");inp.className="inl";inp.placeholder="свойство: стойност";inp.style.marginLeft="14px";btn.replaceWith(inp);inp.focus();
+  const done=ok=>{const t=inp.value.trim().replace(/;$/,"");const m=/^([a-z-]+)\s*:\s*(.+)$/i.exec(t);if(ok&&m)rules[+add].decls.push({p:m[1].toLowerCase(),v:m[2].trim(),on:true});applyCss()};
+  inp.addEventListener("keydown",k=>{if(k.key==="Enter")done(true);if(k.key==="Escape")done(false)});inp.addEventListener("blur",()=>done(true),{once:true});return}
+ const ed=e.target.dataset.edit;if(!ed)return;const ruleEl=e.target.closest(".rule");const r=rules[+ruleEl.dataset.r];const d=ed==="sel"?null:r.decls[+e.target.closest(".decl").dataset.d];
+ const inp=document.createElement("input");inp.className="inl";inp.value=ed==="sel"?r.sel:d[ed];inp.size=Math.max(6,inp.value.length+2);e.target.replaceWith(inp);inp.focus();inp.select();
+ let fin=false;const done=ok=>{if(fin)return;fin=true;const v=inp.value.trim();
+  if(ok&&v){if(ed==="sel"){try{doc.querySelector(v);r.sel=v}catch(x){toast("Невалиден селектор")}}else d[ed]=ed==="p"?v.toLowerCase():v}
+  applyCss()};
+ inp.addEventListener("keydown",k=>{if(k.key==="Enter")done(true);if(k.key==="Escape")done(false)});inp.addEventListener("blur",()=>done(true));
+});
+document.querySelectorAll(".stab").forEach(b=>b.onclick=()=>{sideTab=b.dataset.s;renderSide()});
+
+/* ================= Computed ================= */
+function renderComputed(){
+ const sb=$("#sbody");if(!selected){sb.innerHTML="";return}
+ const cs=win.getComputedStyle(selected);const n=v=>Math.round(parseFloat(v)*100)/100||0;
+ const four=k=>["top","right","bottom","left"].map(s=>n(cs.getPropertyValue(k.replace("*",s))));
+ const m=four("margin-*"),b=four("border-*-width"),p=four("padding-*");
+ const r=selected.getBoundingClientRect();const cw=n(r.width-b[1]-b[3]-p[1]-p[3]),ch=n(r.height-b[0]-b[2]-p[0]-p[2]);
+ const box=(cls,lab,v,inner)=>`<div class="bx ${cls}"><span class="lab">${lab}</span><span class="tn">${v[0]||"–"}</span><div class="row"><span>${v[3]||"–"}</span>${inner}<span>${v[1]||"–"}</span></div><span class="tn">${v[2]||"–"}</span></div>`;
+ let h=`<div class="boxm">${box("bm","margin",m,box("bb","border",b,box("bp","padding",p,`<div class="bx bc">${cw} × ${ch}</div>`)))}</div><div class="cprops">`;
+ ["box-sizing","width","color","background-color","font-size","font-weight","display"].forEach(k=>h+=`<div><span class="k">${k}</span><span>${esc(cs.getPropertyValue(k))}</span></div>`);
+ sb.innerHTML=h+"</div>";
+}
+
+/* ================= Console ================= */
+const cm=$("#cmsgs");
+function msg(cls,text,link){const d=document.createElement("div");d.className="msg "+cls;d.innerHTML=(link?`<span class="lnk" data-l="${link}" tabindex="0" role="link">${link}</span>`:"")+esc(text);cm.appendChild(d);cm.scrollTop=cm.scrollHeight}
+function initConsole(){cm.innerHTML="";
+ msg("err","GET "+ORIGIN+"img/klas.png 404 (Not Found)","(index):"+LN("<img"));
+ msg("info","🕵️ Добре дошъл, детективе! В тази страница има скрити повреди. Намери ги с инструментите за разработчици.","script.js:2");
+ msg("err","Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')\n    at script.js:17:36","script.js:17");}
+cm.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.dataset.l)e.target.click()});
+cm.addEventListener("click",e=>{const l=e.target.dataset.l;if(!l)return;if(l.startsWith("script.js")){showFile("js/script.js",+l.split(":")[1]);if(l.endsWith(":17"))flags.sourcesLine=true}else showFile("index.html",+l.split(":")[1]);tab("sources");evalAll()});
+$("#cinput").addEventListener("keydown",e=>{
+ if(e.key!=="Enter")return;const c=e.target.value.trim();if(!c)return;e.target.value="";msg("in",c);
+ if(/^(clear\(\)|console\.clear\(\))$/.test(c)){cm.innerHTML="";return}
+ try{win.$0=selected;let r=win.eval(c);let s;if(r===undefined)s="undefined";else if(r&&r.nodeType===1)s="<"+r.tagName.toLowerCase()+(r.id?"#"+r.id:"")+[...r.classList].filter(x=>x!=="__hl").map(x=>"."+x).join("")+">";else if(r&&typeof r==="object"&&"length"in r&&r.item)s="NodeList("+r.length+")";else if(typeof r==="string")s='"'+r+'"';else s=String(r);msg("out",s)}
+ catch(err){msg("err","Uncaught "+err.name+": "+err.message)}
+ renderTree();refresh();
+});
+
+/* ================= Sources ================= */
+function cssSourceText(){return "/* Стилове за страницата „Моят клас“ */\n\n"+ORIG_CSS.map(([s,d])=>s+" {\n"+d.map(([p,v])=>"    "+p+": "+v+";").join("\n")+"\n}").join("\n\n")}
+const FILES={"index.html":()=>`<!DOCTYPE html>\n<html lang="bg">\n<head>\n    <meta charset="UTF-8">\n    <title>Моят клас</title>\n    <link rel="icon" href="images/favicon.png">\n    <link rel="stylesheet" href="css/style.css">\n</head>\n<body>\n${PAGE_BODY.split("\n").map(l=>"    "+l).join("\n")}\n    <script src="js/script.js"><\/script>\n</body>\n</html>`,"css/style.css":cssSourceText,"js/script.js":()=>SCRIPT_TXT};
+let curFile="js/script.js",curLine;
+function renderFiles(){$("#files").innerHTML='<div style="font-weight:700;cursor:default">▾ ilkoiliev.github.io</div><div style="cursor:default;padding-left:14px">▾ moyat-klas-detektiv</div>'+
+ ["index.html","css/style.css","js/script.js"].map(f=>`<div data-f="${f}" class="${f===curFile?"sel":""}" style="padding-left:28px">📄 ${f}</div>`).join("")+'<div style="padding-left:28px;cursor:default">📁 images/</div>'}
+function showFile(f,line){curFile=f;curLine=line;renderFiles();const lines=FILES[f]().split("\n");$("#code").innerHTML=lines.map((l,i)=>`<div class="ln${i+1===line?" hl":""}"><span class="n">${i+1}</span>${esc(l)||" "}</div>`).join("");
+ if(line){const el=$("#code").children[line-1];if(el)setTimeout(()=>el.scrollIntoView({block:"center"}),30)}}
+$("#files").addEventListener("click",e=>{const f=e.target.dataset.f;if(f)showFile(f,undefined)});
+
+/* ================= Network ================= */
+let netFilter="all",netSel=null;
+function renderNet(){
+ const rows=NET.filter(r=>netFilter==="all"||r.type===netFilter);
+ $("#nt").innerHTML="<tr><th>Name</th><th>Status</th><th>Type</th><th>Initiator</th><th>Size</th><th>Time</th></tr>"+rows.map(r=>`<tr class="${r.status>=400?"e":""} ${netSel===r?"sel":""}" data-n="${NET.indexOf(r)}" tabindex="0"><td>${r.name}</td><td>${r.status}</td><td>${r.type}</td><td>${r.init}</td><td>${r.size}</td><td>${r.time}</td></tr>`).join("");
+ $("#nsum").textContent=`${rows.length} / ${NET.length} requests • 14.3 kB transferred • Finish: 186 ms`;
+ const d=$("#ndet");if(!netSel){d.hidden=true;$("#nwrap").classList.remove("det");return}
+ d.hidden=false;$("#nwrap").classList.add("det");const r=netSel;
+ d.innerHTML=`<h4>Headers – General</h4><div class="kv"><b>Request URL</b><span>${ORIGIN}${r.path}</span><b>Request Method</b><span>GET</span><b>Status Code</b><span style="color:${r.status>=400?"#c5221f":"#188038"}">${r.status} ${r.status>=400?"Not Found":"OK"}</span><b>Remote Address</b><span>185.199.108.153:443</span></div>
+ <h4>Response Headers</h4><div class="kv"><b>Content-Type</b><span>${r.ctype}</span><b>Server</b><span>GitHub.com</span><b>Cache-Control</b><span>max-age=600</span></div>
+ <h4>Request Headers</h4><div class="kv"><b>Accept</b><span>${r.type==="png"?"image/avif,image/webp,image/png,*/*":"*/*"}</span><b>Referer</b><span>${ORIGIN}</span><b>User-Agent</b><span>Mozilla/5.0 … Chrome</span></div>`;
+}
+$("#nt").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.dataset.n!==undefined){e.preventDefault();e.target.click()}});
+$("#nt").addEventListener("click",e=>{const tr=e.target.closest("tr[data-n]");if(!tr)return;netSel=NET[+tr.dataset.n];if(netSel.status===404)flags.netRow=true;renderNet();evalAll()});
+document.querySelectorAll(".ntool .f").forEach(b=>b.onclick=()=>{netFilter=b.dataset.f;document.querySelectorAll(".ntool .f").forEach(x=>x.classList.toggle("on",x===b));renderNet()});
+
+/* ================= Application ================= */
+function renderStorage(){
+ $("#st").innerHTML="<tr><th style='width:40%'>Key</th><th>Value</th><th></th></tr>"+storage.map((r,i)=>`<tr><td><input data-k="${i}" value="${esc(r[0])}" aria-label="Ключ"></td><td><input data-v="${i}" value="${esc(r[1])}" aria-label="Стойност"></td><td><button class="del" data-x="${i}" title="Изтрий записа" aria-label="Изтрий">✕</button></td></tr>`).join("")+
+ `<tr class="newrow"><td><input data-nk placeholder="нов ключ" aria-label="Нов ключ"></td><td><input data-nv placeholder="стойност" aria-label="Нова стойност"></td><td></td></tr>`;
+}
+$("#st").addEventListener("change",e=>{const t=e.target;
+ if(t.dataset.k!==undefined)storage[+t.dataset.k][0]=t.value.trim();
+ if(t.dataset.v!==undefined)storage[+t.dataset.v][1]=t.value;
+ if(t.dataset.nk!==undefined||t.dataset.nv!==undefined){const k=$("[data-nk]").value.trim(),v=$("[data-nv]").value;if(k){storage=storage.filter(r=>r[0]!==k);storage.push([k,v]);renderStorage();const vi=document.querySelector(`[data-v="${storage.length-1}"]`);if(vi&&!v)vi.focus()}}
+ storage=storage.filter(r=>r[0]);evalAll()});
+$("#st").addEventListener("click",e=>{const x=e.target.dataset.x;if(x!==undefined){storage.splice(+x,1);renderStorage();evalAll()}});
+
+/* ================= Табове, презареждане, режим „посочи“ ================= */
+function tab(p){document.querySelectorAll(".dtab").forEach(b=>b.classList.toggle("active",b.dataset.p===p));document.querySelectorAll(".dpane").forEach(d=>d.classList.toggle("active",d.id==="p-"+p));
+ if(p==="sources")showFile(curFile,curLine);if(p==="network")renderNet();if(p==="application")renderStorage()}
+document.querySelectorAll(".dtab").forEach(b=>b.onclick=()=>tab(b.dataset.p));
+function setPick(on){pickOn=on;$("#pick").classList.toggle("on",on);$("#browser").classList.toggle("pickmode",on);if(!on)hl(null)}
+$("#pick").onclick=()=>setPick(!pickOn);
+$("#reload").onclick=()=>{
+ const name=(storage.find(r=>r[0]==="ime")||[])[1];if(name&&name.trim())flags.reloadedWithName=true;
+ const p=storage.find(r=>r[0]==="posledno-poseshtenie");if(p)p[1]=new Date().toLocaleString("bg-BG");else storage.push(["posledno-poseshtenie",new Date().toLocaleString("bg-BG")]);
+ loadPage();initConsole();renderStorage();renderNet();
+ toast("Страницата е презаредена. Промените от DevTools изчезнаха – те са временни. Записите в Local storage остават.");
+ setTimeout(evalAll,300);
+};
+document.addEventListener("keydown",e=>{if(e.key==="F5"&&!e.ctrlKey){e.preventDefault();$("#reload").click()}if(e.ctrlKey&&e.shiftKey&&e.key.toLowerCase()==="c"){e.preventDefault();setPick(!pickOn)}});
+function refresh(){if(!doc)return;renderSide();evalAll()}
+
+/* ================= Мисии ================= */
+const M=[
+ {t:"1. Инспектирай елемента",sit:"Изречението „Учим се да създаваме уеб страници!“ трябва да е оранжево, но е тъмносиньо.",
+  task:`<ol><li>Натисни бутона <b>⬚↖</b> горе вляво в DevTools (или <code>Ctrl+Shift+C</code>) и кликни изречението в страницата. Може и да го избереш в HTML дървото.</li><li>Разгледай правилата в <b>Styles</b>. Коя декларация за <code>color</code> е задраскана?</li></ol>`,
+  quiz:{q:"Кое правило определя цвета на изречението?",opts:[".important – защото е записано по-късно",".card p – защото е по-специфично (клас + таг)","body – защото цветът се наследява"],ok:1,why:["По-късно записаното правило печели само при еднаква специфичност. Сравни специфичността на двата селектора.","","Наследеният цвят от body е най-слаб – всяко правило, насочено директно към елемента, го отменя. В Styles виж кои правила са над наследяването."]},
+  checks:[["Избран е елементът <code>&lt;p class=\"important\"&gt;</code>",()=>flags.inspectedImportant],["Правилен отговор на въпроса",()=>quizState[0]===true]],
+  hint:"<code>.card p</code> има един клас и един таг – специфичност (0,1,1). <code>.important</code> има само един клас – (0,1,0). По-специфичното правило печели, независимо от реда в файла."},
+ {t:"2. Поправи цвета в Styles",sit:"Сега поправи проблема направо в DevTools, без да пипаш файла.",
+  task:`<ol><li>Избери изречението.</li><li>В <b>Styles</b> кликни върху селектора <code>.important</code> и го промени, така че да е <b>по-специфичен</b> от <code>.card p</code>. Натисни <b>Enter</b>.</li><li>Изречението трябва да стане оранжево, а останалите параграфи – да останат тъмносини.</li></ol>`,
+  checks:[["Изречението е оранжево",()=>doc&&rgbIs(win.getComputedStyle(doc.querySelector(".important")).color,[179,82,0])],["Другите параграфи в картата са тъмносини",()=>doc&&rgbIs(win.getComputedStyle(doc.querySelector("#za-nas p:not(.important)")).color,[8,45,70])],["Без <code>!important</code>",()=>!rules.some(r=>r.decls.some(d=>/!important/.test(d.v)))]],
+  hint:"Например <code>.card .important</code> – два класа, специфичност (0,2,0). Може и <code>p.important</code> с класа и тага… но тогава специфичността е (0,1,1) – колкото на <code>.card p</code>, и печели по-късно записаното правило."},
+ {t:"3. Кутиеният модел",sit:"Картите излизат вдясно от основното съдържание. Защо?",
+  task:`<ol><li>Избери първата карта <code>&lt;section class="card" id="za-nas"&gt;</code>.</li><li>Отвори раздела <b>Computed</b> и разгледай схемата: ширина на съдържанието, <code>padding</code>, <code>border</code>.</li><li>Изчисли <b>общата</b> ширина на картата и я въведи отдолу.</li><li>Върни се в <b>Styles</b> и добави в правилото <code>.card</code> свойството, което включва <code>padding</code> и <code>border</code> в ширината (бутон <b>+ свойство</b>).</li></ol>`,
+  quiz:{q:"Каква е общата ширина на картата преди поправката (съдържание + padding + border)?",num:()=>Math.round(doc.querySelector(".page").getBoundingClientRect().width)+48},
+  checks:[["Избрана е карта",()=>flags.cardSelected],["Правилно изчислена обща ширина",()=>quizState[2]===true],["Картата е широка колкото <code>.page</code> (400 px)",()=>doc&&Math.round(doc.querySelector("#za-nas").getBoundingClientRect().width)===Math.round(doc.querySelector(".page").getBoundingClientRect().width)]],
+  hint:"Ширината на съдържанието е колкото <code>.page</code> (400 px при широк прозорец). Към нея се добавят 2 × 20 (padding) + 2 × 4 (border): 400 + 40 + 8 = 448. Свойството е <code>box-sizing: border-box</code>."},
+ {t:"4. Невалидна декларация",sit:"Долната част с надписа „Създадено от 12 клас“ е „изчезнала“.",
+  task:`<ol><li>Избери <code>&lt;footer class="site-footer"&gt;</code> в HTML дървото.</li><li>В <b>Styles</b> намери декларацията с предупредителна икона ⚠. Задръж мишката върху иконата.</li><li>Кликни името на свойството и го поправи.</li></ol>`,
+  quiz:{q:"Защо надписът не се вижда?",opts:["Footer е изтрит от HTML","Цветът на текста е бял, а фонът не е зададен, защото свойството е изписано грешно","Шрифтът е твърде малък"],ok:1,why:["Провери в Elements – елементът <footer> е в HTML дървото, значи не е изтрит.","","Размерът на шрифта е нормален. Виж в Computed какъв е цветът на текста и на фона."]},
+  checks:[["Правилен отговор на въпроса",()=>quizState[3]===true],["Долната част има тъмносин фон",()=>doc&&rgbIs(win.getComputedStyle(doc.querySelector(".site-footer")).backgroundColor,[23,73,103])]],
+  hint:"В правилото пише <code>backgrond-color</code> – липсва буквата „u“. Браузърът не познава такова свойство и го пропуска. Правилно: <code>background-color</code>."},
+ {t:"5. Грешка в конзолата",sit:"Бутонът „Научи повече“ не прави нищо.",
+  task:`<ol><li>Отвори <b>Console</b> и намери червената грешка <code>TypeError</code>.</li><li>Кликни връзката <code>script.js:17</code> вдясно от нея – ще се отвори <b>Sources</b> на реда с грешката.</li><li>Разгледай реда: кой елемент търси кодът? После провери в <b>Elements</b> дали бутонът има такъв атрибут.</li></ol>`,
+  quiz:{q:"Каква е причината за грешката?",opts:["В JavaScript има правописна грешка в думата addEventListener","Кодът търси елемент #more-btn, а бутонът няма id=\"more-btn\" – querySelector връща null","Бутонът е скрит с CSS"],ok:1,why:["Думата е изписана правилно. Съобщението казва, че null няма addEventListener – провери какво е върнал querySelector.","","Бутонът се вижда в страницата. Грешката е в конзолата – прочети я внимателно."]},
+  checks:[["Отворен е редът с грешката в Sources",()=>flags.sourcesLine],["Правилен отговор на въпроса",()=>quizState[4]===true]],
+  hint:"<code>document.querySelector(\"#more-btn\")</code> търси елемент с <code>id=\"more-btn\"</code>. Ако няма такъв, връща <code>null</code>, а <code>null</code> няма метод <code>addEventListener</code>. Поправката е в HTML: <code>&lt;button type=\"button\" id=\"more-btn\"&gt;</code>."},
+ {t:"6. Липсващият файл",sit:"Вместо рисунка в раздела „За нас“ се вижда само текстът на атрибута alt.",
+  task:`<ol><li>Отвори <b>Network</b>. Намери червения ред и кликни върху него.</li><li>В <b>Headers</b> прочети <b>Request URL</b> и <b>Status Code</b>.</li><li>Рисунката всъщност е в папка <code>images</code>. В <b>Elements</b> избери <code>&lt;img&gt;</code>, кликни двукратно стойността на <code>src</code> и я поправи. Рисунката трябва да се появи.</li></ol>`,
+  quiz:{q:"Какво означава статус 404?",opts:["Сървърът не работи","Заявката е успешна, но файлът е празен","Сървърът работи, но на този адрес няма файл – грешка в адреса"],ok:2,why:["Ако сървърът не работеше, нямаше да получим никакъв отговор, а останалите файлове са със статус 200.","Успешната заявка е със статус 200, не 404.",""]},
+  checks:[["Разгледан е редът с грешка 404",()=>flags.netRow],["Правилен отговор на въпроса",()=>quizState[5]===true],["Рисунката се показва",()=>doc&&doc.querySelector(".card img")&&doc.querySelector(".card img").naturalWidth>0]],
+  hint:"Адресът е <code>img/klas.png</code>, а файлът е в <code>images/klas.png</code>. Промени <code>src</code> на <code>images/klas.png</code>."},
+ {t:"7. Данни в Application",sit:"Страницата поздравява „Здравей, гост!“. Скриптът търси името в Local storage под ключа ime.",
+  task:`<ol><li>Отвори <b>Application → Local storage</b>. Какъв запис вече има?</li><li>В празния ред въведи ключ <code>ime</code> и твоето име като стойност (натисни <b>Tab</b> или кликни извън полето).</li><li>Презареди страницата с бутона <b>⟳</b> (или <b>F5</b>). Какво се промени в поздрава? А какво стана с промените, които направи в Styles?</li></ol>`,
+  checks:[["В Local storage има запис <code>ime</code> със стойност",()=>storage.some(r=>r[0]==="ime"&&r[1].trim())],["Страницата е презаредена и поздравява по име",()=>flags.reloadedWithName&&doc&&/Здравей, (?!гост).+!/.test(doc.querySelector("#greeting").textContent)]],
+  hint:"След презареждане промените от <b>Styles</b> и <b>Elements</b> изчезват – те са само в паметта на браузъра. Записите в <b>Local storage</b> остават, затова поздравът вече е с твоето име."}
+];
+function rgbIs(c,t){const m=(c||"").match(/\d+/g);return m&&t.every((v,i)=>Math.abs(+m[i]-v)<=2)}
+let cur=0;const done=new Set(JSON.parse((()=>{try{return localStorage.getItem("dt-sim-done")||"[]"}catch(e){return"[]"}})()));
+function renderNav(){$("#mnav").innerHTML=M.map((m,i)=>`<button class="mbtn${i===cur?" active":""}" data-m="${i}">${done.has(i)?'<span class="ok">✔</span> ':""}${i+1}</button>`).join("");
+ document.querySelectorAll(".mbtn").forEach(b=>b.onclick=()=>{cur=+b.dataset.m;renderMission()})}
+function renderMission(){const m=M[cur];$("#mtitle").textContent=m.t;$("#msit").textContent=m.sit;$("#mtask").innerHTML=m.task;
+ $("#hint").innerHTML=m.hint;$("#hint").classList.remove("show");
+ let q="";if(m.quiz){q=`<div class="quiz"><b>${m.quiz.q}</b>`;
+  if(m.quiz.opts)q+=m.quiz.opts.map((o,i)=>`<label><input type="radio" name="q" value="${i}" ${quizState["sel"+cur]===i?"checked":""}> ${esc(o)}</label>`).join("");
+  else q+=`<input type="number" id="qnum" value="${quizState["num"+cur]??""}"> px <button id="qok" style="padding:5px 9px;font-size:12.5px">Провери</button>`;
+  q+=`<div class="qres" id="qres"></div></div>`}
+ $("#mquiz").innerHTML=q;
+ document.querySelectorAll("#mquiz input[type=radio]").forEach(r=>r.onchange=()=>{quizState["sel"+cur]=+r.value;quizState[cur]=+r.value===m.quiz.ok;showQ();evalAll()});
+ const qok=$("#qok");if(qok)qok.onclick=()=>{const v=+$("#qnum").value;quizState["num"+cur]=$("#qnum").value;const exp=typeof m.quiz.num==="function"?m.quiz.num():m.quiz.num;quizState[cur]=Math.abs(v-exp)<=1;showQ();evalAll()};
+ showQ();renderNav();evalAll();}
+function showQ(){const e=$("#qres");if(!e)return;const s=quizState[cur],m=M[cur];e.className="qres"+(s===true?" ok":s===false?" bad":"");
+ let why="";if(s===false&&m.quiz&&m.quiz.why&&quizState["sel"+cur]!==undefined)why=" "+m.quiz.why[quizState["sel"+cur]];
+ if(s===false&&m.quiz&&!m.quiz.opts)why=" Събери ширината на съдържанието, padding отляво и отдясно и border отляво и отдясно.";
+ e.textContent=s===true?"✔ Вярно!":s===false?"✘ Не е вярно."+why:""}
+function evalAll(){
+ const m=M[cur];if(!m)return;let all=true;
+ $("#mchecks").innerHTML=m.checks.map(([t,f])=>{let ok=false;try{ok=!!f()}catch(e){}if(!ok)all=false;return `<li class="${ok?"done":""}"><span class="m">${ok?"✓":""}</span><span>${t}</span></li>`}).join("");
+ if(all&&!done.has(cur)){done.add(cur);try{localStorage.setItem("dt-sim-done",JSON.stringify([...done]))}catch(e){}renderNav();toast("✅ Мисия "+(cur+1)+" е изпълнена!")}
+ $("#donemsg").classList.toggle("show",all);$("#donewhy").innerHTML=all?"<b>Защо:</b> "+m.hint:"";if(all)$("#hint").classList.remove("show");
+}
+$("#hintbtn").onclick=()=>$("#hint").classList.toggle("show");
+$("#resetbtn").onclick=e=>{const b=e.currentTarget;
+ if(!b.dataset.sure){b.dataset.sure="1";b.textContent="Сигурен ли си? Натисни отново";setTimeout(()=>{delete b.dataset.sure;b.textContent="↺ Започни отначало"},4000);return}
+ delete b.dataset.sure;b.textContent="↺ Започни отначало";
+ done.clear();try{localStorage.removeItem("dt-sim-done")}catch(x){}
+ Object.keys(quizState).forEach(k=>delete quizState[k]);Object.keys(flags).forEach(k=>flags[k]=false);
+ storage=[["posledno-poseshtenie",new Date().toLocaleString("bg-BG")]];netSel=null;curLine=undefined;curFile="js/script.js";cur=0;
+ ELS=[];loadPage();initConsole();renderFiles();renderNet();renderStorage();tab("elements");renderMission();toast("Всичко е нулирано – започни от мисия 1.")};
+$("#fs").onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();
+// стартиране
+ELS=[];NET=NET_DEF();loadPage();initConsole();renderFiles();renderNet();renderStorage();renderMission();
+</script>
+</body>
+</html>

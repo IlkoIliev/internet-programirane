@@ -1,0 +1,110 @@
+/* Стилове за страницата „Моят клас“ */
+
+/* Общи стилове */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.5;
+    color: #082d46;
+    background-color: #eef6fb;
+}
+
+/* Горна част и меню */
+.site-header {
+    background-color: #174967;
+    color: white;
+    padding: 16px 24px;
+}
+
+.site-header h1 {
+    margin: 0 0 4px;
+}
+
+.subtitle,
+.greeting {
+    margin: 0 0 8px;
+}
+
+.menu a {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-right: 6px;
+    border-radius: 6px;
+    background-color: #ffb62e;
+    color: #082d46;
+    text-decoration: none;
+}
+
+.menu a:hover {
+    background-color: white;
+}
+
+/* Основно съдържание */
+.page {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+/* Разделите като карти */
+.card {
+    width: 100%;
+    padding: 20px;
+    border: 4px solid #cfe2ee;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    background-color: white;
+}
+
+.card h2 {
+    margin-top: 0;
+    color: #174967;
+}
+
+.card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.card p {
+    color: #082d46;
+}
+
+.important {
+    color: #b35200;
+    font-weight: bold;
+}
+
+/* Таблица */
+table {
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #9fbfd2;
+    padding: 6px 12px;
+}
+
+th {
+    background-color: #eaf4f9;
+}
+
+/* Бутони */
+button {
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #ffb62e;
+    color: #082d46;
+    font: bold 15px Arial, Helvetica, sans-serif;
+    cursor: pointer;
+}
+
+/* Долна част */
+.site-footer {
+    backgrond-color: #174967;
+    color: white;
+    text-align: center;
+    padding: 12px;
+}

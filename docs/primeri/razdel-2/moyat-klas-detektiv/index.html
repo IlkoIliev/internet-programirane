@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моят клас</title>
+    <link rel="icon" href="images/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <h1 id="main-title">Моят клас</h1>
+        <p class="subtitle">Нашето място за идеи и успехи</p>
+        <p class="greeting" id="greeting">Здравей!</p>
+        <nav class="menu">
+            <a href="#za-nas">За нас</a>
+            <a href="#deynosti">Дейности</a>
+            <a href="#programa">Програма</a>
+        </nav>
+    </header>
+    <main class="page">
+        <section class="card" id="za-nas">
+            <h2>За нас</h2>
+            <img src="img/klas.png" alt="Рисунка: класна стая с дъска, компютри и лупа" width="760" height="300">
+            <p>Ние сме любознателни, креативни и обичаме технологиите.</p>
+            <p class="important">Учим се да създаваме уеб страници!</p>
+        </section>
+        <section class="card" id="deynosti">
+            <h2>Нашите дейности</h2>
+            <ul>
+                <li>Програмиране</li>
+                <li>Роботика</li>
+                <li>Училищни проекти</li>
+            </ul>
+            <p class="more" id="more-text" hidden>Участваме и в олимпиади, хакатони и в изграждането на училищния сайт.</p>
+            <button type="button">Научи повече</button>
+        </section>
+        <section class="card" id="programa">
+            <h2>Седмична програма</h2>
+            <table>
+                <tr><th>Ден</th><th>Дейност</th></tr>
+                <tr><td>Понеделник</td><td>HTML</td></tr>
+                <tr><td>Сряда</td><td>CSS</td></tr>
+                <tr><td>Петък</td><td>Инструменти за разработчици</td></tr>
+            </table>
+            <p class="likes">
+                <button type="button" id="like-btn">👍 Харесва ми</button>
+                Харесвания: <span id="like-count">0</span>
+            </p>
+        </section>
+    </main>
+    <footer class="site-footer">
+        <p>Създадено от 12 клас • 2026/2027</p>
+    </footer>
+    <script src="js/script.js"></script>
+</body>
+</html>

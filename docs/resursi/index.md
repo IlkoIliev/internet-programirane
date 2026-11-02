@@ -8,6 +8,7 @@
 |---|---|---|
 | Протокол „Мрежов детектив“ – за разпечатване | [Учебна практика, Раздел 1, Упражнение 1](../praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) | [PDF](protokol-01-mrezhov-detektiv.pdf) |
 | Протокол „Мрежов детектив“ – за попълване на компютър | [Учебна практика, Раздел 1, Упражнение 1](../praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) | [Word](protokol-01-mrezhov-detektiv.docx) |
+| Протокол „Детектив в DevTools“ – за попълване на компютър | [Учебна практика, Раздел 2, Упражнение 3](../praktika/razdel-2/uprazhnenie-03-devtools.md) | [Word](protokol-03-detektiv-devtools.docx) |
 
 ## Програми
 
@@ -17,7 +18,7 @@
 | **Visual Studio Code** | Писане на HTML и CSS | Упражнения от Раздел 2 |
 | **Postman** | Изпращане и анализ на HTTP заявки без програмиране | Упражнение 2 от Раздел 1 |
 | **Command Prompt (CMD)** | Мрежови команди `ipconfig`, `nslookup`, `ping`, `tracert` | Упражнение 1 от Раздел 1 |
-| **Уеб браузър** с инструменти за разработчици (**F12**) | Преглед на страници, HTML, CSS и мрежовите заявки | Раздели 1 и 2 |
+| **Google Chrome** с инструменти за разработчици (**F12**) | Преглед на страници, HTML, CSS и мрежовите заявки; откриване на грешки | Раздели 1 и 2, Урок 3 и Упражнение 3 от Раздел 2 |
 
 ## Онлайн услуги
 

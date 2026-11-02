@@ -7,7 +7,7 @@
 | Раздел | Упражнения | Състояние |
 |---|---|---|
 | [**Раздел 1. Интернет и HTTP**](razdel-1/index.md) | [1. Мрежов детектив](razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md)<br>[2. HTTP заявки с Postman](razdel-1/uprazhnenie-urok-02-postman.md)<br>[3. HTTP клиент на C# – конзолно приложение](razdel-1/uprazhnenie-urok-02-csharp-http.md)<br>[4. HTTP клиент с Windows Forms](razdel-1/uprazhnenie-urok-02-csharp-winforms.md)<br>[5. Чат сървър и клиент – конзола](razdel-1/uprazhnenie-urok-03-chat-konzola.md)<br>[6. Чат клиент с Windows Forms](razdel-1/uprazhnenie-urok-03-chat-winforms.md)<br>[Практически проект. Чат приложение](razdel-1/proekt-chat-prilozhenie.md) | ✅ Публикуван |
-| [**Раздел 2. Външен интерфейс (front-end)**](razdel-2/index.md) | [1. HTML страница „Моят клас“](razdel-2/uprazhnenie-01-html.md)<br>[2. Оформяне на „Моят клас“ със CSS](razdel-2/uprazhnenie-02-css.md) | 🛠️ Попълва се |
+| [**Раздел 2. Външен интерфейс (front-end)**](razdel-2/index.md) | [1. HTML страница „Моят клас“](razdel-2/uprazhnenie-01-html.md)<br>[2. Оформяне на „Моят клас“ със CSS](razdel-2/uprazhnenie-02-css.md)<br>[3. Детектив в DevTools](razdel-2/uprazhnenie-03-devtools.md) | 🛠️ Попълва се |
 | [**Раздел 3. ASP.NET Core MVC**](razdel-3/index.md) | – | ⏳ В подготовка |
 | [**Раздел 4. REST API**](razdel-4/index.md) | – | ⏳ В подготовка |
 | [**Раздел 5. Финален проект и публикуване**](razdel-5/index.md) | – | ⏳ В подготовка |

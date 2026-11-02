@@ -7,7 +7,7 @@
 | Раздел | Уроци | Състояние |
 |---|---|---|
 | [**Раздел 1. Интернет и HTTP**](razdel-1/index.md) | [Урок 1. Основи на интернет и мрежови протоколи](razdel-1/urok-01-osnovi-na-internet.md)<br>[Урок 2. HTTP. Видове HTTP заявки](razdel-1/urok-02-http-vidove-zayavki.md)<br>[Урок 3. Клиент-сървър комуникация](razdel-1/urok-03-klient-sarvar-komunikatsia.md) | ✅ Публикуван |
-| [**Раздел 2. Разработка на външен интерфейс (front-end)**](razdel-2/index.md) | [Урок 1. Работа с HTML. Основни тагове](razdel-2/urok-01-html-osnovni-tagove.md)<br>[Урок 2. Работа със CSS. Селектори и основни правила](razdel-2/urok-02-css-selektori-i-pravila.md)<br>*следват: инструменти за разработчици, формуляри, семантични страници, адаптивно оформление, JavaScript и DOM* | 🛠️ Попълва се |
+| [**Раздел 2. Разработка на външен интерфейс (front-end)**](razdel-2/index.md) | [Урок 1. Работа с HTML. Основни тагове](razdel-2/urok-01-html-osnovni-tagove.md)<br>[Урок 2. Работа със CSS. Селектори и основни правила](razdel-2/urok-02-css-selektori-i-pravila.md)<br>[Урок 3. Работа с инструментите за разработчици](razdel-2/urok-03-instrumenti-za-razrabotchitsi.md)<br>*следват: формуляри, семантични страници, адаптивно оформление, JavaScript и DOM* | 🛠️ Попълва се |
 | [**Раздел 3. ASP.NET Core MVC и бази данни**](razdel-3/index.md) | – | ⏳ В подготовка |
 | [**Раздел 4. REST API**](razdel-4/index.md) | – | ⏳ В подготовка |
 
