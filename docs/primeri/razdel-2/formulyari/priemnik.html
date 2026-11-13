@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Приемник на формуляри (GET)</title>
+<style>
+:root{--ink:#082d46;--nav:#174967;--soft:#46738d;--line:#cfe2ee;--bg:#eef6fb;--accent:#ffb62e}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
+header{background:var(--nav);color:#fff;padding:14px 20px}
+header h1{margin:0;font-size:22px}header p{margin:4px 0 0;opacity:.9;font-size:14px}
+main{max-width:860px;margin:18px auto;padding:0 16px}
+.card{background:#fff;border:2px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+h2{margin:0 0 10px;font-size:18px;color:var(--nav)}
+.url{font:14px/1.5 Consolas,"DejaVu Sans Mono",monospace;background:#f4f8fb;border:1px solid var(--line);border-radius:8px;padding:8px 10px;word-break:break-all}
+.url b{color:#b35200}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:#eaf4f9}
+td code,th code{font:14px Consolas,"DejaVu Sans Mono",monospace}
+.enc{color:var(--soft);font:13px Consolas,"DejaVu Sans Mono",monospace;word-break:break-all}
+.note{background:#fff8e9;border-left:6px solid var(--accent);padding:10px 12px;border-radius:6px;font-size:14.5px}
+.empty{color:var(--soft);font-style:italic}
+a{color:#1c6fa3}
+</style>
+</head>
+<body>
+<header>
+  <h1>📬 Приемник на формуляри</h1>
+  <p>Учебна страница: показва какво е пристигнало в адреса при изпращане на формуляр с <b>GET</b>.</p>
+</header>
+<main>
+  <section class="card">
+    <h2>1. Адресът, на който пристигнахте</h2>
+    <div class="url" id="url"></div>
+  </section>
+  <section class="card">
+    <h2>2. Низът със заявката (след <code>?</code>)</h2>
+    <div class="url" id="query"></div>
+  </section>
+  <section class="card">
+    <h2>3. Получените двойки име = стойност</h2>
+    <div id="pairs"></div>
+  </section>
+  <section class="card note">
+    <b>Как работи тази страница?</b> Браузърът е изпратил данните от формуляра в адреса – след знака <code>?</code>, като двойки <code>име=стойност</code>, разделени с <code>&amp;</code>. Тази страница само ги прочита от адреса и ги показва. Тя <b>не е сървър</b>: не записва и не проверява нищо. Истинска сървърна обработка ще създаваме в Раздел 3.
+    <br><br>
+    Ако формулярът е изпратен с <b>POST</b>, данните са в <b>тялото</b> на заявката, а не в адреса – тази статична страница не може да ги получи. Тях ги виждате в инструментите за разработчици: <b>F12 → Network →</b> заявката <b>→ Payload</b>.
+  </section>
+  <p><a href="#" onclick="if(history.length>1){history.back()}else{window.close()}return false">← Назад към формуляра</a> <span style="color:#46738d;font-size:14px">(ако страницата е отворена в нов раздел, просто го затворете)</span></p>
+</main>
+<script>
+"use strict";
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+const q=location.search.slice(1);
+document.getElementById("url").innerHTML=esc(location.origin+location.pathname)+(q?"<b>?"+esc(q)+"</b>":"");
+document.getElementById("query").innerHTML=q?esc(q):'<span class="empty">(празно – няма изпратени данни в адреса)</span>';
+const pairs=q?q.split("&").map(p=>{const i=p.indexOf("=");const k=i<0?p:p.slice(0,i),v=i<0?"":p.slice(i+1);
+  const dec=s=>{try{return decodeURIComponent(s.replace(/\+/g," "))}catch(e){return s}};return [k,v,dec(k),dec(v)]}):[];
+document.getElementById("pairs").innerHTML=pairs.length
+ ?"<table><tr><th>№</th><th>Име (name)</th><th>Стойност (value)</th><th>Както е изпратено</th></tr>"+pairs.map((p,i)=>`<tr><td>${i+1}</td><td><code>${esc(p[2])}</code></td><td>${p[3]===""?'<span class="empty">(празно)</span>':esc(p[3])}</td><td class="enc">${esc(p[0])}=${esc(p[1])}</td></tr>`).join("")+"</table>"
+ :'<p class="empty">Няма получени данни. Изпратете формуляр с method="get", чийто action сочи към тази страница.</p>';
+</script>
+</body>
+</html>

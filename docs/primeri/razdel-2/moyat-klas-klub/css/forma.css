@@ -1,0 +1,62 @@
+/* Стилове за формуляра „Запиши се за клуб“ */
+
+.forma label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+.forma p {
+    margin: 12px 0 0;
+    font-weight: bold;
+}
+
+.forma input,
+.forma select,
+.forma textarea {
+    display: block;
+    width: 100%;
+    max-width: 360px;
+    margin-top: 4px;
+    padding: 6px 8px;
+    border: 1px solid #8aa9bb;
+    border-radius: 6px;
+    font: inherit;
+}
+
+/* Отметките и радиобутоните остават на един ред с етикета си */
+.forma input[type="checkbox"],
+.forma input[type="radio"] {
+    display: inline;
+    width: auto;
+    margin-right: 4px;
+}
+
+.forma input:focus,
+.forma select:focus,
+.forma textarea:focus {
+    outline: none;
+}
+
+.forma input:invalid,
+.forma select:invalid {
+    border: 2px solid #c62828;
+    background-color: #fff5f5;
+}
+
+.podskazka {
+    display: block;
+    margin-top: 2px;
+    font-size: 14px;
+    color: #46738d;
+}
+
+.pravila {
+    padding: 8px 12px;
+    border-left: 5px solid #ffb62e;
+    background-color: #fff8e9;
+}
+
+.butoni {
+    margin-top: 18px;
+}

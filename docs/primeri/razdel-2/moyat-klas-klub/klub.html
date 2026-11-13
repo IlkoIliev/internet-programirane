@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Записване за клубовете на 12 клас – роботика, програмиране и дизайн.">
+    <title>Запиши се за клуб – Моят клас</title>
+    <link rel="icon" href="images/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/forma.css">
+</head>
+<body>
+    <header class="site-header">
+        <h1>Запиши се за клуб</h1>
+        <p class="subtitle">Роботика, програмиране или дизайн – избери своя клуб</p>
+        <nav class="menu">
+            <a href="index.html">Начало</a>
+            <a href="klub.html">Запиши се за клуб</a>
+        </nav>
+    </header>
+    <main class="page">
+        <section class="card">
+            <h2>Формуляр за записване</h2>
+            <form class="forma" action="priemnik.html" method="get">
+                <label for="ime">Име и фамилия:</label>
+                <input type="text" id="ime" name="ime" required minlength="3" maxlength="40">
+
+                <label for="klas">Клас (8–12):</label>
+                <input type="text" id="klas" name="klas" required pattern="[8-12]">
+
+                <label for="mail">Имейл:</label>
+                <input type="email" id="email" name="email" required>
+
+                <p>Телефон на родител:</p>
+                <input type="tel" id="tel" name="tel" pattern="08[0-9]{8}" placeholder="0888123456">
+                <span class="podskazka">По желание. 10 цифри без интервали.</span>
+
+                <label for="klub">Клуб:</label>
+                <select id="klub" name="klub" required>
+                    <option value="nyama">-- избери клуб --</option>
+                    <option value="robotika">Роботика</option>
+                    <option value="programirane">Програмиране</option>
+                    <option value="dizayn">Дизайн</option>
+                </select>
+
+                <p class="pravila" id="pravila" hidden>Клубовете се събират след часовете в компютърния кабинет. Всеки клуб приема до 15 ученици.</p>
+
+                <div class="butoni">
+                    <button id="pravila-btn">Правила на клуба</button>
+                    <button type="submit">Запиши ме</button>
+                </div>
+            </form>
+        </section>
+    </main>
+    <footer class="site-footer">
+        <p>Създадено от 12 клас • 2026/2027</p>
+    </footer>
+    <script src="js/klub.js"></script>
+</body>
+</html>

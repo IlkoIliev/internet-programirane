@@ -9,6 +9,8 @@
 | Протокол „Мрежов детектив“ – за разпечатване | [Учебна практика, Раздел 1, Упражнение 1](../praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) | [PDF](protokol-01-mrezhov-detektiv.pdf) |
 | Протокол „Мрежов детектив“ – за попълване на компютър | [Учебна практика, Раздел 1, Упражнение 1](../praktika/razdel-1/uprazhnenie-urok-01-osnovi-na-internet.md) | [Word](protokol-01-mrezhov-detektiv.docx) |
 | Протокол „Детектив в DevTools“ – за попълване на компютър | [Учебна практика, Раздел 2, Упражнение 3](../praktika/razdel-2/uprazhnenie-03-devtools.md) | [Word](protokol-03-detektiv-devtools.docx) |
+| Протокол „Формуляр „Запиши се за клуб““ – за попълване на компютър | [Учебна практика, Раздел 2, Упражнение 4](../praktika/razdel-2/uprazhnenie-04-formulyari.md) | [Word](protokol-04-formulyar-klub.docx) |
+| FormsLab v1.1 – учебен сървър на ASP.NET Core за изпращане на формуляри (изходен код) | [Урок 4 от Раздел 2](../teoria/razdel-2/urok-04-formulyari.md#13-formslab), [Упражнение 4](../praktika/razdel-2/uprazhnenie-04-formulyari.md) | [ZIP](../primeri/razdel-2/FormsLab_v1.1_source.zip) |
 
 ## Програми
 

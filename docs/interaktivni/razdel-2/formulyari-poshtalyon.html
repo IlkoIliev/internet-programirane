@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пощальон на формуляри</title>
+<style>
+:root{--ink:#082d46;--nav:#174967;--soft:#46738d;--line:#cfe2ee;--bg:#eef6fb;--accent:#ffb62e;--ok:#1b7a3d;--okbg:#e8f6ec;--bad:#b3261e;--badbg:#fdecea}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
+header{background:var(--nav);color:#fff;padding:12px 20px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between}
+header h1{margin:0;font-size:21px}
+header p{margin:2px 0 0;font-size:14px;opacity:.9}
+header .progress{font-size:14px;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:14px}
+main{max-width:1280px;margin:0 auto;padding:14px 16px 30px;display:grid;grid-template-columns:minmax(300px,410px) 1fr;gap:16px}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+.card{background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;min-width:0}
+h2{margin:0 0 8px;font-size:18px;color:var(--nav)}
+h3{margin:12px 0 6px;font-size:15.5px;color:var(--nav)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.missions{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.missions button{border:2px solid var(--line);background:#f4f8fb;color:var(--ink);border-radius:8px;padding:4px 10px;min-width:44px}
+.missions button[aria-current="step"]{border-color:var(--nav);background:var(--nav);color:#fff}
+.missions button.done::after{content:" ✓";color:var(--ok);font-weight:700}
+.missions button[aria-current="step"].done::after{color:#bdf0cc}
+.task p{margin:6px 0}
+.task code,.env code,.hint code{font:13.5px Consolas,"DejaVu Sans Mono",monospace;background:#eef4f8;padding:0 3px;border-radius:3px}
+.predict{background:#f7fbfd;border:1px dashed var(--soft);border-radius:10px;padding:10px 12px;margin-top:10px}
+.predict .choices{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.predict .choices button{text-align:left;border:1px solid #9bb8c9;background:#fff;color:var(--ink);border-radius:8px;padding:6px 10px}
+.predict .choices button[aria-pressed="true"].right{border-color:var(--ok);background:var(--okbg)}
+.predict .choices button[aria-pressed="true"].wrong{border-color:var(--bad);background:var(--badbg)}
+.predict .choices button:disabled{cursor:default;opacity:.85}
+.fb{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:14.5px}
+.fb:empty{display:none}
+.fb.ok{background:var(--okbg);border-left:5px solid var(--ok)}
+.fb.bad{background:var(--badbg);border-left:5px solid var(--bad)}
+.fb.info{background:#fff8e9;border-left:5px solid var(--accent)}
+.done-box{margin-top:10px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.tools button{border:0;border-radius:7px;padding:6px 12px;background:var(--nav);color:#fff}
+.tools button.sec{background:#e7eef3;color:var(--ink)}
+textarea#code{width:100%;min-height:210px;font:13.5px/1.45 Consolas,"DejaVu Sans Mono",monospace;border:1px solid #8aa9bb;border-radius:8px;padding:8px 10px;color:var(--ink);background:#fbfdfe;resize:vertical;tab-size:2}
+.small{font-size:13px;color:var(--soft)}
+.preview-wrap{position:relative}
+iframe#preview{width:100%;height:300px;border:1px solid #8aa9bb;border-radius:8px;background:#fff;display:block}
+.lock{position:absolute;inset:0;background:rgba(238,246,251,.93);border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-weight:600;color:var(--nav)}
+.lock[hidden]{display:none}
+.env pre{margin:0;font:13.5px/1.5 Consolas,"DejaVu Sans Mono",monospace;background:#f4f8fb;border:1px solid var(--line);border-radius:8px;padding:10px 12px;white-space:pre-wrap;word-break:break-all}
+.env .m{color:#b35200;font-weight:700}.env .q{color:#b35200}.env .h{color:var(--soft)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin-top:6px}
+th,td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:#eaf4f9}
+td.enc{font:12.5px Consolas,"DejaVu Sans Mono",monospace;color:var(--soft);word-break:break-all}
+.empty{color:var(--soft);font-style:italic}
+.note{background:#fff8e9;border-left:6px solid var(--accent);padding:10px 12px;border-radius:6px;font-size:14px}
+.final{background:var(--okbg);border:2px solid var(--ok)}
+.final[hidden]{display:none}
+a{color:#1c6fa3}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>📮 Пощальон на формуляри</h1>
+    <p>Попълни формуляра и виж какво точно би изпратил браузърът.</p>
+  </div>
+  <div class="progress" id="progress" aria-live="polite">Изпълнени мисии: 0 от 7</div>
+</header>
+<main>
+  <div>
+    <section class="card" aria-labelledby="h-m">
+      <h2 id="h-m">Мисии</h2>
+      <ul class="missions" id="missionList"></ul>
+    </section>
+    <section class="card task" id="task" aria-live="polite"></section>
+    <section class="card final" id="final" hidden>
+      <h2>🎉 Всички мисии са изпълнени</h2>
+      <p id="finalText"></p>
+      <p>Следваща стъпка: изпрати някой от примерите в урока и сравни „плика“ с <b>DevTools → Network → Payload</b>.</p>
+    </section>
+    <section class="card note">
+      <b>Опростен модел.</b> Данните се изчисляват със същия механизъм, който браузърът използва при изпращане (<code>FormData</code>), а проверките на полетата са истинските проверки на браузъра. Нищо <b>не се изпраща</b> по мрежата. В „плика“ са показани само най-важните заглавки – истинската заявка има и други (например <code>User-Agent</code>, <code>Accept</code>). Адресът <code>moyat-klas.example</code> е измислен. Скриптове в кода не се изпълняват.
+      <p style="margin:8px 0 0"><button type="button" class="sec" id="resetAll" style="border:0;border-radius:7px;padding:5px 12px;background:#e7eef3;color:var(--ink)">Започни всички мисии отначало</button></p>
+    </section>
+  </div>
+  <div>
+    <section class="card" aria-labelledby="h-code">
+      <h2 id="h-code">1. HTML код на формуляра</h2>
+      <label for="code" class="small">Можеш да променяш кода. След промяна натисни „Приложи кода“ (или Ctrl + Enter).</label>
+      <textarea id="code" spellcheck="false"></textarea>
+      <div class="tools">
+        <button type="button" id="apply">Приложи кода</button>
+        <button type="button" class="sec" id="restore">Върни началния код на мисията</button>
+      </div>
+      <div class="fb" id="codeFb" aria-live="polite"></div>
+    </section>
+    <section class="card" aria-labelledby="h-prev">
+      <h2 id="h-prev">2. Формулярът</h2>
+      <div class="preview-wrap">
+        <iframe id="preview" title="Преглед на формуляра" sandbox="allow-same-origin allow-forms"></iframe>
+        <div class="lock" id="lock">Първо отговори на въпроса „Предскажи“ в описанието на мисията.</div>
+      </div>
+    </section>
+    <section class="card env" aria-labelledby="h-env">
+      <h2 id="h-env">3. Пликът – какво би изпратил браузърът</h2>
+      <div id="envelope" aria-live="polite"><p class="empty">Още няма изпратен формуляр. Попълни го и натисни бутона за изпращане.</p></div>
+    </section>
+  </div>
+</main>
+<script>
+"use strict";
+const BASE = "https://moyat-klas.example/formulyari/";
+const PAGE = BASE + "stranitsa.html";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pairsOf = env => env ? env.pairs : [];
+const valuesOf = (env, name) => pairsOf(env).filter(p => p[0] === name).map(p => p[1]);
+
+const MISSIONS = [
+{
+  title: "Първото писмо",
+  text: `<p>Формулярът търси в сайта с метод <code>get</code>. Въведи в полето текст на <b>кирилица с поне един интервал</b> (например <code>котки и кучета</code>) и го изпрати.</p><p>Разгледай адреса в плика: как изглеждат интервалът и буквите на кирилица?</p>`,
+  code: `<form action="tarsene" method="get">
+  <label for="q">Търси:</label>
+  <input type="search" id="q" name="q">
+  <button type="submit">Търси</button>
+</form>`,
+  predict: { q: "Как ще бъде записан интервалът в адреса?",
+    choices: [["+", true], ["Остава интервал", false], ["_", false], ["Интервалът се изтрива", false]],
+    why: "При кодиране на формулярни данни интервалът се заменя с <code>+</code>. Буквите на кирилица стават по два байта <code>%XX</code>." },
+  check(env) {
+    if (env.method !== "get") return [false, "Методът трябва да остане <code>get</code> – в тази мисия наблюдаваме адреса."];
+    const v = valuesOf(env, "q")[0];
+    if (v === undefined) return [false, "Не пристигна двойка с име <code>q</code>. Не променяй <code>name</code> на полето."];
+    if (!/[а-яё]/i.test(v) || !/ /.test(v)) return [false, "Въведи текст на кирилица с поне един интервал, например <code>котки и кучета</code>."];
+    return [true, "Интервалите са станали <code>+</code>, а всяка буква на кирилица – <code>%D0%..</code> или <code>%D1%..</code>: два байта в UTF-8."];
+  }
+},
+{
+  title: "Изгубеното поле",
+  text: `<p>Ученик казва: „Попълних и името, и имейла, но сървърът получава само името.“ Попълни двете полета и изпрати. После <b>поправи кода</b>, така че имейлът да пристигне.</p>`,
+  code: `<form action="registratsia" method="get">
+  <label for="ime">Име:</label>
+  <input type="text" id="ime" name="ime">
+  <label for="email">Имейл:</label>
+  <input type="email" id="email">
+  <button type="submit">Регистрирай ме</button>
+</form>`,
+  predict: { q: "Прочети кода. Кое поле няма да пристигне?",
+    choices: [["Име", false], ["Имейл", true], ["И двете", false], ["Ще пристигнат и двете", false]],
+    why: "Полето за имейл има <code>id</code>, но няма <code>name</code>. Браузърът изпраща само полета с <code>name</code>." },
+  check(env) {
+    const ime = valuesOf(env, "ime")[0], em = valuesOf(env, "email")[0];
+    if (!ime) return [false, "Попълни и името – двойката <code>ime</code> трябва да има стойност."];
+    if (em === undefined) return [false, "Имейлът все още не пристига. Сравни атрибутите на двете полета. Под кое име сървърът ще очаква имейла?"];
+    if (!em.includes("@")) return [false, "Двойката <code>email</code> пристига, но е празна. Попълни имейл и изпрати отново."];
+    return [true, "Без <code>name</code> полето се вижда на страницата, но не се изпраща. <code>id</code> е за етикета, <code>name</code> – за сървъра."];
+  }
+},
+{
+  title: "Радиобутоните не се слушат",
+  text: `<p>В този формуляр може да се маркират и трите паралелки едновременно, а сървърът получава три различни имена. Поправи кода така, че да може да се избере <b>само една</b> паралелка и тя да пристига като <b>една двойка</b>.</p>`,
+  code: `<form action="klas" method="get">
+  <p>Паралелка:</p>
+  <input type="radio" id="k-a" name="klas-a" value="12a">
+  <label for="k-a">12 А</label>
+  <input type="radio" id="k-b" name="klas-b" value="12b">
+  <label for="k-b">12 Б</label>
+  <input type="radio" id="k-v" name="klas-v" value="12v">
+  <label for="k-v">12 В</label>
+  <button type="submit">Изпрати</button>
+</form>`,
+  predict: { q: "Колко от тези радиобутони могат да бъдат маркирани едновременно в този код?",
+    choices: [["Само един", false], ["Всичките три", true], ["Нито един", false], ["Зависи от браузъра", false]],
+    why: "Браузърът групира радиобутоните по <code>name</code>. Тук всеки бутон има различно име – всеки е отделна група." },
+  check(env, doc) {
+    const rs = [...doc.querySelectorAll('input[type="radio"]')];
+    if (rs.length < 3) return [false, "Трябва да останат трите радиобутона."];
+    const names = new Set(rs.map(r => r.name));
+    if (names.size !== 1 || !rs[0].name) return [false, "Все още може да се маркират няколко бутона. Какво определя групата радиобутони?"];
+    const n = rs[0].name, sent = valuesOf(env, n);
+    if (sent.length !== 1) return [false, "Маркирай една паралелка и изпрати отново."];
+    if (new Set(rs.map(r => r.value)).size !== rs.length) return [false, "Бутоните са в една група, но имат еднакви <code>value</code>. Как сървърът ще разбере коя паралелка е избрана?"];
+    return [true, `Една група = едно <code>name</code>. Пристигна <code>${esc(n)}=${esc(sent[0])}</code> – изпраща се <code>value</code> на маркирания бутон.`];
+  }
+},
+{
+  title: "Загадъчното „on“",
+  text: `<p>Маркирай <b>две</b> отметки и изпрати. Сървърът не може да разбере какво е избрано. Поправи кода, така че при две маркирани отметки да пристигат две <b>различни, смислени</b> стойности под едно и също име.</p>`,
+  code: `<form action="interesi" method="get">
+  <p>Интереси:</p>
+  <input type="checkbox" id="i-sport" name="interes">
+  <label for="i-sport">Спорт</label>
+  <input type="checkbox" id="i-muzika" name="interes">
+  <label for="i-muzika">Музика</label>
+  <input type="checkbox" id="i-kino" name="interes">
+  <label for="i-kino">Кино</label>
+  <button type="submit">Изпрати</button>
+</form>`,
+  predict: { q: "Маркирани са „Спорт“ и „Музика“. Какво ще пристигне?",
+    choices: [["interes=Спорт&interes=Музика", false], ["interes=on&interes=on", true], ["interes=true&interes=true", false], ["Нищо – липсва value", false]],
+    why: "Отметка без <code>value</code> се изпраща със стойност <code>on</code>. Текстът на етикета не се изпраща." },
+  check(env, doc) {
+    const cs = [...doc.querySelectorAll('input[type="checkbox"]')];
+    if (cs.length < 3) return [false, "Трябва да останат трите отметки."];
+    const byName = {};
+    pairsOf(env).forEach(([k, v]) => { if (cs.some(c => c.name === k)) (byName[k] = byName[k] || []).push(v); });
+    const grp = Object.values(byName).find(a => a.length >= 2);
+    if (!grp) return [false, "Маркирай поне две отметки с едно и също <code>name</code> и изпрати."];
+    if (grp.includes("on")) return [false, "Все още пристига <code>on</code>. Кой атрибут задава изпращаната стойност на отметка?"];
+    if (new Set(grp).size !== grp.length) return [false, "Двете стойности са еднакви – сървърът пак не може да ги различи."];
+    return [true, "Всяка маркирана отметка дава отделна двойка с едно и също име. Немаркираните не се изпращат."];
+  }
+},
+{
+  title: "Пазач на вратата",
+  text: `<p>Полето за мобилен телефон приема всичко. Добави правила, така че браузърът да приема само <b>10 цифри без интервали</b>, които започват с <code>087</code>, <code>088</code> или <code>089</code>, и полето да е <b>задължително</b>. После изпрати с правилен номер.</p><p class="small">Пример за правилен номер: <code>0888123456</code>. Неправилни: празно, <code>0888 123 456</code>, <code>0812345678</code>, <code>08881234567</code>.</p>`,
+  code: `<form action="klub" method="get">
+  <label for="ime">Име:</label>
+  <input type="text" id="ime" name="ime" required>
+  <label for="tel">Мобилен телефон:</label>
+  <input type="tel" id="tel" name="tel">
+  <button type="submit">Запиши ме</button>
+</form>`,
+  predict: { q: "Полето е <code>type=\"tel\"</code> без други атрибути. Ще спре ли браузърът стойността <code>абв</code>?",
+    choices: [["Да – tel приема само цифри", false], ["Не – tel не проверява формата", true], ["Да, но само на телефон", false]],
+    why: "<code>type=\"tel\"</code> не проверява формата, защото номерата по света са различни. На телефон само показва цифрова клавиатура. Правилото се задава с <code>pattern</code>." },
+  check(env, doc) {
+    const t = doc.querySelector('input[name="tel"]') || doc.getElementById("tel");
+    if (!t) return [false, "Не намирам полето за телефон с <code>name=\"tel\"</code>."];
+    const old = t.value, bad = ["", "0888 123 456", "0812345678", "08881234567", "088812345a", "абв"], good = ["0888123456", "0878123456", "0898123456"];
+    const ok = v => { t.value = v; return t.checkValidity(); };
+    const wrongAccepted = bad.filter(v => ok(v)), rightRejected = good.filter(v => !ok(v));
+    t.value = old;
+    if (wrongAccepted.length) return [false, "Правилото още приема: " + wrongAccepted.map(v => v === "" ? "<i>празно поле</i>" : "<code>" + esc(v) + "</code>").join(", ") + "."];
+    if (rightRejected.length) return [false, "Правилото отхвърля правилни номера: " + rightRejected.map(v => "<code>" + v + "</code>").join(", ") + "."];
+    if (!valuesOf(env, "tel")[0]) return [false, "Правилата са верни. Изпрати формуляра с правилен номер."];
+    return [true, "Браузърът вече пази вратата. Запомни: това е удобство за потребителя – сървърът трябва да провери номера отново."];
+  }
+},
+{
+  title: "Паролата в адреса",
+  text: `<p>Формулярът за вход е с метод <code>get</code>. Попълни го с измислени данни (<b>не</b> въвеждай истинска парола) и изпрати. После го промени така, че данните да пътуват в <b>тялото</b> на заявката.</p>`,
+  code: `<form action="vhod" method="get">
+  <label for="potr">Потребител:</label>
+  <input type="text" id="potr" name="potrebitel">
+  <label for="par">Парола:</label>
+  <input type="password" id="par" name="parola">
+  <button type="submit">Вход</button>
+</form>`,
+  predict: { q: "Къде ще се вижда паролата след изпращане с <code>get</code>?",
+    choices: [["Никъде – полето е password", false], ["В адреса: в адресната лента, в историята и в дневниците на сървъра", true], ["Само в DevTools", false]],
+    why: "<code>type=\"password\"</code> скрива символите само на екрана. При GET стойността отива в адреса." },
+  check(env) {
+    if (env.method !== "post") return [false, "Паролата още е в адреса. Кой атрибут на <code>&lt;form&gt;</code> трябва да промениш?"];
+    if (env.url.includes("?")) return [false, "Адресът все още съдържа данни след <code>?</code>."];
+    if (!valuesOf(env, "parola")[0]) return [false, "Попълни паролата (измислена) и изпрати отново."];
+    return [true, "Сега данните са в тялото. Внимание: POST не ги прави тайни – виждат се в DevTools, а без <b>HTTPS</b> могат да бъдат прочетени по пътя."];
+  }
+},
+{
+  title: "Забранено или само за четене?",
+  text: `<p>Номерът и паралелката на ученика са попълнени предварително и не трябва да се променят. Изпрати формуляра и виж какво пристига. После поправи кода така, че <b>и двете</b> стойности да пристигат, но потребителят пак да <b>не може да ги променя</b>.</p>`,
+  code: `<form action="spravka" method="post">
+  <label for="nomer">Номер в класа:</label>
+  <input type="text" id="nomer" name="nomer" value="7" readonly>
+  <label for="klas">Паралелка:</label>
+  <input type="text" id="klas" name="klas" value="12Б" disabled>
+  <label for="belezhka">Бележка:</label>
+  <textarea id="belezhka" name="belezhka"></textarea>
+  <button type="submit">Изпрати</button>
+</form>`,
+  predict: { q: "Кои от двете предварително попълнени полета ще пристигнат?",
+    choices: [["Само „Номер в класа“ (readonly)", true], ["Само „Паралелка“ (disabled)", false], ["И двете", false], ["Нито едно", false]],
+    why: "Поле с <code>readonly</code> се изпраща, а поле с <code>disabled</code> – не." },
+  check(env, doc) {
+    const k = doc.querySelector('[name="klas"]'), n = doc.querySelector('[name="nomer"]');
+    if (!k || !n) return [false, "Двете полета трябва да останат с имената си <code>nomer</code> и <code>klas</code>."];
+    if (valuesOf(env, "klas")[0] === undefined) return [false, "Паралелката още не пристига. Кой атрибут я спира?"];
+    if (!k.readOnly || k.disabled || !n.readOnly) return [false, "Стойността пристига, но полето може да се променя. Потребителят не трябва да може да редактира номера и паралелката."];
+    return [true, "<code>readonly</code> – не се променя, но се изпраща; <code>disabled</code> – не се променя и не се изпраща. Сървърът пак трябва да провери стойностите – <code>readonly</code> се маха лесно с DevTools."];
+  }
+}];
+
+const state = { cur: 0, done: MISSIONS.map(() => false), predicted: MISSIONS.map(() => null), firstRight: MISSIONS.map(() => null), code: MISSIONS.map(m => m.code), env: null, fb: MISSIONS.map(() => null) };
+const $ = id => document.getElementById(id);
+const frame = $("preview"), codeEl = $("code");
+
+function renderList() {
+  $("missionList").innerHTML = MISSIONS.map((m, i) =>
+    `<li><button type="button" data-i="${i}" class="${state.done[i] ? "done" : ""}" ${i === state.cur ? 'aria-current="step"' : ""} aria-label="Мисия ${i + 1}: ${esc(m.title)}${state.done[i] ? " (изпълнена)" : ""}">${i + 1}</button></li>`).join("");
+  const n = state.done.filter(Boolean).length;
+  $("progress").textContent = `Изпълнени мисии: ${n} от ${MISSIONS.length}`;
+  const fin = n === MISSIONS.length;
+  $("final").hidden = !fin;
+  if (fin) { const r = state.firstRight.filter(x => x === true).length; $("finalText").textContent = `Верни предсказания от първия опит: ${r} от ${MISSIONS.length}.`; }
+}
+function renderTask() {
+  const m = MISSIONS[state.cur], p = m.predict, ans = state.predicted[state.cur];
+  const choices = p.choices.map(([t, ok], j) => {
+    const pressed = ans === j, cls = pressed ? (ok ? "right" : "wrong") : "";
+    return `<button type="button" data-j="${j}" class="${cls}" aria-pressed="${pressed}" ${ans !== null ? "disabled" : ""}>${esc(t)}</button>`;
+  }).join("");
+  let pfb = "";
+  if (ans !== null) pfb = `<div class="fb ${p.choices[ans][1] ? "ok" : "bad"}">${p.choices[ans][1] ? "Вярно. " : "Не съвсем. "}${p.why}</div>`;
+  const f = state.fb[state.cur];
+  $("task").innerHTML = `<h2>Мисия ${state.cur + 1}. ${esc(m.title)}</h2>${m.text}
+    <div class="predict"><b>Предскажи:</b> ${p.q}<div class="choices" role="group" aria-label="Възможни отговори">${choices}</div>${pfb}</div>
+    <div class="fb ${f ? (f[0] ? "ok" : "bad") : ""} done-box">${f ? (f[0] ? "✔ Мисията е изпълнена. " : "") + f[1] : ""}</div>
+    ${state.done[state.cur] && state.cur < MISSIONS.length - 1 ? '<div class="tools"><button type="button" id="next">Към мисия ' + (state.cur + 2) + " →</button></div>" : ""}`;
+  $("lock").hidden = ans !== null;
+  frame.inert = ans === null; // докато е заключен, формулярът не е достъпен и с клавиатура
+}
+function loadFrame() {
+  const html = `<!DOCTYPE html><html lang="bg"><head><meta charset="UTF-8"><base href="${BASE}"><style>
+  body{font-family:Arial,Helvetica,sans-serif;color:#082d46;margin:12px 14px;line-height:1.45}
+  label{font-weight:600}input:not([type=radio]):not([type=checkbox]),select,textarea{display:block;box-sizing:border-box;width:100%;max-width:320px;margin:3px 0 10px;padding:5px 7px;border:1px solid #8aa9bb;border-radius:6px;font:inherit}
+  input[type=radio]+label,input[type=checkbox]+label{font-weight:400;margin-right:10px}
+  input[readonly]{background:#f1f4f6}button{font:inherit;padding:5px 12px;margin-top:4px}p{margin:6px 0 4px}
+  :focus-visible{outline:3px solid #ffb62e;outline-offset:2px}</style></head><body>${codeEl.value}</body></html>`;
+  frame.onload = wireFrame;
+  frame.srcdoc = html;
+}
+function wireFrame() {
+  const doc = frame.contentDocument; if (!doc) return;
+  const forms = doc.forms;
+  const cfb = $("codeFb");
+  if (!forms.length) { cfb.className = "fb bad"; cfb.innerHTML = "В кода няма елемент <code>&lt;form&gt;</code>."; }
+  else if (forms.length > 1) { cfb.className = "fb info"; cfb.innerHTML = "В кода има повече от един формуляр. Всеки се изпраща поотделно."; }
+  else { cfb.className = "fb"; cfb.innerHTML = ""; }
+  doc.addEventListener("click", e => { const a = e.target.closest && e.target.closest("a[href]"); if (a) e.preventDefault(); });
+  [...forms].forEach(f => {
+    f.addEventListener("invalid", e => showInvalid(e.target), true);
+    f.addEventListener("submit", e => { e.preventDefault(); onSubmit(f, e.submitter || null); });
+  });
+}
+let invalidShown = false;
+function showInvalid(el) {
+  if (invalidShown) return; invalidShown = true; setTimeout(() => invalidShown = false, 50);
+  const lab = el.labels && el.labels[0] ? el.labels[0].textContent.trim().replace(/:\s*$/, "") : (el.name || el.id || el.type);
+  $("envelope").innerHTML = `<div class="fb bad"><b>Браузърът спря изпращането.</b> Полето „${esc(lab)}“ не отговаря на правилата: ${esc(el.validationMessage)}<br><span class="small">Нищо не е изпратено. Съобщението е на езика на браузъра.</span></div>`;
+}
+function envelopeOf(form, submitter) {
+  const sm = submitter && submitter.hasAttribute("formmethod") ? submitter.formMethod : form.method;
+  const hasAction = submitter && submitter.hasAttribute("formaction") ? true : form.hasAttribute("action");
+  let action = submitter && submitter.hasAttribute("formaction") ? submitter.formAction : (hasAction ? form.action : PAGE);
+  if (!/^https?:/.test(action)) action = PAGE;
+  const enctype = form.enctype;
+  let fd; try { fd = new FormData(form, submitter || undefined); } catch (e) { fd = new FormData(form); }
+  const pairs = [];
+  for (const [k, v] of fd) pairs.push([k, typeof v === "string" ? v.replace(/\r\n|\r|\n/g, "\r\n") : (v.name || "")]);
+  const body = new URLSearchParams(pairs).toString();
+  const method = sm === "post" ? "post" : "get";
+  const u = new URL(action);
+  if (method === "get") u.search = body ? "?" + body : "";
+  const notSent = [];
+  [...form.elements].forEach(el => {
+    if (!el.tagName || el.tagName === "FIELDSET" || el.tagName === "OUTPUT" || el.tagName === "OBJECT") return;
+    const isBtn = el.tagName === "BUTTON" || ["submit", "reset", "button", "image"].includes(el.type);
+    if (isBtn) return;
+    const lab = el.labels && el.labels[0] ? el.labels[0].textContent.trim().replace(/:\s*$/, "") : "";
+    const who = (lab ? "„" + lab + "“ " : "") + "<code>&lt;" + el.tagName.toLowerCase() + (el.type && el.tagName === "INPUT" ? ' type="' + esc(el.type) + '"' : "") + "&gt;</code>";
+    if (el.disabled) notSent.push([who, "полето е забранено (<code>disabled</code>)"]);
+    else if (!el.name) notSent.push([who, "няма атрибут <code>name</code>"]);
+    else if ((el.type === "checkbox" || el.type === "radio") && !el.checked) notSent.push([who, "не е маркирано"]);
+  });
+  return { method, url: u.href, path: u.pathname + (method === "get" ? u.search : ""), host: u.host, enctype, body, pairs, notSent };
+}
+function renderEnvelope(env) {
+  const decode = s => { try { return decodeURIComponent(s.replace(/\+/g, " ")); } catch (e) { return s; } };
+  let req;
+  if (env.method === "get") {
+    const [p, q] = env.path.split("?");
+    req = `<span class="m">GET</span> ${esc(p)}${q !== undefined ? '<span class="q">?' + esc(q) + "</span>" : ""} HTTP/1.1\n<span class="h">Host:</span> ${esc(env.host)}\n\n<span class="h">(тялото е празно)</span>`;
+  } else {
+    const multi = env.enctype === "multipart/form-data";
+    req = `<span class="m">POST</span> ${esc(env.path)} HTTP/1.1\n<span class="h">Host:</span> ${esc(env.host)}\n<span class="h">Content-Type:</span> ${multi ? "multipart/form-data; boundary=…" : "application/x-www-form-urlencoded"}\n` +
+      (multi ? `\n<span class="h">(при multipart/form-data тялото е разделено на части – по една за всяко поле; тук е показано опростено)</span>\n` + esc(env.pairs.map(([k, v]) => `--- ${k}: ${v}`).join("\n"))
+             : `<span class="h">Content-Length:</span> ${env.body.length}\n\n<span class="q">${esc(env.body) || '<span class="h">(празно)</span>'}</span>`);
+  }
+  const enc = new URLSearchParams(env.pairs).toString().split("&");
+  const rows = env.pairs.map(([k, v], i) => `<tr><td>${i + 1}</td><td><code>${esc(k)}</code></td><td>${v === "" ? '<span class="empty">(празно)</span>' : esc(v).replace(/\r\n/g, "<br>")}</td><td class="enc">${esc(enc[i] || "")}</td></tr>`).join("");
+  const ns = env.notSent.length ? `<h3>Не са изпратени</h3><ul style="margin:4px 0 0;padding-left:20px">${env.notSent.map(([w, r]) => `<li>${w} – ${r}</li>`).join("")}</ul>` : "";
+  $("envelope").innerHTML = `<pre>${req}</pre>
+    <h3>Изпратени двойки (${env.pairs.length})</h3>
+    ${env.pairs.length ? `<table><tr><th>№</th><th>Име (name)</th><th>Стойност</th><th>Както е изпратено</th></tr>${rows}</table>` : '<p class="empty">Няма изпратени двойки.</p>'}
+    ${ns}
+    <p class="small">Данните са ${env.method === "get" ? "в <b>адреса</b>, след <code>?</code>" : "в <b>тялото</b> на заявката"}. В истинския браузър ги виждаш в DevTools → Network → заявката → Payload.</p>`;
+}
+function onSubmit(form, submitter) {
+  const env = envelopeOf(form, submitter);
+  state.env = env;
+  renderEnvelope(env);
+  const i = state.cur, m = MISSIONS[i];
+  if (state.predicted[i] === null) return;
+  let res;
+  try { res = m.check(env, frame.contentDocument); } catch (e) { res = [false, "Проверката не успя да прочете формуляра. Провери кода."]; }
+  state.fb[i] = res;
+  if (res[0]) state.done[i] = true;
+  renderList(); renderTask();
+}
+function goto(i, save = true) {
+  if (save) state.code[state.cur] = codeEl.value;
+  state.cur = i; state.env = null;
+  codeEl.value = state.code[i];
+  $("envelope").innerHTML = '<p class="empty">Още няма изпратен формуляр. Попълни го и натисни бутона за изпращане.</p>';
+  renderList(); renderTask(); loadFrame();
+}
+$("missionList").addEventListener("click", e => { const b = e.target.closest("button[data-i]"); if (b) goto(+b.dataset.i); });
+$("task").addEventListener("click", e => {
+  const b = e.target.closest("button[data-j]");
+  if (b && state.predicted[state.cur] === null) {
+    const j = +b.dataset.j; state.predicted[state.cur] = j;
+    state.firstRight[state.cur] = MISSIONS[state.cur].predict.choices[j][1];
+    renderTask(); renderList();
+    const msg = $("task").querySelector(".predict .fb"); if (msg) { msg.setAttribute("tabindex", "-1"); msg.focus(); }
+    return;
+  }
+  if (e.target.id === "next") goto(state.cur + 1);
+});
+$("apply").addEventListener("click", () => { state.code[state.cur] = codeEl.value; loadFrame(); $("envelope").innerHTML = '<p class="empty">Кодът е приложен. Попълни формуляра и го изпрати.</p>'; });
+codeEl.addEventListener("keydown", e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $("apply").click(); } });
+$("restore").addEventListener("click", () => { codeEl.value = MISSIONS[state.cur].code; $("apply").click(); });
+$("resetAll").addEventListener("click", () => {
+  state.done = MISSIONS.map(() => false); state.predicted = MISSIONS.map(() => null); state.firstRight = MISSIONS.map(() => null);
+  state.code = MISSIONS.map(m => m.code); state.fb = MISSIONS.map(() => null); goto(0, false);
+});
+codeEl.value = state.code[0];
+renderList(); renderTask(); loadFrame();
+</script>
+</body>
+</html>
