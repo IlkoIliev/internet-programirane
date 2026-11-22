@@ -29,6 +29,7 @@ nav:
           - "Урок 2. Работа със CSS. Селектори и основни правила": teoria/razdel-2/urok-02-css-selektori-i-pravila.md
           - "Урок 3. Работа с инструментите за разработчици на съвременните уеб браузъри": teoria/razdel-2/urok-03-instrumenti-za-razrabotchitsi.md
           - "Урок 4. Създаване на формуляри": teoria/razdel-2/urok-04-formulyari.md
+          - "Урок 5. Създаване на семантични страници": teoria/razdel-2/urok-05-semantichni-stranitsi.md
       - Раздел 3: teoria/razdel-3/index.md
       - Раздел 4: teoria/razdel-4/index.md
 
@@ -49,6 +50,7 @@ nav:
           - "Упражнение 2. Оформяне на страницата „Моят клас“ със CSS": praktika/razdel-2/uprazhnenie-02-css.md
           - "Упражнение 3. Детектив в DevTools – откриване на грешки": praktika/razdel-2/uprazhnenie-03-devtools.md
           - "Упражнение 4. Формуляр „Запиши се за клуб“": praktika/razdel-2/uprazhnenie-04-formulyari.md
+          - "Упражнение 5. „Моят клас“: от div към семантика": praktika/razdel-2/uprazhnenie-05-semantika.md
       - Раздел 3: praktika/razdel-3/index.md
       - Раздел 4: praktika/razdel-4/index.md
       - Раздел 5: praktika/razdel-5/index.md

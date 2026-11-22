@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рентген на страницата</title>
+<style>
+:root{--ink:#082d46;--nav:#174967;--soft:#46738d;--line:#cfe2ee;--bg:#eef6fb;--accent:#ffb62e;--ok:#1b7a3d;--okbg:#e8f6ec;--bad:#b3261e;--badbg:#fdecea;--warn:#8a5a00;--warnbg:#fff6e0}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
+header.top{background:var(--nav);color:#fff;padding:12px 20px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between}
+header.top h1{margin:0;font-size:21px}
+header.top p{margin:2px 0 0;font-size:14px;opacity:.9}
+.progress{font-size:14px;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:14px}
+main.wrap{max-width:1320px;margin:0 auto;padding:14px 16px 30px;display:grid;grid-template-columns:minmax(300px,400px) 1fr;gap:16px}
+@media (max-width:900px){main.wrap{grid-template-columns:1fr}}
+.card{background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;min-width:0}
+h2{margin:0 0 8px;font-size:18px;color:var(--nav)}
+h3{margin:12px 0 6px;font-size:15.5px;color:var(--nav)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.missions{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.missions button{border:2px solid var(--line);background:#f4f8fb;color:var(--ink);border-radius:8px;padding:4px 10px;min-width:44px}
+.missions button[aria-current="step"]{border-color:var(--nav);background:var(--nav);color:#fff}
+.missions button.done::after{content:" ✓";color:var(--ok);font-weight:700}
+.missions button[aria-current="step"].done::after{color:#bdf0cc}
+.task p{margin:6px 0}
+code{font:13.5px Consolas,"DejaVu Sans Mono",monospace;background:#eef4f8;padding:0 3px;border-radius:3px}
+.predict{background:#f7fbfd;border:1px dashed var(--soft);border-radius:10px;padding:10px 12px;margin-top:10px}
+.predict .choices{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.predict .choices button{text-align:left;border:1px solid #9bb8c9;background:#fff;color:var(--ink);border-radius:8px;padding:6px 10px}
+.predict .choices button[aria-pressed="true"].right{border-color:var(--ok);background:var(--okbg)}
+.predict .choices button[aria-pressed="true"].wrong{border-color:var(--bad);background:var(--badbg)}
+.predict .choices button:disabled{cursor:default;opacity:.85}
+.fb{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:14.5px}
+.fb:empty{display:none}
+.fb.ok{background:var(--okbg);border-left:5px solid var(--ok)}
+.fb.bad{background:var(--badbg);border-left:5px solid var(--bad)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.tools button{border:0;border-radius:7px;padding:6px 12px;background:var(--nav);color:#fff}
+.tools button.sec{background:#e7eef3;color:var(--ink)}
+textarea#code{width:100%;min-height:240px;font:13.5px/1.45 Consolas,"DejaVu Sans Mono",monospace;border:1px solid #8aa9bb;border-radius:8px;padding:8px 10px;color:var(--ink);background:#fbfdfe;resize:vertical;tab-size:2}
+.small{font-size:13px;color:var(--soft)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:1100px){.cols{grid-template-columns:1fr}}
+.preview-wrap{position:relative}
+iframe#preview{width:100%;height:320px;border:1px solid #8aa9bb;border-radius:8px;background:#fff;display:block}
+.lock{position:absolute;inset:0;background:rgba(238,246,251,.93);border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-weight:600;color:var(--nav)}
+.lock[hidden]{display:none}
+.tree{list-style:none;margin:4px 0;padding-left:0;font-size:14.5px}
+.tree ul{list-style:none;margin:2px 0 2px 10px;padding-left:12px;border-left:2px solid var(--line)}
+.tree li{margin:3px 0}
+.lm{display:inline-block;border-radius:6px;padding:1px 8px;font-weight:600}
+.lm-banner{background:#e3f0fb}.lm-navigation{background:#fdeedd}.lm-main{background:#e8f6ec}.lm-complementary{background:#f1e9fb}.lm-contentinfo{background:#e9eef2}.lm-region{background:#fff6d6}.lm-article{background:#f4f4f4;font-weight:400}
+.role{font:12.5px Consolas,"DejaVu Sans Mono",monospace;color:var(--soft)}
+.hd{font-family:Consolas,"DejaVu Sans Mono",monospace;font-size:13px;color:#fff;background:var(--nav);border-radius:4px;padding:0 5px;margin-right:6px}
+.hd.skip{background:var(--bad)}
+.empty{color:var(--soft);font-style:italic}
+.warnlist{margin:4px 0 0;padding-left:20px;font-size:14px}
+.warnlist li{margin:3px 0}
+.warnlist li.err{color:var(--bad)}
+.warnlist li.wrn{color:var(--warn)}
+.note{background:#fff8e9;border-left:6px solid var(--accent);padding:10px 12px;border-radius:6px;font-size:14px}
+.final{background:var(--okbg);border:2px solid var(--ok)}
+.final[hidden]{display:none}
+</style>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>🩻 Рентген на страницата</h1>
+    <p>Виж страницата така, както я „чува“ екранен четец: ориентири и заглавия.</p>
+  </div>
+  <div class="progress" id="progress" aria-live="polite">Изпълнени мисии: 0 от 7</div>
+</header>
+<main class="wrap">
+  <div>
+    <section class="card" aria-labelledby="h-m">
+      <h2 id="h-m">Мисии</h2>
+      <ul class="missions" id="missionList"></ul>
+    </section>
+    <section class="card task" id="task" aria-live="polite"></section>
+    <section class="card final" id="final" hidden>
+      <h2>🎉 Всички мисии са изпълнени</h2>
+      <p id="finalText"></p>
+      <p>Следваща стъпка: отвори своя страница в Chrome и сравни с <b>DevTools → Elements → Accessibility</b>.</p>
+    </section>
+    <section class="card note">
+      <b>Опростен модел.</b> Ролите се изчисляват по основните правила, по които браузърът изгражда дървото на достъпността (проверени са в Chromium). Истинският екранен четец обявява и много други неща – връзки, списъци, бутони. Тук се показват само <b>ориентирите</b>, <b>статиите</b> и <b>заглавията</b>. Скриптове в кода не се изпълняват.
+      <p style="margin:8px 0 0"><button type="button" id="resetAll" style="border:0;border-radius:7px;padding:5px 12px;background:#e7eef3;color:var(--ink)">Започни всички мисии отначало</button></p>
+    </section>
+  </div>
+  <div>
+    <section class="card" aria-labelledby="h-code">
+      <h2 id="h-code">1. HTML код</h2>
+      <label for="code" class="small">Променяй кода и натисни „Приложи и провери“ (или Ctrl + Enter).</label>
+      <textarea id="code" spellcheck="false"></textarea>
+      <div class="tools">
+        <button type="button" id="apply">Приложи и провери</button>
+        <button type="button" class="sec" id="restore">Върни началния код на мисията</button>
+      </div>
+    </section>
+    <div class="cols">
+      <section class="card" aria-labelledby="h-prev">
+        <h2 id="h-prev">2. Как я вижда окото</h2>
+        <div class="preview-wrap">
+          <iframe id="preview" title="Преглед на страницата" sandbox="allow-same-origin"></iframe>
+          <div class="lock" id="lock">Първо отговори на въпроса „Предскажи“ в описанието на мисията.</div>
+        </div>
+      </section>
+      <section class="card" aria-labelledby="h-xray">
+        <h2 id="h-xray">3. Как я „чува“ екранен четец</h2>
+        <div id="xray" aria-live="polite"><p class="empty">Първо отговори на въпроса „Предскажи“.</p></div>
+      </section>
+    </div>
+  </div>
+</main>
+<script>
+"use strict";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LM_BG = { banner: "Банер", navigation: "Навигация", main: "Основно съдържание", complementary: "Допълнително съдържание", contentinfo: "Информация за страницата", region: "Регион", article: "Статия" };
+const LANDMARKS = ["banner", "navigation", "main", "complementary", "contentinfo", "region"];
+const SECTIONING = "article,aside,main,nav,section";
+
+/* ---------- модел на ролите (опростен HTML-AAM, проверен в Chromium) ---------- */
+function isHidden(el) { return el.closest("[hidden]") !== null; }
+function accName(el, doc) {
+  const lb = el.getAttribute("aria-labelledby");
+  if (lb) { const t = lb.split(/\s+/).map(id => doc.getElementById(id)).filter(Boolean).map(e => e.textContent.trim()).join(" "); if (t) return t; }
+  const al = el.getAttribute("aria-label"); if (al && al.trim()) return al.trim();
+  return "";
+}
+function roleOf(el, doc) {
+  const explicit = (el.getAttribute("role") || "").trim().split(/\s+/)[0];
+  if (explicit) return explicit;
+  const t = el.tagName.toLowerCase();
+  const scoped = () => el.parentElement && el.parentElement.closest(SECTIONING) !== null;
+  switch (t) {
+    case "header": return scoped() ? null : "banner";
+    case "footer": return scoped() ? null : "contentinfo";
+    case "nav": return "navigation";
+    case "main": return "main";
+    case "aside": {
+      if (accName(el, doc)) return "complementary";
+      const anc = el.parentElement && el.parentElement.closest("article,aside,nav,section");
+      return anc ? null : "complementary";
+    }
+    case "section": return accName(el, doc) ? "region" : null;
+    case "article": return "article";
+    default: return null;
+  }
+}
+function analyze(doc) {
+  const body = doc.body;
+  const nodes = [];
+  // дърво на ориентирите и статиите
+  function walk(el, list) {
+    for (const ch of el.children) {
+      if (isHidden(ch)) continue;
+      const r = roleOf(ch, doc);
+      if (r && (LANDMARKS.includes(r) || r === "article")) {
+        const item = { el: ch, role: r, name: accName(ch, doc), tag: ch.tagName.toLowerCase(), kids: [] };
+        list.push(item); nodes.push(item);
+        walk(ch, item.kids);
+      } else walk(ch, list);
+    }
+  }
+  const tree = []; if (body) walk(body, tree);
+  // заглавия
+  const heads = [...doc.querySelectorAll("h1,h2,h3,h4,h5,h6")].filter(h => !isHidden(h)).map(h => ({ el: h, level: +h.tagName[1], text: h.textContent.trim().replace(/\s+/g, " ") }));
+  let prev = 0; heads.forEach(h => { h.skip = prev > 0 && h.level > prev + 1; if (prev === 0 && h.level > 1) h.skip = false; prev = h.level; });
+  // предупреждения
+  const W = [];
+  const count = r => nodes.filter(n => n.role === r).length;
+  const mains = [...doc.querySelectorAll("main")].filter(m => !isHidden(m));
+  if (mains.length === 0) W.push(["err", "Няма видим <code>&lt;main&gt;</code> – екранният четец не може да прескочи до основното съдържание."]);
+  if (mains.length > 1) W.push(["err", `Има ${mains.length} видими <code>&lt;main&gt;</code>. Разрешен е само един.`]);
+  mains.forEach(m => { const bad = m.parentElement && m.parentElement.closest("article,aside,header,footer,nav"); if (bad) W.push(["err", `<code>&lt;main&gt;</code> е вътре в <code>&lt;${bad.tagName.toLowerCase()}&gt;</code> – това не е разрешено.`]); });
+  doc.querySelectorAll("footer header, footer footer, header header, header footer, address header, address footer").forEach(e => {
+    const outer = e.parentElement.closest("header,footer,address");
+    W.push(["err", `<code>&lt;${e.tagName.toLowerCase()}&gt;</code> е вътре в <code>&lt;${outer.tagName.toLowerCase()}&gt;</code> – не е разрешено.`]);
+  });
+  const h1 = heads.filter(h => h.level === 1).length;
+  if (heads.length && h1 === 0) W.push(["wrn", "Няма <code>&lt;h1&gt;</code> – липсва основното заглавие на страницата."]);
+  if (h1 > 1) W.push(["wrn", `Има ${h1} заглавия <code>&lt;h1&gt;</code>. Препоръчва се едно.`]);
+  heads.filter(h => h.skip).forEach(h => W.push(["wrn", `Прескочено ниво: <code>&lt;h${h.level}&gt;</code> „${esc(h.text)}“ идва след по-високо заглавие с повече от едно ниво разлика.`]));
+  heads.filter(h => !h.text).forEach(() => W.push(["wrn", "Празно заглавие – екранният четец ще обяви заглавие без текст."]));
+  const navs = nodes.filter(n => n.role === "navigation");
+  if (navs.length > 1) { const nm = navs.map(n => n.name); if (nm.some(x => !x) || new Set(nm).size < nm.length) W.push(["wrn", `Има ${navs.length} навигации, но не всички имат различно име (<code>aria-label</code>) – четецът ги обявява еднакво.`]); }
+  [...doc.querySelectorAll("section")].filter(s => !isHidden(s)).forEach(s => { const first = s.querySelector("h1,h2,h3,h4,h5,h6"); if (!first || first.closest("section") !== s) W.push(["wrn", "<code>&lt;section&gt;</code> без заглавие. Ако групата няма смислено заглавие, може би трябва <code>&lt;div&gt;</code>."]); });
+  [...doc.querySelectorAll("div[id],div[class]")].forEach(d => {
+    const key = ((d.id || "") + " " + (d.className || "")).toLowerCase();
+    const m = [["header","header"],["nav","nav"],["menu","nav"],["footer","footer"],["sidebar","aside"],["content","main"]].find(([k]) => new RegExp("\\b" + k).test(key));
+    if (m) W.push(["wrn", `<code>&lt;div ${d.id ? 'id="' + esc(d.id) + '"' : 'class="' + esc(d.className) + '"'}&gt;</code> изглежда като <code>&lt;${m[1]}&gt;</code>, но за екранния четец е обикновен блок.`]);
+  });
+  doc.querySelectorAll("img:not([alt])").forEach(i => W.push(["err", `Изображение <code>${esc(i.getAttribute("src") || "")}</code> без <code>alt</code>.`]));
+  return { tree, nodes, heads, warnings: W, count, mains };
+}
+function renderXray(a) {
+  const li = n => `<li><span class="lm lm-${n.role}">${LM_BG[n.role] || n.role}${n.name ? " „" + esc(n.name) + "“" : ""}</span> <span class="role">${n.role} ← &lt;${n.tag}&gt;</span>${n.kids.length ? "<ul>" + n.kids.map(li).join("") + "</ul>" : ""}</li>`;
+  const lmCount = a.nodes.filter(n => LANDMARKS.includes(n.role)).length;
+  const tree = a.tree.length ? `<ul class="tree">${a.tree.map(li).join("")}</ul>` : '<p class="empty">Няма нито един ориентир или статия – за екранния четец страницата е един непрекъснат текст.</p>';
+  const heads = a.heads.length ? `<ul class="tree">${a.heads.map(h => `<li style="padding-left:${(h.level - 1) * 14}px"><span class="hd${h.skip ? " skip" : ""}">h${h.level}</span>${h.text ? esc(h.text) : '<span class="empty">(празно)</span>'}</li>`).join("")}</ul>` : '<p class="empty">Няма заглавия.</p>';
+  const w = a.warnings.length ? `<ul class="warnlist">${a.warnings.map(([k, t]) => `<li class="${k}">${k === "err" ? "✖ " : "⚠ "}${t}</li>`).join("")}</ul>` : '<p class="small">✔ Няма предупреждения.</p>';
+  document.getElementById("xray").innerHTML = `<h3>Ориентири и статии (${lmCount} ориентира)</h3>${tree}<h3>Заглавия (${a.heads.length})</h3>${heads}<h3>Предупреждения</h3>${w}`;
+}
+
+/* ---------- мисии ---------- */
+const q = (doc, s) => [...doc.querySelectorAll(s)];
+const MISSIONS = [
+{
+  title: "Страница от кутии",
+  text: `<p>Цялата страница е изградена с <code>&lt;div&gt;</code>. Замени четирите основни области със съответните семантични елементи, така че екранният четец да намери <b>банер, навигация, основно съдържание и информация за страницата</b> – всеки точно по веднъж.</p>`,
+  code: `<div id="header">
+  <h1>Клуб по шах</h1>
+</div>
+<div id="nav">
+  <a href="#">Начало</a> | <a href="#">Турнири</a> | <a href="#">Контакти</a>
+</div>
+<div id="content">
+  <h2>Добре дошли</h2>
+  <p>Срещаме се всеки вторник след часовете.</p>
+</div>
+<div id="footer">
+  <p>© 2026 Клуб по шах</p>
+</div>`,
+  predict: { q: "Колко ориентира ще намери екранният четец в тази страница?", choices: [["4 – по един за всеки div", false], ["0", true], ["2 – заглавието и менюто", false]], why: "<code>id=\"header\"</code> е само име за CSS. За браузъра всички <code>&lt;div&gt;</code> са обикновени блокове без роля." },
+  check(a) {
+    const need = ["banner", "navigation", "main", "contentinfo"], miss = need.filter(r => a.count(r) !== 1);
+    if (miss.length) return [false, "Още липсват или се повтарят: " + miss.map(r => LM_BG[r]).join(", ") + ". Кой елемент дава всяка от тези роли?"];
+    if (a.warnings.some(w => w[0] === "err")) return [false, "Ориентирите са налице, но има грешки в предупрежденията – виж ги."];
+    return [true, "Четирите <code>&lt;div&gt;</code> станаха <code>header</code>, <code>nav</code>, <code>main</code> и <code>footer</code>. Сега потребителят на екранен четец прескача директно до менюто или съдържанието."];
+  }
+},
+{
+  title: "Два „главни“ блока",
+  text: `<p>Авторът е сложил основните новини <b>и</b> страничната колона с полезни връзки в отделни <code>&lt;main&gt;</code>. Поправи структурата така, че да има <b>един</b> <code>&lt;main&gt;</code>, а страничната колона да е <b>допълнително съдържание</b>.</p>`,
+  code: `<header><h1>Училищен вестник</h1></header>
+<main>
+  <h2>Новини</h2>
+  <p>Отборът ни спечели турнира по роботика.</p>
+</main>
+<main>
+  <h2>Полезни връзки</h2>
+  <ul>
+    <li><a href="#">Седмична програма</a></li>
+    <li><a href="#">Архив</a></li>
+  </ul>
+</main>
+<footer><p>© 2026 Училищен вестник</p></footer>`,
+  predict: { q: "Може ли една страница да има два видими <code>&lt;main&gt;</code>?", choices: [["Да, ако имат различни заглавия", false], ["Не – разрешен е само един видим main", true], ["Да, но само ако са един под друг", false]], why: "Разрешен е само един <code>&lt;main&gt;</code> без атрибут <code>hidden</code>. Той съдържа уникалното съдържание на страницата." },
+  check(a) {
+    if (a.mains.length !== 1) return [false, "Все още видимите <code>&lt;main&gt;</code> не са точно един."];
+    if (a.count("complementary") !== 1) return [false, "Има един <code>&lt;main&gt;</code>, но страничната колона още не е ориентир „Допълнително съдържание“. Кой елемент е за свързано, но не основно съдържание?"];
+    const cmp = a.nodes.find(n => n.role === "complementary").el;
+    if (!/Полезни връзки/.test(cmp.textContent)) return [false, "Ориентирът „Допълнително съдържание“ трябва да обхваща полезните връзки."];
+    if (/Полезни връзки/.test(a.mains[0].textContent) && !a.mains[0].contains(cmp)) return [false, "Полезните връзки са едновременно в main и извън aside – провери структурата."];
+    return [true, "Един <code>&lt;main&gt;</code> за новините и <code>&lt;aside&gt;</code> за връзките – вътре или извън <code>main</code>, и двете е допустимо."];
+  }
+},
+{
+  title: "Стълбицата на заглавията",
+  text: `<p>Заглавията са избрани „по размер“. Поправи нивата им така, че да има <b>едно</b> <code>&lt;h1&gt;</code>, да няма <b>прескочени нива</b>, и да се запазят и петте заглавия с текста им. „Турнир по роботика“ и „Нова библиотека“ са новини от раздел „Новини“.</p>`,
+  code: `<header><h1>Училищен вестник</h1></header>
+<main>
+  <section>
+    <h1>Новини</h1>
+    <article><h4>Турнир по роботика</h4><p>…</p></article>
+    <article><h4>Нова библиотека</h4><p>…</p></article>
+  </section>
+  <section>
+    <h5>Събития</h5>
+    <p>…</p>
+  </section>
+</main>`,
+  predict: { q: "Какво ще чуе потребителят, когато прегледа списъка със заглавия?", choices: [["Правилна структура – браузърът сам намалява h1 в section", false], ["Две заглавия от ниво 1 и прескочени нива", true], ["Нищо – заглавията в section не се обявяват", false]], why: "Алгоритъмът, който „намалява“ <code>&lt;h1&gt;</code> в <code>&lt;section&gt;</code>, никога не е реализиран. Четецът обявява нивото, което е в кода." },
+  check(a) {
+    const texts = a.heads.map(h => h.text);
+    for (const t of ["Училищен вестник", "Новини", "Турнир по роботика", "Нова библиотека", "Събития"]) if (!texts.includes(t)) return [false, `Заглавието „${t}“ липсва. Промени само нивата, не текста.`];
+    if (a.heads.filter(h => h.level === 1).length !== 1) return [false, "Трябва да има точно едно <code>&lt;h1&gt;</code>."];
+    if (a.heads.some(h => h.skip)) return [false, "Още има прескочено ниво. Виж червените етикети в дървото на заглавията."];
+    const lv = t => a.heads.find(h => h.text === t).level;
+    if (!(lv("Турнир по роботика") > lv("Новини") && lv("Нова библиотека") > lv("Новини"))) return [false, "Новините трябва да са подзаглавия на „Новини“ – с по-ниско ниво от него."];
+    if (lv("Събития") !== lv("Новини")) return [false, "„Събития“ е раздел на същото ниво като „Новини“."];
+    return [true, "Стълбица: h1 → h2 → h3. Размерът на заглавията се променя със CSS, а не с избора на ниво."];
+  }
+},
+{
+  title: "Автор на всяка статия",
+  text: `<p>Добави под всяка от двете статии <b>долна част с автора</b>. Внимавай: в страницата трябва да остане <b>само една</b> „Информация за страницата“ – общият footer.</p>`,
+  code: `<header><h1>Блог на класа</h1></header>
+<main>
+  <article>
+    <h2>Екскурзия до Пловдив</h2>
+    <p>В петък посетихме Античния театър.</p>
+  </article>
+  <article>
+    <h2>Седмица на четенето</h2>
+    <p>Всеки прочете по една книга.</p>
+  </article>
+</main>
+<footer><p>© 2026 Блог на класа</p></footer>`,
+  predict: { q: "Ако добавиш <code>&lt;footer&gt;</code> вътре във всяка статия, колко ориентира „Информация за страницата“ ще има?", choices: [["3 – по един за всеки footer", false], ["1 – само общият footer", true], ["0 – всички footer се изключват", false]], why: "<code>&lt;footer&gt;</code> вътре в <code>&lt;article&gt;</code> принадлежи на статията и не е ориентир за страницата." },
+  check(a, doc) {
+    const arts = q(doc, "article");
+    if (arts.length < 2) return [false, "Двете статии трябва да останат."];
+    if (!arts.every(ar => q(ar, "footer").some(f => f.closest("article") === ar && /\S/.test(f.textContent)))) return [false, "Не всяка статия има собствена долна част с текст. Кой елемент е за заключителна част?"];
+    if (a.count("contentinfo") !== 1) return [false, "Ориентирите „Информация за страницата“ не са точно един. Общият footer трябва да остане извън статиите."];
+    return [true, "Всяка статия има свой <code>&lt;footer&gt;</code>, а ориентирът за страницата е един."];
+  }
+},
+{
+  title: "Статия, раздел или каре?",
+  text: `<p>Новините, групата им и рекламното каре са в <code>&lt;div&gt;</code>. Избери подходящ елемент за всяко: всяка <b>новина</b> – самостоятелно съдържание; групата „Новини“ – тематичен раздел със заглавие; <b>карето</b> с реклама – допълнително съдържание.</p>`,
+  code: `<header><h1>Училищен вестник</h1></header>
+<main>
+  <div class="novini">
+    <h2>Новини</h2>
+    <div class="novina"><h3>Турнир по роботика</h3><p>…</p></div>
+    <div class="novina"><h3>Нова библиотека</h3><p>…</p></div>
+  </div>
+  <div class="reklama"><h2>Купи тениска на училището!</h2></div>
+</main>`,
+  predict: { q: "Коя от частите е <b>самостоятелно</b> съдържание, което има смисъл и извън страницата?", choices: [["Всяка новина", true], ["Групата „Новини“", false], ["Рекламното каре", false]], why: "Новината може да бъде изпратена или публикувана сама – тя е <code>&lt;article&gt;</code>. Групата с обща тема и заглавие е <code>&lt;section&gt;</code>." },
+  check(a, doc) {
+    const arts = q(doc, "article").filter(x => /Турнир|библиотека/.test(x.textContent));
+    if (arts.length !== 2) return [false, "Двете новини още не са самостоятелни елементи."];
+    const sec = q(doc, "section").find(s => arts.every(ar => s.contains(ar)));
+    if (!sec) return [false, "Новините трябва да са в общ тематичен раздел."];
+    const h = sec.querySelector("h1,h2,h3,h4,h5,h6"); if (!h || !/Новини/.test(h.textContent)) return [false, "Разделът трябва да има заглавие „Новини“."];
+    const ad = q(doc, "aside").find(x => /тениска/.test(x.textContent));
+    if (!ad) return [false, "Рекламното каре още не е допълнително съдържание."];
+    if (sec.contains(ad)) return [false, "Карето не е част от раздела „Новини“."];
+    return [true, "Новина → <code>article</code>; група със заглавие → <code>section</code>; реклама → <code>aside</code>."];
+  }
+},
+{
+  title: "Две менюта с едно име",
+  text: `<p>Страницата има главно меню и меню в долната част. Направи така, че екранният четец да ги обявява с <b>различни имена</b> („Основно меню“ и „Допълнителни връзки“ или подобни).</p>`,
+  code: `<header>
+  <h1>Моят сайт</h1>
+  <nav>
+    <ul>
+      <li><a href="#">Начало</a></li>
+      <li><a href="#">Статии</a></li>
+    </ul>
+  </nav>
+</header>
+<main><h2>Начало</h2><p>…</p></main>
+<footer>
+  <nav>
+    <a href="#">Поверителност</a>
+    <a href="#">Контакти</a>
+  </nav>
+</footer>`,
+  predict: { q: "Как екранният четец ще различи двете менюта сега?", choices: [["По мястото – „горна“ и „долна“ навигация", false], ["Няма да ги различи – и двете са просто „навигация“", true], ["По първата връзка в менюто", false]], why: "Без име двата ориентира се обявяват еднакво. Името се задава с <code>aria-label</code> или <code>aria-labelledby</code>." },
+  check(a) {
+    const navs = a.nodes.filter(n => n.role === "navigation");
+    if (navs.length !== 2) return [false, "Трябва да останат две навигации."];
+    if (navs.some(n => !n.name)) return [false, "Не всяка навигация има име. С кой атрибут се задава име на ориентир?"];
+    if (navs[0].name === navs[1].name) return [false, "Имената са еднакви – четецът пак не ги различава."];
+    return [true, `Сега четецът казва „${esc(navs[0].name)}, навигация“ и „${esc(navs[1].name)}, навигация“.`];
+  }
+},
+{
+  title: "Нередният footer",
+  text: `<p>В долната част на страницата има <b>вложен header</b>, а в <code>&lt;address&gt;</code> е сложена и датата на последната промяна. Поправи кода: без <code>&lt;header&gt;</code> във <code>&lt;footer&gt;</code>; в <code>&lt;address&gt;</code> да остане <b>само контактът</b>, а датата да е машинно четима и извън него.</p>`,
+  code: `<header><h1>Клуб по шах</h1></header>
+<main><h2>Турнири</h2><p>…</p></main>
+<footer>
+  <header><h2>За контакт</h2></header>
+  <address>
+    <a href="mailto:shah@uchilishte.example">shah@uchilishte.example</a><br>
+    Последна промяна: 20.11.2026
+  </address>
+</footer>`,
+  predict: { q: "Разрешено ли е <code>&lt;header&gt;</code> да е вътре във <code>&lt;footer&gt;</code>?", choices: [["Да, ако е за заглавие на footer", false], ["Не – footer не може да съдържа header или друг footer", true], ["Да, но само веднъж на страница", false]], why: "Спецификацията на HTML забранява <code>&lt;header&gt;</code> и <code>&lt;footer&gt;</code> вътре във <code>&lt;footer&gt;</code>. Заглавието може да е просто <code>&lt;h2&gt;</code>." },
+  check(a, doc) {
+    if (q(doc, "footer header").length) return [false, "Във footer още има <code>&lt;header&gt;</code>."];
+    const ad = doc.querySelector("footer address"); if (!ad) return [false, "Контактът трябва да остане в <code>&lt;address&gt;</code> във footer."];
+    if (!ad.querySelector('a[href^="mailto:"]')) return [false, "В <code>&lt;address&gt;</code> трябва да остане имейлът за контакт."];
+    if (/промяна|\d{2}\.\d{2}\.\d{4}/i.test(ad.textContent) || ad.querySelector("time")) return [false, "В <code>&lt;address&gt;</code> още има информация, която не е контакт."];
+    const t = doc.querySelector("footer time[datetime]"); if (!t) return [false, "Датата трябва да е в елемент, който дава машинно четима стойност."];
+    if (!/^2026-11-20/.test(t.getAttribute("datetime"))) return [false, "Стойността на <code>datetime</code> трябва да е датата 20.11.2026 във формат ГГГГ-ММ-ДД."];
+    return [true, "Footer без вложен header, <code>&lt;address&gt;</code> само с контакт и дата в <code>&lt;time datetime=\"2026-11-20\"&gt;</code>."];
+  }
+}];
+
+/* ---------- състояние и интерфейс ---------- */
+const state = { cur: 0, done: MISSIONS.map(() => false), predicted: MISSIONS.map(() => null), firstRight: MISSIONS.map(() => null), code: MISSIONS.map(m => m.code), fb: MISSIONS.map(() => null) };
+const $ = id => document.getElementById(id);
+const frame = $("preview"), codeEl = $("code");
+
+function renderList() {
+  $("missionList").innerHTML = MISSIONS.map((m, i) => `<li><button type="button" data-i="${i}" class="${state.done[i] ? "done" : ""}" ${i === state.cur ? 'aria-current="step"' : ""} aria-label="Мисия ${i + 1}: ${esc(m.title)}${state.done[i] ? " (изпълнена)" : ""}">${i + 1}</button></li>`).join("");
+  const n = state.done.filter(Boolean).length;
+  $("progress").textContent = `Изпълнени мисии: ${n} от ${MISSIONS.length}`;
+  $("final").hidden = n !== MISSIONS.length;
+  if (n === MISSIONS.length) $("finalText").textContent = `Верни предсказания от първия опит: ${state.firstRight.filter(x => x === true).length} от ${MISSIONS.length}.`;
+}
+function renderTask() {
+  const m = MISSIONS[state.cur], p = m.predict, ans = state.predicted[state.cur];
+  const choices = p.choices.map(([t, ok], j) => `<button type="button" data-j="${j}" class="${ans === j ? (ok ? "right" : "wrong") : ""}" aria-pressed="${ans === j}" ${ans !== null ? "disabled" : ""}>${t}</button>`).join("");
+  const pfb = ans !== null ? `<div class="fb ${p.choices[ans][1] ? "ok" : "bad"}">${p.choices[ans][1] ? "Вярно. " : "Не съвсем. "}${p.why}</div>` : "";
+  const f = state.fb[state.cur];
+  $("task").innerHTML = `<h2>Мисия ${state.cur + 1}. ${esc(m.title)}</h2>${m.text}
+    <div class="predict"><b>Предскажи:</b> ${p.q}<div class="choices" role="group" aria-label="Възможни отговори">${choices}</div>${pfb}</div>
+    <div class="fb ${f ? (f[0] ? "ok" : "bad") : ""}">${f ? (f[0] ? "✔ Мисията е изпълнена. " : "") + f[1] : ""}</div>
+    ${state.done[state.cur] && state.cur < MISSIONS.length - 1 ? '<div class="tools"><button type="button" id="next">Към мисия ' + (state.cur + 2) + " →</button></div>" : ""}`;
+  $("lock").hidden = ans !== null;
+  frame.inert = ans === null;
+}
+function loadFrame(runCheck) {
+  const html = `<!DOCTYPE html><html lang="bg"><head><meta charset="UTF-8"><style>body{font-family:Arial,Helvetica,sans-serif;color:#082d46;margin:10px 12px;line-height:1.4;font-size:14px}h1{font-size:1.5em}h2{font-size:1.25em}h3,h4,h5,h6{font-size:1.05em}h1,h2,h3,h4,h5,h6{margin:.3em 0}p,ul{margin:.3em 0}a{color:#1c6fa3}</style></head><body>${codeEl.value}</body></html>`;
+  frame.onload = () => {
+    const doc = frame.contentDocument; if (!doc) return;
+    doc.addEventListener("click", e => { if (e.target.closest && e.target.closest("a[href]")) e.preventDefault(); });
+    if (state.predicted[state.cur] === null) return;
+    const a = analyze(doc); renderXray(a);
+    if (runCheck) {
+      let res; try { res = MISSIONS[state.cur].check(a, doc); } catch (e) { res = [false, "Проверката не успя да прочете страницата. Провери кода."]; }
+      state.fb[state.cur] = res; if (res[0]) state.done[state.cur] = true;
+      renderList(); renderTask();
+    }
+  };
+  frame.srcdoc = html;
+}
+function goto(i, save = true) {
+  if (save) state.code[state.cur] = codeEl.value;
+  state.cur = i; codeEl.value = state.code[i];
+  $("xray").innerHTML = '<p class="empty">Първо отговори на въпроса „Предскажи“.</p>';
+  renderList(); renderTask(); loadFrame(false);
+}
+$("missionList").addEventListener("click", e => { const b = e.target.closest("button[data-i]"); if (b) goto(+b.dataset.i); });
+$("task").addEventListener("click", e => {
+  const b = e.target.closest("button[data-j]");
+  if (b && state.predicted[state.cur] === null) {
+    const j = +b.dataset.j; state.predicted[state.cur] = j; state.firstRight[state.cur] = MISSIONS[state.cur].predict.choices[j][1];
+    renderTask(); renderList(); loadFrame(false);
+    const msg = $("task").querySelector(".predict .fb"); if (msg) { msg.setAttribute("tabindex", "-1"); msg.focus(); }
+    return;
+  }
+  if (e.target.id === "next") goto(state.cur + 1);
+});
+$("apply").addEventListener("click", () => {
+  state.code[state.cur] = codeEl.value;
+  if (state.predicted[state.cur] === null) { state.fb[state.cur] = [false, "Първо отговори на въпроса „Предскажи“."]; renderTask(); return; }
+  loadFrame(true);
+});
+codeEl.addEventListener("keydown", e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $("apply").click(); } });
+$("restore").addEventListener("click", () => { codeEl.value = MISSIONS[state.cur].code; state.code[state.cur] = codeEl.value; state.fb[state.cur] = null; renderTask(); loadFrame(false); });
+$("resetAll").addEventListener("click", () => {
+  state.done = MISSIONS.map(() => false); state.predicted = MISSIONS.map(() => null); state.firstRight = MISSIONS.map(() => null);
+  state.code = MISSIONS.map(m => m.code); state.fb = MISSIONS.map(() => null); goto(0, false);
+});
+codeEl.value = state.code[0];
+renderList(); renderTask(); loadFrame(false);
+</script>
+</body>
+</html>

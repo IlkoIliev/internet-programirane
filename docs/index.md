@@ -23,7 +23,7 @@
 | Раздел | Теория | Учебна практика | Състояние |
 |---|---|---|---|
 | **1. Интернет и HTTP** | [3 урока](teoria/razdel-1/index.md) | [6 упражнения и проект](praktika/razdel-1/index.md) | ✅ Публикуван |
-| **2. Външен интерфейс (front-end): HTML, CSS, JavaScript** | [4 урока](teoria/razdel-2/index.md) | [4 упражнения](praktika/razdel-2/index.md) | 🛠️ Попълва се |
+| **2. Външен интерфейс (front-end): HTML, CSS, JavaScript** | [5 урока](teoria/razdel-2/index.md) | [5 упражнения](praktika/razdel-2/index.md) | 🛠️ Попълва се |
 | **3. ASP.NET Core MVC и бази данни** | [Преглед](teoria/razdel-3/index.md) | [Преглед](praktika/razdel-3/index.md) | ⏳ В подготовка |
 | **4. REST API** | [Преглед](teoria/razdel-4/index.md) | [Преглед](praktika/razdel-4/index.md) | ⏳ В подготовка |
 | **5. Финален проект и публикуване** | – | [Преглед](praktika/razdel-5/index.md) | ⏳ В подготовка |
@@ -48,6 +48,7 @@
 | [Урок 2. Работа със CSS. Селектори и основни правила](teoria/razdel-2/urok-02-css-selektori-i-pravila.md) | [Упражнение 2. Оформяне на „Моят клас“ със CSS](praktika/razdel-2/uprazhnenie-02-css.md) |
 | [Урок 3. Работа с инструментите за разработчици](teoria/razdel-2/urok-03-instrumenti-za-razrabotchitsi.md) | [Упражнение 3. Детектив в DevTools](praktika/razdel-2/uprazhnenie-03-devtools.md) |
 | [Урок 4. Създаване на формуляри](teoria/razdel-2/urok-04-formulyari.md) | [Упражнение 4. Формуляр „Запиши се за клуб“](praktika/razdel-2/uprazhnenie-04-formulyari.md) |
+| [Урок 5. Създаване на семантични страници](teoria/razdel-2/urok-05-semantichni-stranitsi.md) | [Упражнение 5. „Моят клас“: от div към семантика](praktika/razdel-2/uprazhnenie-05-semantika.md) |
 
 ## Интерактивни лаборатории
 
@@ -69,6 +70,7 @@
 | [CSS конструктор](interaktivni/razdel-2/css-konstruktor.html){: target="_blank" } | Селектори, свойства, кутиен модел и контраст | Раздел 2, урок 2 |
 | [Симулатор на DevTools](interaktivni/razdel-2/devtools-simulator.html){: target="_blank" } | Elements, Styles, Computed, Console, Sources, Network и Application върху страница с повреди | Раздел 2, урок 3 |
 | [Пощальон на формуляри](interaktivni/razdel-2/formulyari-poshtalyon.html){: target="_blank" } | Какво изпраща формулярът: двойки име=стойност, кодиране, GET и POST, проверки в браузъра | Раздел 2, урок 4 |
+| [Рентген на страницата](interaktivni/razdel-2/rentgen-na-stranitsata.html){: target="_blank" } | Страницата, както я „чува“ екранен четец: ориентири, статии и дърво на заглавията | Раздел 2, урок 5 |
 
 ## Как да използвате учебника?
 

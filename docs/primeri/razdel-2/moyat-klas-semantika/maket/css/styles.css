@@ -1,0 +1,66 @@
+/* Готов CSS за макета – НЕ се променя.
+   Селекторите са имена на семантични елементи (header, nav, main…),
+   затова страницата изглежда като образеца само ако HTML структурата е правилна.
+   Подреждането един до друг (display: flex) ще изучаваме в темата
+   „Адаптивен дизайн“ – тук е готово. */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;     /* областите на страницата – една под друга */
+    background: #777;
+    font-family: Arial, sans-serif;
+}
+
+header, nav, main, footer {
+    border: 8px solid #222;
+    background: #888;
+    color: white;
+    text-align: center;
+    font-size: 24px;
+}
+
+header, nav, footer {
+    padding: 20px 0;
+}
+
+main {
+    flex: 1;                    /* main заема свободната височина */
+    display: flex;              /* section и aside – една до друга */
+    gap: 20px;
+    padding: 20px;
+}
+
+section {
+    border: 8px solid #222;
+    background: #888;
+    flex: 2;                    /* section е два пъти по-широк от aside */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;     /* статиите – една под друга */
+    gap: 20px;
+}
+
+aside {
+    border: 8px solid #222;
+    background: #888;
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    align-items: center;        /* текстът – в средата */
+    justify-content: center;
+}
+
+article {
+    border: 8px solid #222;
+    background: #999;
+    padding: 40px;
+    text-align: center;
+    font-size: 22px;
+}

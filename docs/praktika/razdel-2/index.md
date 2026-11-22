@@ -12,6 +12,7 @@
 | 2 | [**Оформяне на страницата „Моят клас“ със CSS**](uprazhnenie-02-css.md) | [Урок 2. Работа със CSS](../../teoria/razdel-2/urok-02-css-selektori-i-pravila.md) | Visual Studio Code, браузър, [CSS конструктор](../../interaktivni/razdel-2/css-konstruktor.html){: target="_blank" } | 2 часа |
 | 3 | [**Детектив в DevTools – откриване на грешки в „Моят клас“**](uprazhnenie-03-devtools.md) | [Урок 3. Инструменти за разработчици](../../teoria/razdel-2/urok-03-instrumenti-za-razrabotchitsi.md) | Google Chrome, Visual Studio Code, [симулатор на DevTools](../../interaktivni/razdel-2/devtools-simulator.html){: target="_blank" } | 2 часа |
 | 4 | [**Формуляр „Запиши се за клуб“**](uprazhnenie-04-formulyari.md) | [Урок 4. Създаване на формуляри](../../teoria/razdel-2/urok-04-formulyari.md) | Google Chrome, Visual Studio Code, [Пощальон на формуляри](../../interaktivni/razdel-2/formulyari-poshtalyon.html){: target="_blank" } | 2 часа |
+| 5 | [**„Моят клас“: от div към семантика**](uprazhnenie-05-semantika.md) | [Урок 5. Създаване на семантични страници](../../teoria/razdel-2/urok-05-semantichni-stranitsi.md) | Google Chrome, Visual Studio Code, [Рентген на страницата](../../interaktivni/razdel-2/rentgen-na-stranitsata.html){: target="_blank" } | 2 часа |
 
 ## Интерактивни конструктори и симулатор
 
@@ -21,8 +22,9 @@
 - [**CSS конструктор**](../../interaktivni/razdel-2/css-konstruktor.html){: target="_blank" } – мисии за селектори, свойства, кутиен модел и контраст, плюс свободен режим за проверка на собствената страница.
 - [**Симулатор на DevTools**](../../interaktivni/razdel-2/devtools-simulator.html){: target="_blank" } – мисии за откриване на повреди в страница с панелите Elements, Console, Sources, Network и Application.
 - [**Пощальон на формуляри**](../../interaktivni/razdel-2/formulyari-poshtalyon.html){: target="_blank" } – мисии за това какво изпраща формулярът: имена и стойности, кодиране, GET и POST, проверки в браузъра.
+- [**Рентген на страницата**](../../interaktivni/razdel-2/rentgen-na-stranitsata.html){: target="_blank" } – мисии за ориентири, статии и стълбица на заглавията, както ги използва екранен четец.
 
 !!! note "Следващи упражнения"
-    Упражненията към следващите теми от раздела – семантични страници, адаптивно оформление, JavaScript и DOM – ще бъдат добавени тук.
+    Упражненията към следващите теми от раздела – адаптивно оформление, JavaScript и DOM – ще бъдат добавени тук.
 
 [Към началото на учебната практика](../index.md)
