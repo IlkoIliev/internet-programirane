@@ -68,10 +68,10 @@ iframe#preview{width:100%;height:320px;border:1px solid #8aa9bb;border-radius:8p
 <body>
 <header class="top">
   <div>
-    <h1>🩻 Рентген на страницата</h1>
+    <h1>🔬 Рентген на страницата</h1>
     <p>Виж страницата така, както я „чува“ екранен четец: ориентири и заглавия.</p>
   </div>
-  <div class="progress" id="progress" aria-live="polite">Изпълнени мисии: 0 от 7</div>
+  <div class="progress" id="progress" aria-live="polite">Изпълнени мисии: 0 от 8</div>
 </header>
 <main class="wrap">
   <div>
@@ -219,7 +219,8 @@ const MISSIONS = [
 </div>
 <div id="content">
   <h2>Добре дошли</h2>
-  <p>Срещаме се всеки вторник след часовете.</p>
+  <p>Срещаме се всеки вторник след часовете в кабинет 21.</p>
+  <p>Начинаещите учат правилата, а напредналите се подготвят за областния турнир.</p>
 </div>
 <div id="footer">
   <p>© 2026 Клуб по шах</p>
@@ -238,7 +239,7 @@ const MISSIONS = [
   code: `<header><h1>Училищен вестник</h1></header>
 <main>
   <h2>Новини</h2>
-  <p>Отборът ни спечели турнира по роботика.</p>
+  <p>Отборът ни спечели турнира по роботика. Роботът измина трасето за 41 секунди – най-бързо от всички 12 училища.</p>
 </main>
 <main>
   <h2>Полезни връзки</h2>
@@ -265,12 +266,18 @@ const MISSIONS = [
 <main>
   <section>
     <h1>Новини</h1>
-    <article><h4>Турнир по роботика</h4><p>…</p></article>
-    <article><h4>Нова библиотека</h4><p>…</p></article>
+    <article>
+      <h4>Турнир по роботика</h4>
+      <p>Роботът на 12 Б спечели първо място сред 12 училища.</p>
+    </article>
+    <article>
+      <h4>Нова библиотека</h4>
+      <p>От понеделник библиотеката е на първия етаж и работи до 17:00 ч.</p>
+    </article>
   </section>
   <section>
     <h5>Събития</h5>
-    <p>…</p>
+    <p>На 5 декември в актовата зала ще се проведе коледният концерт.</p>
   </section>
 </main>`,
   predict: { q: "Какво ще чуе потребителят, когато прегледа списъка със заглавия?", choices: [["Правилна структура – браузърът сам намалява h1 в section", false], ["Две заглавия от ниво 1 и прескочени нива", true], ["Нищо – заглавията в section не се обявяват", false]], why: "Алгоритъмът, който „намалява“ <code>&lt;h1&gt;</code> в <code>&lt;section&gt;</code>, никога не е реализиран. Четецът обявява нивото, което е в кода." },
@@ -311,27 +318,44 @@ const MISSIONS = [
 },
 {
   title: "Статия, раздел или каре?",
-  text: `<p>Новините, групата им и рекламното каре са в <code>&lt;div&gt;</code>. Избери подходящ елемент за всяко: всяка <b>новина</b> – самостоятелно съдържание; групата „Новини“ – тематичен раздел със заглавие; <b>карето</b> с реклама – допълнително съдържание.</p>`,
+  text: `<p>Новините, групата им, списъкът „Прочетете още“ и рекламното каре са в <code>&lt;div&gt;</code>. Избери подходящ елемент за всяко: всяка <b>новина</b> – самостоятелно съдържание; групата „Новини“ – тематичен раздел със заглавие; <b>карето</b> с реклама – допълнително съдържание.</p><p>Внимавай: не всичко, което стои сред новините и има заглавие, е новина. Реши сам какво е „Прочетете още“.</p>`,
   code: `<header><h1>Училищен вестник</h1></header>
 <main>
   <div class="novini">
     <h2>Новини</h2>
-    <div class="novina"><h3>Турнир по роботика</h3><p>…</p></div>
-    <div class="novina"><h3>Нова библиотека</h3><p>…</p></div>
+    <div class="novina">
+      <h3>Турнир по роботика</h3>
+      <p>Роботът на 12 Б спечели първо място сред 12 училища.</p>
+    </div>
+    <div class="novina">
+      <h3>Нова библиотека</h3>
+      <p>От понеделник библиотеката е на първия етаж и работи до 17:00 ч.</p>
+    </div>
+    <div class="oshte">
+      <h3>Прочетете още</h3>
+      <ul>
+        <li><a href="#">Брой 11: Екскурзия до Пловдив</a></li>
+        <li><a href="#">Брой 10: Седмица на четенето</a></li>
+      </ul>
+    </div>
   </div>
-  <div class="reklama"><h2>Купи тениска на училището!</h2></div>
+  <div class="reklama">
+    <h2>Купи тениска на училището!</h2>
+    <p>Тениските са в пет цвята. Поръчки – в стая 12 до петък.</p>
+  </div>
 </main>`,
   predict: { q: "Коя от частите е <b>самостоятелно</b> съдържание, което има смисъл и извън страницата?", choices: [["Всяка новина", true], ["Групата „Новини“", false], ["Рекламното каре", false]], why: "Новината може да бъде изпратена или публикувана сама – тя е <code>&lt;article&gt;</code>. Групата с обща тема и заглавие е <code>&lt;section&gt;</code>." },
   check(a, doc) {
+    if (q(doc, "article").some(x => /Прочетете още/.test(x.textContent) && !/Турнир|библиотека/.test(x.textContent))) return [false, "„Прочетете още“ е списък с връзки към стари броеве. Самостоятелна новина ли е? Какво друго може да бъде?"];
     const arts = q(doc, "article").filter(x => /Турнир|библиотека/.test(x.textContent));
-    if (arts.length !== 2) return [false, "Двете новини още не са самостоятелни елементи."];
+    if (arts.length !== 2 || arts.some(x => /Прочетете още/.test(x.textContent))) return [false, "Двете новини още не са самостоятелни елементи."];
     const sec = q(doc, "section").find(s => arts.every(ar => s.contains(ar)));
     if (!sec) return [false, "Новините трябва да са в общ тематичен раздел."];
     const h = sec.querySelector("h1,h2,h3,h4,h5,h6"); if (!h || !/Новини/.test(h.textContent)) return [false, "Разделът трябва да има заглавие „Новини“."];
     const ad = q(doc, "aside").find(x => /тениска/.test(x.textContent));
     if (!ad) return [false, "Рекламното каре още не е допълнително съдържание."];
     if (sec.contains(ad)) return [false, "Карето не е част от раздела „Новини“."];
-    return [true, "Новина → <code>article</code>; група със заглавие → <code>section</code>; реклама → <code>aside</code>."];
+    return [true, "Новина → <code>article</code>; група със заглавие → <code>section</code>; реклама → <code>aside</code>. „Прочетете още“ не е новина – подходящи са <code>aside</code> (свързано съдържание) или <code>nav</code> (група връзки); и двете се приемат."];
   }
 },
 {
@@ -346,7 +370,10 @@ const MISSIONS = [
     </ul>
   </nav>
 </header>
-<main><h2>Начало</h2><p>…</p></main>
+<main>
+  <h2>Начало</h2>
+  <p>Тук публикуваме статии за уеб програмиране, написани от ученици.</p>
+</main>
 <footer>
   <nav>
     <a href="#">Поверителност</a>
@@ -366,7 +393,10 @@ const MISSIONS = [
   title: "Нередният footer",
   text: `<p>В долната част на страницата има <b>вложен header</b>, а в <code>&lt;address&gt;</code> е сложена и датата на последната промяна. Поправи кода: без <code>&lt;header&gt;</code> във <code>&lt;footer&gt;</code>; в <code>&lt;address&gt;</code> да остане <b>само контактът</b>, а датата да е машинно четима и извън него.</p>`,
   code: `<header><h1>Клуб по шах</h1></header>
-<main><h2>Турнири</h2><p>…</p></main>
+<main>
+  <h2>Турнири</h2>
+  <p>Следващият турнир е на 14 декември във физкултурния салон.</p>
+</main>
 <footer>
   <header><h2>За контакт</h2></header>
   <address>
@@ -383,6 +413,64 @@ const MISSIONS = [
     const t = doc.querySelector("footer time[datetime]"); if (!t) return [false, "Датата трябва да е в елемент, който дава машинно четима стойност."];
     if (!/^2026-11-20/.test(t.getAttribute("datetime"))) return [false, "Стойността на <code>datetime</code> трябва да е датата 20.11.2026 във формат ГГГГ-ММ-ДД."];
     return [true, "Footer без вложен header, <code>&lt;address&gt;</code> само с контакт и дата в <code>&lt;time datetime=\"2026-11-20\"&gt;</code>."];
+  }
+},
+{
+  title: "Истинска страница",
+  text: `<p><b>Финална мисия.</b> Страницата на клуба съдържа няколко различни проблема от предишните мисии – без подсказка кои са и къде са. Използвай рентгена и правилата от урока. Готово е, когато:</p><ul><li>рентгенът е <b>без предупреждения</b>;</li><li>има банер, основно съдържание, допълнително съдържание и информация за страницата – всяко точно по веднъж – и две навигации с различни имена;</li><li>двата проекта са самостоятелно съдържание;</li><li>изображението има смислен <code>alt</code>;</li><li>двете дати са машинно четими, а в <code>&lt;address&gt;</code> е само контактът.</li></ul>`,
+  code: `<div id="header">
+  <h1>Клуб „Млад програмист“</h1>
+  <div class="menu">
+    <a href="#">Начало</a> | <a href="#">Проекти</a> | <a href="#">Контакти</a>
+  </div>
+</div>
+<main>
+  <h1>Нашите проекти</h1>
+  <div class="proekt">
+    <h3>Игра „Пазител на гората“</h3>
+    <img src="igra.png" width="160" height="90">
+    <p>Платформена игра на Python, в която героят събира семена и засажда дървета.</p>
+  </div>
+  <div class="proekt">
+    <h3>Робот за сортиране на отпадъци</h3>
+    <p>Роботът разпознава цвета на капачката и я пуска в правилния контейнер.</p>
+  </div>
+</main>
+<main>
+  <h2>Предстоящи събития</h2>
+  <p>Хакатон в училище на 5 декември 2026 г. – отбори по трима души.</p>
+</main>
+<div class="sidebar">
+  <h4>Присъедини се</h4>
+  <p>Срещите са всеки четвъртък от 14:30 ч. в кабинет 21.</p>
+</div>
+<footer>
+  <header><h2>Контакти</h2></header>
+  <address>
+    klub@uchilishte.example<br>
+    Обновено: 01.12.2026
+  </address>
+  <div class="menu">
+    <a href="#">Поверителност</a> <a href="#">Карта на сайта</a>
+  </div>
+</footer>`,
+  predict: { q: "Кое от следните <b>не е</b> проблем в тази страница?", choices: [["Два видими <code>&lt;main&gt;</code>", false], ["<code>&lt;header&gt;</code> вътре във <code>&lt;footer&gt;</code>", false], ["<code>&lt;address&gt;</code> вътре във <code>&lt;footer&gt;</code>", true], ["Изображение без <code>alt</code>", false]], why: "<code>&lt;address&gt;</code> във <code>&lt;footer&gt;</code> е напълно правилно – там обикновено стоят контактите. Останалите три са грешки, но не са единствените в страницата." },
+  check(a, doc) {
+    if (a.warnings.length) return [false, `Рентгенът още показва ${a.warnings.length} ${a.warnings.length === 1 ? "предупреждение" : "предупреждения"}. Започни от тях.`];
+    const miss = ["banner", "main", "complementary", "contentinfo"].filter(r => a.count(r) !== 1);
+    if (miss.length) return [false, "Още липсват или се повтарят: " + miss.map(r => LM_BG[r]).join(", ") + "."];
+    const navs = a.nodes.filter(n => n.role === "navigation");
+    if (navs.length !== 2) return [false, "Страницата има две менюта – и двете трябва да са навигации с различни имена."];
+    const arts = q(doc, "article");
+    if (!["Пазител", "Робот"].every(t => arts.some(x => x.textContent.includes(t)))) return [false, "Двата проекта още не са самостоятелно съдържание."];
+    const img = doc.querySelector("img");
+    if (!img || !(img.getAttribute("alt") || "").trim()) return [false, "Изображението на играта трябва да има смислен <code>alt</code> – то носи информация."];
+    const ad = doc.querySelector("address");
+    if (!ad || !/@/.test(ad.textContent)) return [false, "Контактът трябва да е в <code>&lt;address&gt;</code>."];
+    if (/Обновено|\d{2}\.\d{2}\.\d{4}/.test(ad.textContent) || ad.querySelector("time")) return [false, "В <code>&lt;address&gt;</code> още има информация, която не е контакт."];
+    const need = [["2026-12-05", "датата на хакатона"], ["2026-12-01", "датата на обновяване"]].filter(([d]) => !doc.querySelector(`time[datetime^="${d}"]`));
+    if (need.length) return [false, "Не е машинно четима: " + need.map(x => x[1]).join(" и ") + "."];
+    return [true, "Истинска страница без нито едно предупреждение: ориентири, навигации с имена, статии, стълбица на заглавията, <code>alt</code>, <code>time</code> и <code>address</code>. Това е нивото, което се очаква и в Упражнение 5."];
   }
 }];
 
