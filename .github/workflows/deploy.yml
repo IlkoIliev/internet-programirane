@@ -1,4 +1,3 @@
-
 name: Publish textbook
 
 on:
@@ -17,12 +16,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  # 1. Сглобява учебника и качва готовия сайт като артефакт.
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -43,6 +39,15 @@ jobs:
         with:
           path: site/
 
+  # 2. Публикува артефакта. Отделна задача, за да е завършено качването,
+  #    преди публикуването да го потърси (actions/deploy-pages#451).
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
