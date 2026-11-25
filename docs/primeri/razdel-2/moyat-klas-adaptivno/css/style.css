@@ -1,0 +1,147 @@
+/* ===== Моят клас – стилове (направени и проверени само на компютър) ===== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #1d2b36;
+    background: #e4ecf2;
+}
+
+/* Бялата „страница“ в средата на екрана */
+.obvivka {
+    width: 1000px;
+    margin: 0 auto;
+    background: #ffffff;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ----- Горна част ----- */
+header {
+    background: #17496b;
+    color: #ffffff;
+    padding: 24px 32px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 40px;
+}
+
+.slogan {
+    margin: 0;
+    color: #cfe3f1;
+}
+
+/* ----- Меню ----- */
+nav ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: #f29f05;
+}
+
+nav a {
+    display: block;
+    padding: 14px 32px;
+    color: #1d2b36;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+nav a:hover,
+nav a:focus {
+    background: #d88c00;
+}
+
+/* ----- Две колони: основно съдържание и странично каре ----- */
+.stranitsa {
+    display: grid;
+    grid-template-columns: 660px 268px;
+    gap: 24px;
+    padding: 24px;
+}
+
+h2 {
+    margin: 24px 0 8px;
+    color: #17496b;
+}
+
+/* ----- Илюстрацията ----- */
+.banner {
+    margin: 0;
+}
+
+.banner img {
+    display: block;
+    border-radius: 6px;
+}
+
+.banner figcaption {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #4a5d6b;
+}
+
+/* ----- Карти със събития ----- */
+.karti {
+    display: flex;
+    gap: 16px;
+}
+
+.karta {
+    flex: 0 0 209px;
+    padding: 12px 14px;
+    background: #f4f8fb;
+    border-top: 4px solid #f29f05;
+    border-radius: 6px;
+}
+
+.karta h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+}
+
+.karta p {
+    margin: 0 0 8px;
+}
+
+.data {
+    font-size: 14px;
+    color: #4a5d6b;
+}
+
+/* ----- Странично каре ----- */
+aside {
+    align-self: start;
+    padding: 0 16px 8px;
+    background: #fff4dd;
+    border-left: 4px solid #f29f05;
+    border-radius: 6px;
+}
+
+/* ----- Долна част ----- */
+footer {
+    background: #17496b;
+    color: #ffffff;
+    padding: 16px 32px;
+}
+
+footer address {
+    font-style: normal;
+}
+
+footer p {
+    margin: 4px 0 0;
+}
+
+footer a {
+    color: #ffd27a;
+}

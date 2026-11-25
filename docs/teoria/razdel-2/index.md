@@ -36,7 +36,7 @@
 | 3 | [**Работа с инструментите за разработчици на съвременните уеб браузъри**](urok-03-instrumenti-za-razrabotchitsi.md) | Преглед на HTML и CSS, изследване на елементи и откриване на грешки. |
 | 4 | [**Създаване на формуляри**](urok-04-formulyari.md) | Полета за въвеждане, етикети, бутони и изпращане на данни. |
 | 5 | [**Създаване на семантични страници**](urok-05-semantichni-stranitsi.md) | Подходящо използване на `header`, `nav`, `main`, `section`, `article` и `footer`. |
-| 6 | **Създаване на адаптивно (responsive) оформление на страници** | Оформление за различни размери на екрана. |
+| 6 | [**Създаване на адаптивно (responsive) оформление на страници**](urok-06-adaptivno-oformlenie.md) | Оформление за различни размери на екрана. |
 | 7 | **Увод в JavaScript. Работа с обекти и събития** | Основи на JavaScript и реакция на действия на потребителя. |
 | 8 | **Принципи на DOM. Манипулиране на DOM** | Избиране, промяна и създаване на елементи в уеб страницата. |
 
@@ -56,6 +56,7 @@
 - [**Симулатор на DevTools**](../../interaktivni/razdel-2/devtools-simulator.html){: target="_blank" } — изследване на страница с повреди в панелите Elements, Console, Sources, Network и Application. Използва се в [Упражнение 3. Детектив в DevTools](../../praktika/razdel-2/uprazhnenie-03-devtools.md).
 - [**Пощальон на формуляри**](../../interaktivni/razdel-2/formulyari-poshtalyon.html){: target="_blank" } — какво точно изпраща един формуляр: двойки име=стойност, кодиране, GET и POST, проверки в браузъра. Използва се в [Упражнение 4. Формуляр „Запиши се за клуб“](../../praktika/razdel-2/uprazhnenie-04-formulyari.md).
 - [**Рентген на страницата**](../../interaktivni/razdel-2/rentgen-na-stranitsata.html){: target="_blank" } — страницата, както я „чува“ екранен четец: ориентири, статии и дърво на заглавията. Използва се в [Упражнение 5. „Моят клас“: от div към семантика](../../praktika/razdel-2/uprazhnenie-05-semantika.md).
+- [**Flex и Grid полигон**](../../interaktivni/razdel-2/flex-grid-poligon.html){: target="_blank" } — подреждане с Flexbox и Grid и медийни заявки, проверявано при различни ширини на екрана. Използва се в [Упражнение 6. „Моят клас“ на телефон](../../praktika/razdel-2/uprazhnenie-06-adaptivno.md).
 
 ## Какво ще можеш в края на раздела?
 

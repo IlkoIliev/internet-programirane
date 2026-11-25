@@ -13,6 +13,7 @@
 | 3 | [**Детектив в DevTools – откриване на грешки в „Моят клас“**](uprazhnenie-03-devtools.md) | [Урок 3. Инструменти за разработчици](../../teoria/razdel-2/urok-03-instrumenti-za-razrabotchitsi.md) | Google Chrome, Visual Studio Code, [симулатор на DevTools](../../interaktivni/razdel-2/devtools-simulator.html){: target="_blank" } | 2 часа |
 | 4 | [**Формуляр „Запиши се за клуб“**](uprazhnenie-04-formulyari.md) | [Урок 4. Създаване на формуляри](../../teoria/razdel-2/urok-04-formulyari.md) | Google Chrome, Visual Studio Code, [Пощальон на формуляри](../../interaktivni/razdel-2/formulyari-poshtalyon.html){: target="_blank" } | 2 часа |
 | 5 | [**„Моят клас“: от div към семантика**](uprazhnenie-05-semantika.md) | [Урок 5. Създаване на семантични страници](../../teoria/razdel-2/urok-05-semantichni-stranitsi.md) | Google Chrome, Visual Studio Code, [Рентген на страницата](../../interaktivni/razdel-2/rentgen-na-stranitsata.html){: target="_blank" } | 2 часа |
+| 6 | [**„Моят клас“ на телефон**](uprazhnenie-06-adaptivno.md) | [Урок 6. Създаване на адаптивно оформление на страници](../../teoria/razdel-2/urok-06-adaptivno-oformlenie.md) | Google Chrome, Visual Studio Code, [Flex и Grid полигон](../../interaktivni/razdel-2/flex-grid-poligon.html){: target="_blank" } | 2 часа |
 
 ## Интерактивни конструктори и симулатор
 
@@ -23,8 +24,9 @@
 - [**Симулатор на DevTools**](../../interaktivni/razdel-2/devtools-simulator.html){: target="_blank" } – мисии за откриване на повреди в страница с панелите Elements, Console, Sources, Network и Application.
 - [**Пощальон на формуляри**](../../interaktivni/razdel-2/formulyari-poshtalyon.html){: target="_blank" } – мисии за това какво изпраща формулярът: имена и стойности, кодиране, GET и POST, проверки в браузъра.
 - [**Рентген на страницата**](../../interaktivni/razdel-2/rentgen-na-stranitsata.html){: target="_blank" } – мисии за ориентири, статии и стълбица на заглавията, както ги използва екранен четец.
+- [**Flex и Grid полигон**](../../interaktivni/razdel-2/flex-grid-poligon.html){: target="_blank" } – мисии за подреждане с Flexbox и Grid и за медийни заявки; решението се проверява при няколко ширини на екрана.
 
 !!! note "Следващи упражнения"
-    Упражненията към следващите теми от раздела – адаптивно оформление, JavaScript и DOM – ще бъдат добавени тук.
+    Упражненията към следващите теми от раздела – JavaScript и DOM – ще бъдат добавени тук.
 
 [Към началото на учебната практика](../index.md)

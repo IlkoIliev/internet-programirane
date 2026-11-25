@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flexbox – центриране</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 12px; font-family: Arial, Helvetica, sans-serif; color: #082d46; background: #eef6fb; }
+.shirina { position: fixed; right: 6px; bottom: 6px; font: 12px Consolas, monospace; background: #082d46; color: #fff; padding: 2px 6px; border-radius: 4px; }
+.skena {
+  display: flex;
+  justify-content: center;   /* по главната ос – хоризонтално */
+  align-items: center;       /* по напречната ос – вертикално */
+  height: 200px; border: 2px dashed #8aa9bb; border-radius: 8px; background: #fff;
+}
+.znachka { padding: 12px 18px; border-radius: 8px; background: #ffb62e; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="skena">
+  <div class="znachka">В средата съм</div>
+</div>
+<div class="shirina" aria-hidden="true"></div>
+<script>
+// Показва текущата ширина на прозореца – само за урока.
+const s = document.querySelector(".shirina");
+const pokazhi = () => s.textContent = innerWidth + " px";
+addEventListener("resize", pokazhi); pokazhi();
+</script>
+</body>
+</html>

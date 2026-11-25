@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flexbox – карти с пренасяне</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 12px; font-family: Arial, Helvetica, sans-serif; color: #082d46; background: #eef6fb; }
+.shirina { position: fixed; right: 6px; bottom: 6px; font: 12px Consolas, monospace; background: #082d46; color: #fff; padding: 2px 6px; border-radius: 4px; }
+.karti { display: flex; flex-wrap: wrap; gap: 10px; }
+.karta {
+  flex: 1 1 180px;      /* расте, свива се, започва от 180px */
+  padding: 14px; border-radius: 8px; background: #fff; border: 2px solid #cfe2ee;
+}
+.karta h2 { font-size: 17px; margin: 0 0 4px; }
+.karta p { margin: 0; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="karti">
+  <article class="karta"><h2>Роботика</h2><p>Вторник, 14:30</p></article>
+  <article class="karta"><h2>Програмиране</h2><p>Сряда, 14:30</p></article>
+  <article class="karta"><h2>Дизайн</h2><p>Четвъртък, 15:00</p></article>
+  <article class="karta"><h2>Шах</h2><p>Петък, 13:30</p></article>
+</div>
+<div class="shirina" aria-hidden="true"></div>
+<script>
+// Показва текущата ширина на прозореца – само за урока.
+const s = document.querySelector(".shirina");
+const pokazhi = () => s.textContent = innerWidth + " px";
+addEventListener("resize", pokazhi); pokazhi();
+</script>
+</body>
+</html>

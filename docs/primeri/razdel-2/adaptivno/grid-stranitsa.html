@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS Grid – оформление на страница</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 12px; font-family: Arial, Helvetica, sans-serif; color: #082d46; background: #eef6fb; }
+.shirina { position: fixed; right: 6px; bottom: 6px; font: 12px Consolas, monospace; background: #082d46; color: #fff; padding: 2px 6px; border-radius: 4px; }
+.stranitsa {
+  display: grid;
+  gap: 8px;
+  /* Малки екрани: една колона, областите една под друга */
+  grid-template-areas:
+    "glava"
+    "menyu"
+    "sadarzhanie"
+    "strana"
+    "dolu";
+}
+.stranitsa > * { padding: 12px; border-radius: 8px; color: #082d46; }
+header { grid-area: glava; background: #d6ecfa; }
+nav    { grid-area: menyu; background: #fdeedd; }
+main   { grid-area: sadarzhanie; background: #d9f2df; min-height: 90px; }
+aside  { grid-area: strana; background: #f1e9fb; }
+footer { grid-area: dolu; background: #e9eef2; }
+
+/* От 700px: странична колона вдясно */
+@media (min-width: 700px) {
+  .stranitsa {
+    grid-template-columns: 3fr 1fr;
+    grid-template-areas:
+      "glava glava"
+      "menyu menyu"
+      "sadarzhanie strana"
+      "dolu dolu";
+  }
+}
+</style>
+</head>
+<body>
+<div class="stranitsa">
+  <header>header</header>
+  <nav>nav</nav>
+  <main>main</main>
+  <aside>aside</aside>
+  <footer>footer</footer>
+</div>
+<div class="shirina" aria-hidden="true"></div>
+<script>
+// Показва текущата ширина на прозореца – само за урока.
+const s = document.querySelector(".shirina");
+const pokazhi = () => s.textContent = innerWidth + " px";
+addEventListener("resize", pokazhi); pokazhi();
+</script>
+</body>
+</html>

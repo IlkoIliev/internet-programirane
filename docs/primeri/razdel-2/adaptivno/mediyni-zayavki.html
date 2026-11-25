@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Медийни заявки – пример</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 12px; font-family: Arial, Helvetica, sans-serif; color: #082d46; background: #eef6fb; }
+.shirina { position: fixed; right: 6px; bottom: 6px; font: 12px Consolas, monospace; background: #082d46; color: #fff; padding: 2px 6px; border-radius: 4px; }
+/* Основни стилове – за малки екрани (mobile-first) */
+.kutiya { padding: 16px; border-radius: 10px; background: #ffe2cc; }
+.kutiya h1 { font-size: 20px; margin: 0 0 6px; }
+.kutiya p { margin: 0; }
+
+/* От 600px нагоре – таблет */
+@media (min-width: 600px) {
+  .kutiya { background: #d6ecfa; }
+  .kutiya h1 { font-size: 28px; }
+}
+
+/* От 900px нагоре – настолен компютър */
+@media (min-width: 900px) {
+  .kutiya { background: #d9f2df; }
+  .kutiya h1 { font-size: 36px; }
+}
+</style>
+</head>
+<body>
+<div class="kutiya">
+  <h1>Променям се според ширината!</h1>
+  <p>Под 600 px – оранжево; от 600 px – синьо; от 900 px – зелено.</p>
+</div>
+<div class="shirina" aria-hidden="true"></div>
+<script>
+// Показва текущата ширина на прозореца – само за урока.
+const s = document.querySelector(".shirina");
+const pokazhi = () => s.textContent = innerWidth + " px";
+addEventListener("resize", pokazhi); pokazhi();
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flexbox – меню</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 12px; font-family: Arial, Helvetica, sans-serif; color: #082d46; background: #eef6fb; }
+.shirina { position: fixed; right: 6px; bottom: 6px; font: 12px Consolas, monospace; background: #082d46; color: #fff; padding: 2px 6px; border-radius: 4px; }
+nav ul { list-style: none; margin: 0; padding: 0; }
+nav a { display: block; padding: 8px 14px; border-radius: 6px; background: #174967; color: #fff; text-decoration: none; text-align: center; }
+
+/* Малки екрани: връзките една под друга */
+nav ul { display: flex; flex-direction: column; gap: 6px; }
+
+/* От 600px: в един ред, разпределени по ширината */
+@media (min-width: 600px) {
+  nav ul { flex-direction: row; justify-content: space-between; }
+}
+</style>
+</head>
+<body>
+<nav aria-label="Пример за меню">
+  <ul>
+    <li><a href="#">Начало</a></li>
+    <li><a href="#">Новини</a></li>
+    <li><a href="#">Галерия</a></li>
+    <li><a href="#">Контакти</a></li>
+  </ul>
+</nav>
+<div class="shirina" aria-hidden="true"></div>
+<script>
+// Показва текущата ширина на прозореца – само за урока.
+const s = document.querySelector(".shirina");
+const pokazhi = () => s.textContent = innerWidth + " px";
+addEventListener("resize", pokazhi); pokazhi();
+</script>
+</body>
+</html>
