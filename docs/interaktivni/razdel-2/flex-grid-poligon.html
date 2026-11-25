@@ -12,7 +12,7 @@ header.top{background:var(--nav);color:#fff;padding:12px 20px;display:flex;flex-
 header.top h1{margin:0;font-size:21px}
 header.top p{margin:2px 0 0;font-size:14px;opacity:.9}
 .progress{font-size:14px;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:14px}
-main.wrap{max-width:1320px;margin:0 auto;padding:14px 16px 30px;display:grid;grid-template-columns:minmax(300px,400px) 1fr;gap:16px}
+main.wrap{max-width:1320px;margin:0 auto;padding:14px 16px 30px;display:grid;grid-template-columns:minmax(300px,400px) minmax(0,1fr);gap:16px}
 @media (max-width:900px){main.wrap{grid-template-columns:minmax(0,1fr)}}
 .card{background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;min-width:0}
 h2{margin:0 0 8px;font-size:18px;color:var(--nav)}
@@ -401,8 +401,19 @@ async function runCheck() {
   await loadFrame();
   let res;
   try { res = await MISSIONS[i].check(at, codeEl.value); } catch (e) { res = [false, "Проверката не успя да измери примера. Провери CSS."]; }
+  if (!res[0]) { const u = unknownProps(codeEl.value); if (u.length) res = [false, "Непознато свойство: " + u.map(x => "<code>" + x + "</code>").join(", ") + " – провери изписването. Браузърът пропуска такива редове. " + res[1]]; }
   state.fb[i] = res; if (res[0]) state.done[i] = true;
   busy = false; drawScale(); renderList(); renderTask();
+}
+function unknownProps(css) {
+  const out = [];
+  css.replace(/\/\*[\s\S]*?\*\//g, "").replace(/[{;]\s*([a-zA-Z-]+)\s*:(?=([^;{}]*)([;{}]?))/g, (m, p, v, end) => {
+    if (end === "{") return m;   // селектор като a:hover, не свойство
+    p = p.toLowerCase();
+    if (!p.startsWith("--") && !CSS.supports(p, "initial") && !out.includes(p)) out.push(p);
+    return m;
+  });
+  return out;
 }
 function goto(i, save = true) {
   if (save) state.code[state.cur] = codeEl.value;
